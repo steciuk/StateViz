@@ -1,7 +1,9 @@
-console.log("content loaded");
+import { injectHook } from '@pages/content/injection/injectHook';
 
-/**
- * @description
- * Chrome extensions don't support modules in content scripts.
- */
-import("./components/Demo");
+// Attach the content view to the page
+import('./components/Demo');
+
+console.log(__BUILD_TIME__);
+
+// Inject the hook
+injectHook();

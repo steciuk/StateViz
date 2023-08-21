@@ -16,11 +16,12 @@
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"forceConsistentCasingInFileNames": true,
 		"typeRoots": ["./src/global.d.ts"],
+		"strict": true,
 		"paths": {
-			"@root/*": ["./*"],
-			"@src/*": ["src/*"],
 			"@assets/*": ["src/assets/*"],
 			"@pages/*": ["src/pages/*"],
+			"@src/*": ["src/*"],
+			"@root/*": ["./*"],
 			"virtual:reload-on-update-in-background-script": ["./src/global.d.ts"],
 			"virtual:reload-on-update-in-view": ["./src/global.d.ts"]
 		}
