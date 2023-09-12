@@ -30,6 +30,10 @@ const manifest: chrome.runtime.ManifestV3 = {
 			js: ['src/pages/content/index.js'],
 			// KEY for cache invalidation
 			css: ['assets/css/contentStyle<KEY>.chunk.css'],
+			run_at: 'document_start',
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			world: 'MAIN',
 		},
 	],
 	devtools_page: 'src/pages/devtools/index.html',

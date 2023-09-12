@@ -11,8 +11,47 @@ declare global {
 	}
 }
 
-// Initialization
-export function injectHook() {
+// TODO: remove
+const MODE: 0 | 1 = 1; // 0 = standalone, 1 = with RDT
+
+function injectWithRDT() {
+	// wait for RDT to load
+	setTimeout(() => {
+		const reactHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+		// Check if RTD or StateViz already hooked
+		if (reactHook) {
+			if (reactHook.stateViz) {
+				console.warn('StateViz already hooked');
+				return;
+			}
+		} else {
+			console.warn('React DevTools not found');
+			return;
+		}
+
+		// Hook StateViz
+		reactHook.stateViz = true;
+
+		// iterate through all properties of reactHook
+		for (const prop in reactHook) {
+			const reactHookAny = reactHook as any;
+			// check if the property is a function
+			if (
+				Object.prototype.hasOwnProperty.call(reactHookAny, prop) &&
+				typeof reactHookAny[prop] === 'function'
+			) {
+				// replace the function with a wrapper that calls the original function and logs the arguments
+				const originalFunction = reactHookAny[prop];
+				reactHookAny[prop] = function (...args: any[]) {
+					console.log(prop, args);
+					originalFunction(...args);
+				};
+			}
+		}
+	}, 0);
+}
+
+function injectStandalone() {
 	const reactHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 	// Check if RTD or StateViz already hooked
@@ -28,7 +67,6 @@ export function injectHook() {
 	}
 
 	// Hook StateViz
-
 	window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
 		stateViz: true,
 		rendererInterfaces: new Map(),
@@ -75,4 +113,9 @@ export function injectHook() {
 			console.log('registerInternalModuleStop', moduleStopError);
 		},
 	};
+}
+
+// Initialization
+export function injectHook() {
+	MODE === 0 ? injectStandalone() : injectWithRDT();
 }
