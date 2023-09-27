@@ -1,4 +1,6 @@
 import { inject } from '@pages/content/injection/hookFunctions/inject';
+import { emit, off, on, sub } from '@pages/content/injection/hookFunctions/listeners';
+import { LISTENERS, RENDERERS } from '@pages/content/injection/hookStorage/hookStorage';
 import { DevToolsHook } from '@pages/content/injection/reactTypes';
 
 declare global {
@@ -8,50 +10,11 @@ declare global {
 			registerRendererWithConsole?: (renderer: any) => void;
 			patchConsoleUsingWindowValues?: () => void;
 		};
+		__REACT_DEVTOOLS_ATTACH__: any;
 	}
 }
 
-// TODO: remove
-const MODE: 0 | 1 = 1; // 0 = standalone, 1 = with RDT
-
-function injectWithRDT() {
-	// wait for RDT to load
-	setTimeout(() => {
-		const reactHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-		// Check if RTD or StateViz already hooked
-		if (reactHook) {
-			if (reactHook.stateViz) {
-				console.warn('StateViz already hooked');
-				return;
-			}
-		} else {
-			console.warn('React DevTools not found');
-			return;
-		}
-
-		// Hook StateViz
-		reactHook.stateViz = true;
-
-		// iterate through all properties of reactHook
-		for (const prop in reactHook) {
-			const reactHookAny = reactHook as any;
-			// check if the property is a function
-			if (
-				Object.prototype.hasOwnProperty.call(reactHookAny, prop) &&
-				typeof reactHookAny[prop] === 'function'
-			) {
-				// replace the function with a wrapper that calls the original function and logs the arguments
-				const originalFunction = reactHookAny[prop];
-				reactHookAny[prop] = function (...args: any[]) {
-					console.log(prop, args);
-					originalFunction(...args);
-				};
-			}
-		}
-	}, 0);
-}
-
-function injectStandalone() {
+export function injectHook() {
 	const reactHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 	// Check if RTD or StateViz already hooked
@@ -70,27 +33,19 @@ function injectStandalone() {
 	window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
 		stateViz: true,
 		rendererInterfaces: new Map(),
-		listeners: {},
+		listeners: LISTENERS.expose(),
 		backends: new Map(),
-		// renderers: new Map(),
+		renderers: RENDERERS,
 		supportsFiber: true,
 
 		inject: inject,
-		emit: (event: string, data: any) => {
-			console.log('emit', event, data);
-		},
+		emit: emit,
 		getFiberRoots: (rendererId: number) => {
 			console.log('getFiberRoots', rendererId);
 		},
-		on: (event: string, listener: any) => {
-			console.log('on', event, listener);
-		},
-		off: (event: string, listener: any) => {
-			console.log('off', event, listener);
-		},
-		sub: (event: string, listener: any) => {
-			console.log('sub', event, listener);
-		},
+		on: on,
+		off: off,
+		sub: sub,
 		onCommitFiberUnmount: (rendererId: number, fiber: any) => {
 			console.log('onCommitFiberUnmount', rendererId, fiber);
 		},
@@ -101,21 +56,18 @@ function injectStandalone() {
 			console.log('onPostCommitFiberRoot', rendererID, root);
 		},
 		setStrictMode: (rendererID: number, isStrict: any) => {
-			console.log('setStrictMode', rendererID, isStrict);
+			// console.log('setStrictMode', rendererID, isStrict);
 		},
+		// probably only for profiler
 		getInternalModuleRanges: () => {
-			console.log('getInternalModuleRanges');
+			// console.log('getInternalModuleRanges');
+			return [];
 		},
 		registerInternalModuleStart: (moduleStartError: Error) => {
-			console.log('registerInternalModuleStart', moduleStartError);
+			// console.log('registerInternalModuleStart', moduleStartError);
 		},
 		registerInternalModuleStop: (moduleStopError: Error) => {
-			console.log('registerInternalModuleStop', moduleStopError);
+			// console.log('registerInternalModuleStop', moduleStopError);
 		},
 	};
-}
-
-// Initialization
-export function injectHook() {
-	MODE === 0 ? injectStandalone() : injectWithRDT();
 }
