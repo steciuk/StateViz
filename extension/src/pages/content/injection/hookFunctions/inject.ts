@@ -1,4 +1,3 @@
-import { emit } from '@pages/content/injection/hookFunctions/listeners';
 import { RENDERERS } from '@pages/content/injection/hookStorage/hookStorage';
 import { ReactRenderer } from '@pages/content/injection/reactTypes';
 
@@ -13,22 +12,15 @@ export function inject(renderer: ReactRenderer): number | null {
 	if (RENDERERS.size > 0) {
 		// TODO: consider allowing more renderers
 		console.warn('Only one renderer is supported');
-		return rendererId;
+		return null;
 	}
 
 	RENDERERS.set(rendererId, renderer);
 
 	// TODO: Possible console patching here
 
-	// window.postMessage(
-	// 	{
-	// 		source: 'react-devtools-detector',
-	// 		reactBuildType: 'development',
-	// 	},
-	// 	'*'
-	// );
-
-	emit('renderer', { id: rendererId, renderer, reactBuildType: 'development' });
+	// Why is this needed? (see: extension/src/pages/content/index.ts)
+	// emit('renderer', { id: rendererId, renderer, reactBuildType: 'development' });
 
 	return rendererId;
 }

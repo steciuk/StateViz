@@ -1,4 +1,3 @@
-import { on } from '@pages/content/injection/hookFunctions/listeners';
 import { injectHook } from '@pages/content/injection/injectHook';
 
 // Attach the content view to the page
@@ -10,14 +9,14 @@ import { injectHook } from '@pages/content/injection/injectHook';
 console.log(__BUILD_TIME__);
 injectHook();
 
-// TODO: why is this needed?
-on('renderer', ({ reactBuildType }) => {
-	console.log('on - renderer', reactBuildType);
-	window.postMessage(
-		{
-			source: 'react-devtools-detector',
-			reactBuildType,
-		},
-		'*'
-	);
-});
+// TODO: why is this needed? (see: extension/src/pages/content/injection/hookFunctions/inject.ts)
+// on('renderer', ({ reactBuildType }) => {
+// 	console.log('on - renderer', reactBuildType);
+// 	window.postMessage(
+// 		{
+// 			source: 'react-devtools-detector',
+// 			reactBuildType,
+// 		},
+// 		'*'
+// 	);
+// });
