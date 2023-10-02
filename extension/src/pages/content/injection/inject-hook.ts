@@ -1,7 +1,11 @@
-import { inject } from '@pages/content/injection/hookFunctions/inject';
-import { emit, off, on, sub } from '@pages/content/injection/hookFunctions/listeners';
-import { LISTENERS, RENDERERS } from '@pages/content/injection/hookStorage/hookStorage';
-import { DevToolsHook } from '@pages/content/injection/reactTypes';
+import { inject } from '@pages/content/injection/hook-functions/inject';
+import { emit, off, on, sub } from '@pages/content/injection/hook-functions/listeners';
+import {
+	LISTENERS,
+	RENDERER_INTERFACES,
+	RENDERERS
+} from '@pages/content/injection/hook-storage/hook-storage';
+import { DevToolsHook } from '@pages/content/injection/react-types';
 
 declare global {
 	interface Window {
@@ -32,7 +36,7 @@ export function injectHook() {
 	// Hook StateViz
 	window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
 		stateViz: true,
-		rendererInterfaces: new Map(),
+		rendererInterfaces: RENDERER_INTERFACES,
 		listeners: LISTENERS.expose(),
 		backends: new Map(),
 		renderers: RENDERERS,
@@ -51,6 +55,7 @@ export function injectHook() {
 		},
 		onCommitFiberRoot: (rendererID: any, root: any, priorityLevel: void | number) => {
 			console.log('onCommitFiberRoot', rendererID, root, priorityLevel);
+			console.log(RENDERER_INTERFACES);
 		},
 		onPostCommitFiberRoot: (rendererID: number, root: any) => {
 			console.log('onPostCommitFiberRoot', rendererID, root);

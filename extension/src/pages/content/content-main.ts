@@ -1,4 +1,4 @@
-import { injectHook } from '@pages/content/injection/injectHook';
+import { injectHook } from '@pages/content/injection/inject-hook';
 
 // Attach the content view to the page
 // TODO: enabling this causes content script react renderer to try to
@@ -20,3 +20,11 @@ injectHook();
 // 		'*'
 // 	);
 // });
+
+// TODO: can't use chrome.runtime.sendMessage if executionworld is MAIN
+// setTimeout(() => {
+// 	chrome.runtime.sendMessage({
+// 		source: ChromeMessageSource.CONTENT_SCRIPT,
+// 		type: ChromeMessageType.REACT_ATTACHED,
+// 	});
+// }, 1000);

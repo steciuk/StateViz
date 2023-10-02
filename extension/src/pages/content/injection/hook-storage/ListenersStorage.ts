@@ -1,4 +1,4 @@
-import { Handler } from '@pages/content/injection/reactTypes';
+import { Handler } from '@pages/content/injection/react-types';
 
 export class ListenersStorage {
 	private listeners: Record<string, Handler[]> = {};

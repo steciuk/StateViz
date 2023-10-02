@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import packageJson from './package.json';
 
 /**
@@ -28,13 +29,19 @@ const manifest: chrome.runtime.ManifestV3 = {
 	content_scripts: [
 		{
 			matches: ['http://*/*', 'https://*/*', '<all_urls>'],
-			js: ['src/pages/content/index.js'],
+			js: ['src/pages/content-main/index.js'],
 			// KEY for cache invalidation
 			css: ['assets/css/contentStyle<KEY>.chunk.css'],
 			run_at: 'document_start',
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			world: 'MAIN',
+		},
+		{
+			matches: ['http://*/*', 'https://*/*', '<all_urls>'],
+			js: ['src/pages/content-isolated/index.js'],
+			run_at: 'document_start',
+			// @ts-ignore
+			world: 'ISOLATED',
 		},
 	],
 	devtools_page: 'src/pages/devtools/index.html',

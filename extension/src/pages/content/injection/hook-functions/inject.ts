@@ -1,5 +1,5 @@
-import { RENDERERS } from '@pages/content/injection/hookStorage/hookStorage';
-import { ReactRenderer } from '@pages/content/injection/reactTypes';
+import { RENDERERS } from '@pages/content/injection/hook-storage/hook-storage';
+import { ReactRenderer } from '@pages/content/injection/react-types';
 
 // TODO: consider allowing more renderers
 const rendererId = 0;
@@ -20,7 +20,18 @@ export function inject(renderer: ReactRenderer): number | null {
 	// TODO: Possible console patching here
 
 	// Why is this needed? (see: extension/src/pages/content/index.ts)
-	// emit('renderer', { id: rendererId, renderer, reactBuildType: 'development' });
+	// window.postMessage(
+	// 	{
+	// 		source: 'react-devtools-detector',
+	// 		reactBuildType: 'development',
+	// 	},
+	// 	'*'
+	// );
+	// emit('renderer', {
+	//   id: rendererId,
+	//   renderer,
+	//   reactBuildType: 'development'
+	// });
 
 	return rendererId;
 }
