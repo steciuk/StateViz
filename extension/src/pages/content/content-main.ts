@@ -1,4 +1,7 @@
 import { injectHook } from '@pages/content/injection/inject-hook';
+import { runLog } from '@src/shared/run-log';
+
+runLog('content-main.ts');
 
 // Attach the content view to the page
 // TODO: enabling this causes content script react renderer to try to
@@ -6,7 +9,6 @@ import { injectHook } from '@pages/content/injection/inject-hook';
 // inject function.
 // import('./components/Demo');
 
-console.log(__BUILD_TIME__);
 injectHook();
 
 // TODO: why is this needed? (see: extension/src/pages/content/injection/hookFunctions/inject.ts)

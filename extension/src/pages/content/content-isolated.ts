@@ -1,16 +1,15 @@
-import { sendChromeMessage } from '@pages/content/utils/chrome-message';
-import { ChromeMessageSource, ChromeMessageType } from '@src/shared/chrome-message/events';
+import { runLog } from '@src/shared/run-log';
 
-setTimeout(() => {
-	// chrome.runtime.sendMessage({
-	// 	source: ChromeMessageSource.CONTENT_SCRIPT,
-	// 	type: ChromeMessageType.REACT_ATTACHED,
-	// });
-	sendChromeMessage({
-		source: ChromeMessageSource.CONTENT_SCRIPT,
-		type: ChromeMessageType.REACT_ATTACHED,
-	});
-	console.log('content-isolated.ts - setTimeout');
-}, 1000);
+runLog('content-isolated.ts');
 
-console.log('content-isolated.ts');
+// setTimeout(() => {
+// 	// chrome.runtime.sendMessage({
+// 	// 	source: ChromeMessageSource.CONTENT_SCRIPT,
+// 	// 	type: ChromeMessageType.REACT_ATTACHED,
+// 	// });
+// 	sendChromeMessage({
+// 		source: ChromeMessageSource.CONTENT_SCRIPT,
+// 		type: ChromeMessageType.REACT_ATTACHED,
+// 	});
+// 	console.log('content-isolated.ts - setTimeout');
+// }, 1000);
