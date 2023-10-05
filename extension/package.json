@@ -19,8 +19,7 @@
 	"dependencies": {
 		"construct-style-sheets-polyfill": "^3.1.0",
 		"react": "18.2.0",
-		"react-dom": "18.2.0",
-		"vite-plugin-force-inline-module": "^0.0.5"
+		"react-dom": "18.2.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-typescript": "^8.5.0",
@@ -36,7 +35,7 @@
 		"@types/ws": "^8.5.4",
 		"@typescript-eslint/eslint-plugin": "5.56.0",
 		"@typescript-eslint/parser": "5.38.1",
-		"@vitejs/plugin-react": "2.2.0",
+		"@vitejs/plugin-react": "^4.1.0",
 		"chokidar": "^3.5.3",
 		"cross-env": "^7.0.3",
 		"eslint": "8.36.0",
@@ -53,7 +52,8 @@
 		"ts-jest": "29.0.2",
 		"ts-loader": "9.4.2",
 		"typescript": "4.8.4",
-		"vite": "^3.2.7",
+		"vite": "^4.4.10",
+		"vite-plugin-force-inline-module": "^0.0.5",
 		"ws": "8.13.0"
 	}
 }
