@@ -12,6 +12,7 @@
 		"@types/node": "^20.8.2",
 		"path": "^0.12.7",
 		"typescript": "^5.0.2",
-		"vite": "^4.4.5"
+		"vite": "^4.4.5",
+		"vite-plugin-inline-code": "file:../../lib/vite-plugin-inline-code"
 	}
 }
