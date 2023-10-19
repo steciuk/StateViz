@@ -1,6 +1,6 @@
 import path, { resolve } from 'path';
 import { defineConfig } from 'vite';
-import { forceInlineModule } from 'vite-plugin-force-inline-module';
+import { inlineImports } from 'vite-plugin-inline-imports';
 
 import react from '@vitejs/plugin-react';
 
@@ -41,9 +41,14 @@ export default defineConfig({
 		customDynamicImport(),
 		addHmr({ background: enableHmrInBackgroundScript, view: true }),
 		watchRebuild(),
-		// FIXME: Works, but installed with --force flag, because of broken dependency.
-		// Come up with a better solution.
-		forceInlineModule({ inlineModules: ['run-log'] }),
+		inlineImports({
+			rules: [
+				{
+					for: [/src\/pages\/content\/.*\.ts/],
+					inline: [/src\/shared\/.*\.ts/],
+				},
+			],
+		}),
 	],
 	publicDir,
 	build: {

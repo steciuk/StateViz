@@ -7,6 +7,7 @@ runLog('content-main.ts');
 // TODO: enabling this causes content script react renderer to try to
 // hook to the extension. If deciding to use this, make changes to
 // inject function.
+// TODO: Uncomment the css line in manifest.ts when using this
 // import('./components/Demo');
 
 injectHook();

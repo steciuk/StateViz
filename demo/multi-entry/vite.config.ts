@@ -1,6 +1,6 @@
 import path, { resolve } from 'path';
 import { defineConfig } from 'vite';
-import { inlineCode } from 'vite-plugin-inline-code';
+import { inlineImports } from 'vite-plugin-inline-imports';
 
 export default defineConfig({
 	resolve: {
@@ -8,7 +8,16 @@ export default defineConfig({
 			src: path.resolve('src/'),
 		},
 	},
-	plugins: [inlineCode(['shared'])],
+	plugins: [
+		inlineImports({
+			rules: [
+				{
+					for: [/entry1/, /entry2/],
+					inline: [/shared/],
+				},
+			],
+		}),
+	],
 	build: {
 		outDir: resolve(__dirname, 'dist'),
 		rollupOptions: {

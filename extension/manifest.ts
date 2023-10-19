@@ -31,7 +31,8 @@ const manifest: chrome.runtime.ManifestV3 = {
 			matches: ['http://*/*', 'https://*/*', '<all_urls>'],
 			js: ['src/pages/content-main/index.js'],
 			// KEY for cache invalidation
-			css: ['assets/css/contentStyle<KEY>.chunk.css'],
+			// TODO: uncomment, when using styles in content script
+			// css: ['assets/css/contentStyle<KEY>.chunk.css'],
 			run_at: 'document_start',
 			// @ts-ignore
 			world: 'MAIN',
