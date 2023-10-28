@@ -3,7 +3,7 @@ import { emit, off, on, sub } from '@pages/content/injection/hook-functions/list
 import {
 	LISTENERS,
 	RENDERER_INTERFACES,
-	RENDERERS
+	RENDERERS,
 } from '@pages/content/injection/hook-storage/hook-storage';
 import { DevToolsHook } from '@pages/content/injection/react-types';
 
@@ -45,20 +45,20 @@ export function injectHook() {
 		inject: inject,
 		emit: emit,
 		getFiberRoots: (rendererId: number) => {
-			console.log('getFiberRoots', rendererId);
+			// console.log('getFiberRoots', rendererId);
 		},
 		on: on,
 		off: off,
 		sub: sub,
 		onCommitFiberUnmount: (rendererId: number, fiber: any) => {
-			console.log('onCommitFiberUnmount', rendererId, fiber);
+			// console.log('onCommitFiberUnmount', rendererId, fiber);
 		},
 		onCommitFiberRoot: (rendererID: any, root: any, priorityLevel: void | number) => {
-			console.log('onCommitFiberRoot', rendererID, root, priorityLevel);
-			console.log(RENDERER_INTERFACES);
+			// console.log('onCommitFiberRoot', rendererID, root, priorityLevel);
+			// console.log(RENDERER_INTERFACES);
 		},
 		onPostCommitFiberRoot: (rendererID: number, root: any) => {
-			console.log('onPostCommitFiberRoot', rendererID, root);
+			// console.log('onPostCommitFiberRoot', rendererID, root);
 		},
 		setStrictMode: (rendererID: number, isStrict: any) => {
 			// console.log('setStrictMode', rendererID, isStrict);

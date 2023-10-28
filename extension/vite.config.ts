@@ -45,7 +45,7 @@ export default defineConfig({
 			rules: [
 				{
 					for: [/src\/pages\/content\/.*\.ts/],
-					inline: [/src\/shared\/.*\.ts/],
+					inline: [/src\/shared\/.*\.ts/, /src\/pages\/content\/shared\/.*\.ts/],
 				},
 			],
 		}),

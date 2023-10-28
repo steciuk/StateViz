@@ -1,29 +1,46 @@
 import '@pages/panel/Panel.css';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { ChromeMessage } from '@src/shared/chrome-message/events';
-import { onChromeMessage } from '@src/shared/chrome-message/message';
+type Message = {
+	source: string;
+	text: string;
+};
 
 const Panel: React.FC = () => {
+	const [messages, setMessages] = useState<Message[]>([]);
+
 	useEffect(() => {
-		const onMessageCallback = (message: ChromeMessage) => {
-			console.log(message);
-		};
+		chrome.runtime.onConnect.addListener((port) => {
+			console.log('panel connect');
+			console.log(port);
+			port.onMessage.addListener((message) => {
+				console.log('panel message', message);
+				setMessages((prev) => [...prev, message]);
+			});
+			port.onDisconnect.addListener(() => {
+				console.log('panel disconnect');
+			});
+		});
 
-		// TODO: why if this is used the sender doesn't see the target?
-		onChromeMessage(onMessageCallback);
-		// but if this, everything works fine
-		// chrome.runtime.onMessage.addListener(onMessageCallback);
-
-		return () => {
-			// offChromeMessage(onMessageCallback);
-		};
+		// const port = chrome.runtime.connect({ name: 'panel' });
+		// port.onMessage.addListener((message) => {
+		// 	console.log('panel message', message);
+		// 	setMessages((prev) => [...prev, message]);
+		// });
 	}, []);
 
 	return (
 		<div className="container">
 			<h1 className="text-lime-400">Dev Tools Panel</h1>
+			<ul>
+				{messages.map((message, index) => (
+					<li key={index}>
+						<div>{message.source}</div>
+						<div>{message.text}</div>
+					</li>
+				))}
+			</ul>
 		</div>
 	);
 };

@@ -23,11 +23,3 @@ injectHook();
 // 		'*'
 // 	);
 // });
-
-// TODO: can't use chrome.runtime.sendMessage if executionworld is MAIN
-// setTimeout(() => {
-// 	chrome.runtime.sendMessage({
-// 		source: ChromeMessageSource.CONTENT_SCRIPT,
-// 		type: ChromeMessageType.REACT_ATTACHED,
-// 	});
-// }, 1000);
