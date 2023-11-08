@@ -4,7 +4,7 @@ import {
 } from '@src/shared/chrome-message/events';
 import {
 	onChromeMessage,
-	sendChromeMessage,
+	sendChromeMessageToTab,
 } from '@src/shared/chrome-message/message';
 import { runLog } from '@src/shared/run-log';
 
@@ -23,22 +23,23 @@ function createPanel() {
 }
 
 let panelCreated = false;
+const currentTabId = chrome.devtools.inspectedWindow.tabId;
 
 // Devtools window opened before react attached
-onChromeMessage((message) => {
+const removeListener = onChromeMessage((message) => {
 	if (message.type === ChromeMessageType.CREATE_DEVTOOLS_PANEL) {
-		if (panelCreated) {
-			return;
-		}
+		if (panelCreated) return;
+		if (message.sender.tab.id !== currentTabId) return;
 
 		panelCreated = true;
 		createPanel();
+		removeListener();
 	}
 });
 
 // Devtools window opened after react attached
 if (!panelCreated) {
-	sendChromeMessage({
+	sendChromeMessageToTab(currentTabId, {
 		type: ChromeMessageType.IS_REACT_ATTACHED,
 		source: ChromeMessageSource.DEVTOOLS,
 		responseCallback: (isReactAttached) => {

@@ -1,12 +1,8 @@
+import { WithRequired } from '@src/shared/utility-types';
+
 export type ChromeMessage =
 	| CreateDevtoolsPanelChromeMessage
 	| IsReactAttachedChromeMessage;
-
-// TODO: move to shared utility types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type OmitFromUnion<T, K extends keyof T> = T extends any
-	? Omit<T, K>
-	: never;
 
 export enum ChromeMessageType {
 	CREATE_DEVTOOLS_PANEL = 'CREATE_DEVTOOLS_PANEL',
@@ -25,21 +21,22 @@ export enum ChromeMessageSource {
 
 type ChromeMessageBase = {
 	sender: chrome.runtime.MessageSender;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	responseCallback?: (response?: any) => void;
 };
 
 type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
-	sender: chrome.runtime.MessageSender &
-		Required<Pick<chrome.runtime.MessageSender, 'tab'>>;
+	sender: WithRequired<chrome.runtime.MessageSender, 'tab'>;
 	source: ChromeMessageSource.CONTENT_SCRIPT;
 };
 
 // SPECIFIC TYPES
-
+// content-isolated -> devtools script
 type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.CREATE_DEVTOOLS_PANEL;
 };
 
+// devtools script -> content-isolated on specific tab
 type IsReactAttachedChromeMessage = Omit<
 	ChromeMessageBase,
 	'responseCallback'

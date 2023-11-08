@@ -11,7 +11,3 @@ reloadOnUpdate('pages/content/style.scss');
 // ------------------------------
 
 runLog('background.ts');
-
-chrome.runtime.onMessage.addListener((message, sender, responseCallback) => {
-	console.log('chrome.runtime.onMessage', message, sender, responseCallback);
-});

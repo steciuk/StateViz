@@ -34,6 +34,7 @@ postMessageBridge.onMessage((message) => {
 
 onChromeMessage((message) => {
 	console.log('onChromeMessage', message);
+	console.log(react_attached);
 	if (message.type === ChromeMessageType.IS_REACT_ATTACHED) {
 		message.responseCallback(react_attached);
 	}
