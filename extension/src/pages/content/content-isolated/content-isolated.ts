@@ -1,6 +1,7 @@
 import {
 	PostMessageBridge,
 	PostMessageSource,
+	PostMessageType,
 } from '@pages/content/shared/post-message';
 import {
 	ChromeMessageSource,
@@ -21,14 +22,28 @@ const postMessageBridge = PostMessageBridge.getInstance(
 let react_attached = false;
 
 postMessageBridge.onMessage((message) => {
-	console.log('postMessageBridge.onMessage', message);
-	if (message.content === 'REACT_ATTACHED') {
-		react_attached = true;
+	console.log('onMessage', message);
+	switch (message.type) {
+		case PostMessageType.REACT_ATTACHED:
+			react_attached = true;
 
-		sendChromeMessage({
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
-			source: ChromeMessageSource.CONTENT_SCRIPT,
-		});
+			sendChromeMessage({
+				type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+				source: ChromeMessageSource.CONTENT_SCRIPT,
+			});
+			break;
+
+		case PostMessageType.COMMIT_ROOT:
+			// TODO: change to long-lived connection
+			sendChromeMessage({
+				type: ChromeMessageType.COMMIT_ROOT,
+				source: ChromeMessageSource.CONTENT_SCRIPT,
+				content: message.content,
+			});
+			break;
+
+		default:
+			break;
 	}
 });
 

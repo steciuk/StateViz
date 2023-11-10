@@ -1,46 +1,40 @@
-import '@pages/panel/Panel.css';
-
 import React, { useEffect, useState } from 'react';
 
-type Message = {
-	source: string;
-	text: string;
-};
+import FiberRow from '@pages/panel/components/FiberRow';
+import {
+	ChromeMessage,
+	ChromeMessageType,
+} from '@src/shared/chrome-message/events';
+import { onChromeMessage } from '@src/shared/chrome-message/message';
+import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 const Panel: React.FC = () => {
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [fiberTree, setFiberTree] = useState<ParsedFiber | null>(null);
 
 	useEffect(() => {
-		chrome.runtime.onConnect.addListener((port) => {
-			console.log('panel connect');
-			console.log(port);
-			port.onMessage.addListener((message) => {
-				console.log('panel message', message);
-				setMessages((prev) => [...prev, message]);
-			});
-			port.onDisconnect.addListener(() => {
-				console.log('panel disconnect');
-			});
-		});
-
-		// const port = chrome.runtime.connect({ name: 'panel' });
-		// port.onMessage.addListener((message) => {
-		// 	console.log('panel message', message);
-		// 	setMessages((prev) => [...prev, message]);
-		// });
+		const removeChromeMessageListener = onChromeMessage(
+			(message: ChromeMessage) => {
+				console.log('message', message);
+				if (message.type === ChromeMessageType.COMMIT_ROOT) {
+					setFiberTree(message.content);
+				}
+			}
+		);
+		return () => {
+			removeChromeMessageListener();
+		};
 	}, []);
 
 	return (
-		<div className="container">
-			<h1 className="text-lime-400">Dev Tools Panel</h1>
-			<ul>
-				{messages.map((message, index) => (
-					<li key={index}>
-						<div>{message.source}</div>
-						<div>{message.text}</div>
-					</li>
-				))}
-			</ul>
+		<div
+			style={{
+				backgroundColor: '#1f1f1f',
+				color: 'white',
+				width: '100%',
+				height: '100vh',
+			}}
+		>
+			{fiberTree && <FiberRow fiber={fiberTree} />}
 		</div>
 	);
 };

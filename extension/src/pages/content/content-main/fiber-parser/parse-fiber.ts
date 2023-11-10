@@ -1,8 +1,6 @@
-import {
-	Fiber,
-	FiberRoot,
-	WorkTag,
-} from '@pages/content/content-main/react-types';
+import { Fiber, FiberRoot } from '@pages/content/content-main/react-types';
+import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { WorkTag } from '@src/shared/types/react-types';
 
 export function parseRoot(root: FiberRoot): ParsedFiber {
 	const fiber = root.current;
@@ -37,12 +35,6 @@ function parseFiberChildren(fiber: Fiber): ParsedFiber[] {
 
 	return children;
 }
-
-type ParsedFiber = {
-	tag: WorkTag;
-	name: string;
-	children: ParsedFiber[];
-};
 
 function getFiberName(fiber: Fiber): string {
 	const type = fiber.type;

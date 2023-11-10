@@ -9,11 +9,11 @@ import {
 declare global {
 	interface Window {
 		__REACT_DEVTOOLS_GLOBAL_HOOK__?: DevToolsHook; // TODO: switch to DevToolsHook type
-		__REACT_DEVTOOLS_CONSOLE_FUNCTIONS__?: {
-			registerRendererWithConsole?: (renderer: any) => void;
-			patchConsoleUsingWindowValues?: () => void;
-		};
-		__REACT_DEVTOOLS_ATTACH__: any;
+		// __REACT_DEVTOOLS_CONSOLE_FUNCTIONS__?: {
+		// 	registerRendererWithConsole?: (renderer: any) => void;
+		// 	patchConsoleUsingWindowValues?: () => void;
+		// };
+		// __REACT_DEVTOOLS_ATTACH__: any;
 	}
 }
 

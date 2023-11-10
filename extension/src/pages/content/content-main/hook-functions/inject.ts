@@ -3,6 +3,7 @@ import { ReactRenderer } from '@pages/content/content-main/react-types';
 import {
 	PostMessageBridge,
 	PostMessageSource,
+	PostMessageType,
 } from '@pages/content/shared/post-message';
 
 // TODO: consider allowing more renderers
@@ -22,7 +23,9 @@ export function inject(renderer: ReactRenderer): number | null {
 	const postMessageBridge = PostMessageBridge.getInstance(
 		PostMessageSource.MAIN
 	);
-	postMessageBridge.send('REACT_ATTACHED');
+	postMessageBridge.send({
+		type: PostMessageType.REACT_ATTACHED,
+	});
 
 	RENDERERS.set(rendererId, renderer);
 

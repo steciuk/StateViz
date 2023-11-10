@@ -1,13 +1,10 @@
+import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 import { WithRequired } from '@src/shared/utility-types';
 
 export type ChromeMessage =
 	| CreateDevtoolsPanelChromeMessage
-	| IsReactAttachedChromeMessage;
-
-export enum ChromeMessageType {
-	CREATE_DEVTOOLS_PANEL = 'CREATE_DEVTOOLS_PANEL',
-	IS_REACT_ATTACHED = 'IS_REACT_ATTACHED',
-}
+	| IsReactAttachedChromeMessage
+	| CommitRootChromeMessage;
 
 export enum ChromeMessageSource {
 	CONTENT_SCRIPT = 'CONTENT',
@@ -17,12 +14,17 @@ export enum ChromeMessageSource {
 	POPUP = 'POPUP',
 }
 
+export enum ChromeMessageType {
+	CREATE_DEVTOOLS_PANEL = 'CREATE_DEVTOOLS_PANEL',
+	IS_REACT_ATTACHED = 'IS_REACT_ATTACHED',
+	COMMIT_ROOT = 'COMMIT_ROOT',
+}
+
 // BASE TYPES
 
 type ChromeMessageBase = {
 	sender: chrome.runtime.MessageSender;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	responseCallback?: (response?: any) => void;
+	responseCallback?: undefined;
 };
 
 type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
@@ -34,6 +36,12 @@ type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
 // content-isolated -> devtools script
 type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.CREATE_DEVTOOLS_PANEL;
+};
+
+// content-isolated -> devtools script
+type CommitRootChromeMessage = ContentScriptChromeMessage & {
+	type: ChromeMessageType.COMMIT_ROOT;
+	content: ParsedFiber;
 };
 
 // devtools script -> content-isolated on specific tab

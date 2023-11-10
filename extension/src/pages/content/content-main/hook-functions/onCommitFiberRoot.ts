@@ -1,5 +1,12 @@
 import { parseRoot } from '@pages/content/content-main/fiber-parser/parse-fiber';
 import { FiberRoot, RendererID } from '@pages/content/content-main/react-types';
+import {
+	PostMessageBridge,
+	PostMessageSource,
+	PostMessageType,
+} from '@pages/content/shared/post-message';
+
+const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
 
 export function onCommitFiberRoot(
 	rendererID: RendererID,
@@ -9,5 +16,8 @@ export function onCommitFiberRoot(
 ): void {
 	console.log(root);
 	const parsedFiber = parseRoot(root);
-	console.log(parsedFiber);
+	postMessageBridge.send({
+		type: PostMessageType.COMMIT_ROOT,
+		content: parsedFiber,
+	});
 }

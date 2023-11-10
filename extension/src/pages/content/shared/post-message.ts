@@ -1,14 +1,29 @@
+import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { OmitFromUnion } from '@src/shared/utility-types';
+
 export enum PostMessageSource {
 	ISOLATED = 'ISOLATED',
 	MAIN = 'MAIN',
 }
 
-export type PostMessageContent = 'REACT_ATTACHED';
+export enum PostMessageType {
+	REACT_ATTACHED = 'REACT_ATTACHED',
+	COMMIT_ROOT = 'COMMIT_ROOT',
+}
 
-export type PostMessage = {
-	source: PostMessageSource;
-	content: PostMessageContent;
+type ReactAttachedPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.REACT_ATTACHED;
+	content?: undefined;
 };
+
+type CommitRootPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.COMMIT_ROOT;
+	content: ParsedFiber;
+};
+
+type PostMessage = ReactAttachedPostMessage | CommitRootPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}
@@ -21,11 +36,11 @@ export class PostMessageBridge {
 		return PostMessageBridge.instance;
 	}
 
-	send(message: PostMessageContent) {
+	send(message: OmitFromUnion<PostMessage, 'source'>) {
 		window.postMessage(
 			{
 				source: this.source,
-				content: message,
+				...message,
 			},
 			window.origin
 		);
