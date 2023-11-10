@@ -62,7 +62,8 @@ export type Fiber = {
 	elementType: any;
 
 	// ? The resolved function/class/ associated with this fiber.
-	type: any;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	type: string | Function | Symbol | null;
 
 	// ? The local state associated with this fiber.
 	stateNode: any;
@@ -236,7 +237,7 @@ export type ReactRenderer = {
 	// // ? getLaneLabelMap?: () => Map<Lane, string> | null,
 };
 
-export type BaseFiberRootProperties = {
+type BaseFiberRootProperties = {
 	// ? The type of root (legacy, batched, concurrent, etc.)
 	// tag: RootTag,
 
@@ -301,6 +302,9 @@ export type BaseFiberRootProperties = {
 	// ) => void,
 };
 
+// TODO: only copied part of the type. Maybe more will be needed
+export type FiberRoot = BaseFiberRootProperties;
+
 export type RendererID = number;
 
 export type Handler = (data: any) => void;
@@ -309,7 +313,7 @@ export type DevToolsHook = {
 	stateViz?: boolean;
 	// listeners: { [key: string]: Array<Handler> };
 	// rendererInterfaces: Map<RendererID, RendererInterface>,
-	// renderers: Map<RendererID, ReactRenderer>;
+	renderers: Map<RendererID, ReactRenderer>;
 	// backends: Map<string, DevToolsBackend>,
 
 	supportsFiber: boolean;
@@ -331,7 +335,7 @@ export type DevToolsHook = {
 	onCommitFiberUnmount: (rendererID: RendererID, fiber: object) => void;
 	onCommitFiberRoot: (
 		rendererID: RendererID,
-		fiber: object,
+		fiber: FiberRoot, // TODO: was object instead of FiberRoot. Maybe other types are possible.
 		// ? Added in v16.9 to support Profiler priority labels
 		commitPriority?: number,
 		// ? Added in v16.9 to support Fast Refresh

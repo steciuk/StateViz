@@ -1,4 +1,6 @@
 import { inject } from '@pages/content/content-main/hook-functions/inject';
+import { onCommitFiberRoot } from '@pages/content/content-main/hook-functions/onCommitFiberRoot';
+import { RENDERERS } from '@pages/content/content-main/hook-storage/hook-storage';
 import {
 	DevToolsHook,
 	RendererID,
@@ -36,7 +38,8 @@ export function injectHook() {
 		// rendererInterfaces: RENDERER_INTERFACES,
 		// listeners: LISTENERS.expose(),
 		// backends: new Map(),
-		// renderers: RENDERERS,
+		// without this react breaks
+		renderers: RENDERERS,
 		supportsFiber: true,
 
 		inject: inject,
@@ -61,13 +64,7 @@ export function injectHook() {
 		onCommitFiberUnmount: (rendererId: RendererID, fiber: any) => {
 			console.log('onCommitFiberUnmount', rendererId, fiber);
 		},
-		onCommitFiberRoot: (
-			rendererID: RendererID,
-			root: any,
-			priorityLevel: undefined | number
-		) => {
-			console.log('onCommitFiberRoot', rendererID, root, priorityLevel);
-		},
+		onCommitFiberRoot: onCommitFiberRoot,
 		// onPostCommitFiberRoot: (rendererID: number, root: any) => {
 		// 	// console.log('onPostCommitFiberRoot', rendererID, root);
 		// },
