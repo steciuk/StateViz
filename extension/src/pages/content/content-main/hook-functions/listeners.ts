@@ -1,5 +1,5 @@
-import { LISTENERS } from '@pages/content/injection/hook-storage/hook-storage';
-import { Handler } from '@pages/content/injection/react-types';
+import { LISTENERS } from '@pages/content/content-main/hook-storage/hook-storage';
+import { Handler } from '@pages/content/content-main/react-types';
 
 /**
  * Registers a listener for a specific event.

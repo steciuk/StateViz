@@ -1,4 +1,4 @@
-import { injectHook } from '@pages/content/injection/inject-hook';
+import { injectHook } from '@pages/content/content-main/inject-hook';
 import { runLog } from '@src/shared/run-log';
 
 runLog('content-main.ts');

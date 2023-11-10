@@ -44,8 +44,14 @@ export default defineConfig({
 		inlineImports({
 			rules: [
 				{
-					for: [/src\/pages\/content\/.*\.ts/],
-					inline: [/src\/shared\/.*\.ts/, /src\/pages\/content\/shared\/.*\.ts/],
+					for: [
+						/src\/pages\/content\/content-isolated\/.*\.ts/,
+						/src\/pages\/content\/content-main\/.*\.ts/,
+					],
+					inline: [
+						/src\/shared\/.*\.ts/,
+						/src\/pages\/content\/shared\/.*\.ts/,
+					],
 				},
 			],
 		}),
@@ -61,8 +67,18 @@ export default defineConfig({
 			input: {
 				devtools: resolve(pagesDir, 'devtools', 'index.html'),
 				panel: resolve(pagesDir, 'panel', 'index.html'),
-				'content-main': resolve(pagesDir, 'content', 'content-main.ts'),
-				'content-isolated': resolve(pagesDir, 'content', 'content-isolated.ts'),
+				'content-main': resolve(
+					pagesDir,
+					'content',
+					'content-main',
+					'content-main.ts'
+				),
+				'content-isolated': resolve(
+					pagesDir,
+					'content',
+					'content-isolated',
+					'content-isolated.ts'
+				),
 				background: resolve(pagesDir, 'background', 'index.ts'),
 				contentStyle: resolve(pagesDir, 'content', 'style.scss'),
 				popup: resolve(pagesDir, 'popup', 'index.html'),
@@ -71,7 +87,9 @@ export default defineConfig({
 			},
 			output: {
 				entryFileNames: 'src/pages/[name]/index.js',
-				chunkFileNames: isDev ? 'assets/js/[name].js' : 'assets/js/[name].[hash].js',
+				chunkFileNames: isDev
+					? 'assets/js/[name].js'
+					: 'assets/js/[name].[hash].js',
 				assetFileNames: (assetInfo) => {
 					const { dir, name: _name } = path.parse(assetInfo.name ?? '');
 					const assetFolder = dir.split('/').at(-1);
