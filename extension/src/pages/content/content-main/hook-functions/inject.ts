@@ -4,7 +4,7 @@ import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
-} from '@pages/content/shared/post-message';
+} from '@pages/content/shared/PostMessageBridge';
 
 // TODO: consider allowing more renderers
 const rendererId = 0;

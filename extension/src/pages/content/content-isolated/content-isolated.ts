@@ -2,15 +2,18 @@ import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
-} from '@pages/content/shared/post-message';
+} from '@pages/content/shared/PostMessageBridge';
 import {
 	ChromeMessageSource,
 	ChromeMessageType,
-} from '@src/shared/chrome-message/events';
-import {
 	onChromeMessage,
 	sendChromeMessage,
-} from '@src/shared/chrome-message/message';
+} from '@src/shared/chrome-messages/chrome-message';
+import {
+	ChromeBridgeConnection,
+	ChromeBridgeListener,
+	ChromeBridgeMessageType,
+} from '@src/shared/chrome-messages/ChromeBridge';
 import { runLog } from '@src/shared/run-log';
 
 runLog('content-isolated.ts');
@@ -18,6 +21,13 @@ runLog('content-isolated.ts');
 const postMessageBridge = PostMessageBridge.getInstance(
 	PostMessageSource.ISOLATED
 );
+
+const chromeBridge = new ChromeBridgeListener(
+	ChromeBridgeConnection.PANEL_TO_CONTENT
+);
+chromeBridge.connect(() => {
+	console.warn('chromeBridge connected');
+});
 
 let react_attached = false;
 
@@ -34,12 +44,12 @@ postMessageBridge.onMessage((message) => {
 			break;
 
 		case PostMessageType.COMMIT_ROOT:
-			// TODO: change to long-lived connection
-			sendChromeMessage({
-				type: ChromeMessageType.COMMIT_ROOT,
-				source: ChromeMessageSource.CONTENT_SCRIPT,
-				content: message.content,
-			});
+			if (chromeBridge.isConnected) {
+				chromeBridge.send({
+					type: ChromeBridgeMessageType.COMMIT_ROOT,
+					content: message.content,
+				});
+			}
 			break;
 
 		default:

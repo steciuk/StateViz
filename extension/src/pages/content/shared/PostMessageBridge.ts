@@ -33,6 +33,13 @@ export class PostMessageBridge {
 		if (!PostMessageBridge.instance) {
 			PostMessageBridge.instance = new PostMessageBridge(source);
 		}
+
+		if (PostMessageBridge.instance.source !== source) {
+			throw new Error(
+				'PostMessageBridge already initialized with different source'
+			);
+		}
+
 		return PostMessageBridge.instance;
 	}
 

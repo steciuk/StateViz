@@ -1,11 +1,9 @@
 import {
 	ChromeMessageSource,
 	ChromeMessageType,
-} from '@src/shared/chrome-message/events';
-import {
 	onChromeMessage,
 	sendChromeMessageToTab,
-} from '@src/shared/chrome-message/message';
+} from '@src/shared/chrome-messages/chrome-message';
 import { runLog } from '@src/shared/run-log';
 
 runLog('devtools.ts');

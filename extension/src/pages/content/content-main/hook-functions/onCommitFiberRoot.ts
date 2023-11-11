@@ -4,7 +4,7 @@ import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
-} from '@pages/content/shared/post-message';
+} from '@pages/content/shared/PostMessageBridge';
 
 const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
 

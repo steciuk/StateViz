@@ -2,26 +2,33 @@ import React, { useEffect, useState } from 'react';
 
 import FiberRow from '@pages/panel/components/FiberRow';
 import {
-	ChromeMessage,
-	ChromeMessageType,
-} from '@src/shared/chrome-message/events';
-import { onChromeMessage } from '@src/shared/chrome-message/message';
+	ChromeBridgeConnection,
+	ChromeBridgeMessage,
+	ChromeBridgeMessageType,
+	ChromeBridgeToTabConnector,
+} from '@src/shared/chrome-messages/ChromeBridge';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 const Panel: React.FC = () => {
 	const [fiberTree, setFiberTree] = useState<ParsedFiber | null>(null);
 
 	useEffect(() => {
-		const removeChromeMessageListener = onChromeMessage(
-			(message: ChromeMessage) => {
-				console.log('message', message);
-				if (message.type === ChromeMessageType.COMMIT_ROOT) {
+		const chromeBridge = new ChromeBridgeToTabConnector(
+			ChromeBridgeConnection.PANEL_TO_CONTENT,
+			chrome.devtools.inspectedWindow.tabId
+		);
+		chromeBridge.connect();
+		const removeChromeMessageListener = chromeBridge.onMessage(
+			(message: ChromeBridgeMessage) => {
+				if (message.type === ChromeBridgeMessageType.COMMIT_ROOT) {
 					setFiberTree(message.content);
 				}
 			}
 		);
+
 		return () => {
 			removeChromeMessageListener();
+			chromeBridge.disconnect();
 		};
 	}, []);
 

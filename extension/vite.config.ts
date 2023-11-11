@@ -44,10 +44,7 @@ export default defineConfig({
 		inlineImports({
 			rules: [
 				{
-					for: [
-						/src\/pages\/content\/content-isolated\/.*\.ts/,
-						/src\/pages\/content\/content-main\/.*\.ts/,
-					],
+					for: [/src\/pages\/content\/.*\.ts/],
 					inline: [
 						/src\/shared\/.*\.ts/,
 						/src\/pages\/content\/shared\/.*\.ts/,
