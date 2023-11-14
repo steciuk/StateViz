@@ -23,11 +23,13 @@ export function injectHook() {
 	// Check if RTD or StateViz already hooked
 	if (reactHook) {
 		if (reactHook.stateViz) {
-			console.warn('StateViz already hooked');
+			console.error('StateViz already hooked');
 			return;
 		} else {
 			// TODO: consider integrating with RDT
-			console.warn('React DevTools already hooked. Disable it to use StateViz');
+			console.error(
+				'React DevTools already hooked. Disable it to use StateViz'
+			);
 			return;
 		}
 	}
@@ -62,7 +64,7 @@ export function injectHook() {
 			return;
 		},
 		onCommitFiberUnmount: (rendererId: RendererID, fiber: any) => {
-			console.log('onCommitFiberUnmount', rendererId, fiber);
+			// console.log('onCommitFiberUnmount', rendererId, fiber);
 		},
 		onCommitFiberRoot: onCommitFiberRoot,
 		// onPostCommitFiberRoot: (rendererID: number, root: any) => {

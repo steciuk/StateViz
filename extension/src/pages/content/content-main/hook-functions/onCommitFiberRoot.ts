@@ -14,7 +14,7 @@ export function onCommitFiberRoot(
 	priorityLevel?: number,
 	didError?: boolean
 ): void {
-	console.log(root);
+	// console.log(root);
 	const parsedFiber = parseRoot(root);
 	postMessageBridge.send({
 		type: PostMessageType.COMMIT_ROOT,

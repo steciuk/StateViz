@@ -20,7 +20,7 @@ const Panel: React.FC = () => {
 		chromeBridge.connect();
 		const removeChromeMessageListener = chromeBridge.onMessage(
 			(message: ChromeBridgeMessage) => {
-				if (message.type === ChromeBridgeMessageType.COMMIT_ROOT) {
+				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
 					setFiberTree(message.content);
 				}
 			}
@@ -38,7 +38,7 @@ const Panel: React.FC = () => {
 				backgroundColor: '#1f1f1f',
 				color: 'white',
 				width: '100%',
-				height: '100vh',
+				minHeight: '100vh',
 			}}
 		>
 			{fiberTree && <FiberRow fiber={fiberTree} />}

@@ -6,12 +6,13 @@ export enum ChromeBridgeConnection {
 
 export enum ChromeBridgeMessageType {
 	COMMIT_ROOT = 'COMMIT_ROOT',
+	FULL_SKELETON = 'FULL_SKELETON',
 }
 
-export type ChromeBridgeMessage = CommitRootBridgeMessage;
+export type ChromeBridgeMessage = FullSkeletonBridgeMessage;
 
-type CommitRootBridgeMessage = {
-	type: ChromeBridgeMessageType.COMMIT_ROOT;
+type FullSkeletonBridgeMessage = {
+	type: ChromeBridgeMessageType.FULL_SKELETON;
 	content: ParsedFiber;
 };
 
@@ -27,9 +28,7 @@ abstract class ChromeBridge {
 	}
 
 	disconnect() {
-		if (!this.port) {
-			throw new Error('Not connected');
-		}
+		if (!this.port) return;
 
 		this.port.disconnect();
 		this.port = undefined;
@@ -67,6 +66,9 @@ export class ChromeBridgeConnector extends ChromeBridge {
 		}
 
 		this.port = chrome.runtime.connect({ name: this.connection });
+		this.port.onDisconnect.addListener(() => {
+			this.port = undefined;
+		});
 	}
 }
 
@@ -81,13 +83,16 @@ export class ChromeBridgeToTabConnector extends ChromeBridge {
 		}
 
 		this.port = chrome.tabs.connect(this.tabId, { name: this.connection });
+		this.port.onDisconnect.addListener(() => {
+			this.port = undefined;
+		});
 	}
 }
 
 export class ChromeBridgeListener extends ChromeBridge {
 	private listeners: Array<(message: ChromeBridgeMessage) => void> = [];
 
-	override connect(callback?: () => void): void {
+	override connect(onConnect?: () => void): void {
 		if (this.port) {
 			throw new Error('Already connected');
 		}
@@ -96,15 +101,18 @@ export class ChromeBridgeListener extends ChromeBridge {
 			if (port.name !== this.connection) return;
 
 			this.port = port;
+			this.port.onDisconnect.addListener(() => {
+				this.port = undefined;
+			});
 			this.listeners.forEach((listener) =>
 				port.onMessage.addListener(listener)
 			);
-			callback?.();
+			onConnect?.();
 		});
 	}
 
 	override onMessage(
-		callback: (message: CommitRootBridgeMessage) => void
+		callback: (message: FullSkeletonBridgeMessage) => void
 	): () => void {
 		if (this.port) {
 			return super.onMessage(callback);
