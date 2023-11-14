@@ -1,3 +1,4 @@
+import { getOrGenerateFiberId } from '@pages/content/content-main/fiber-parser/fiber-map';
 import { Fiber, FiberRoot } from '@pages/content/content-main/react-types';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 import { WorkTag } from '@src/shared/types/react-types';
@@ -8,6 +9,7 @@ export function parseRoot(root: FiberRoot): ParsedFiber {
 		tag: fiber.tag,
 		name: getFiberName(fiber),
 		children: parseFiberChildren(fiber),
+		id: getOrGenerateFiberId(fiber),
 	};
 
 	return parsedFiber;
@@ -27,6 +29,7 @@ function parseFiberChildren(fiber: Fiber): ParsedFiber[] {
 				tag: currentChild.tag,
 				name: getFiberName(currentChild),
 				children: parseFiberChildren(currentChild),
+				id: getOrGenerateFiberId(currentChild),
 			});
 		}
 

@@ -4,4 +4,5 @@ export type ParsedFiber = {
 	tag: WorkTag;
 	name: string;
 	children: ParsedFiber[];
+	id: number;
 };

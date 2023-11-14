@@ -16,6 +16,7 @@ export function onCommitFiberRoot(
 ): void {
 	console.log(root);
 	const parsedFiber = parseRoot(root);
+	console.log(parsedFiber);
 	postMessageBridge.send({
 		type: PostMessageType.COMMIT_ROOT,
 		content: parsedFiber,
