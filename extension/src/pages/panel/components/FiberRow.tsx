@@ -18,7 +18,8 @@ const FiberRow = (props: { fiber: ParsedFiber }) => {
 				onChange={() => setIsExpanded(!isExpanded)}
 				disabled={fiber.children.length === 0}
 			/>
-			{fiber.name}
+			{fiber.name + ' - '}
+			{fiber.tag}
 			{isExpanded &&
 				fiber.children.map((child, i) => <FiberRow key={i} fiber={child} />)}
 		</div>

@@ -13,7 +13,7 @@ export function parseRoot(root: FiberRoot): ParsedFiber {
 	return parsedFiber;
 }
 
-const workTagsToSkip: WorkTag[] = [WorkTag.HostComponent];
+const workTagsToSkip: WorkTag[] = [WorkTag.HostComponent, WorkTag.HostText];
 
 function parseFiberChildren(fiber: Fiber): ParsedFiber[] {
 	let currentChild: Fiber | null = fiber.child;
