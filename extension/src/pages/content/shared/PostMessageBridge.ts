@@ -1,4 +1,4 @@
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
 export enum PostMessageSource {
@@ -8,7 +8,8 @@ export enum PostMessageSource {
 
 export enum PostMessageType {
 	REACT_ATTACHED = 'REACT_ATTACHED',
-	COMMIT_ROOT = 'COMMIT_ROOT',
+	UNMOUNT_NODES = 'UNMOUNT_NODES',
+	MOUNT_NODES = 'MOUNT_NODES',
 }
 
 type ReactAttachedPostMessage = {
@@ -17,13 +18,29 @@ type ReactAttachedPostMessage = {
 	content?: undefined;
 };
 
-type CommitRootPostMessage = {
+export type UnmountNodesOperations = NodeId[];
+export type MountNodesOperations = Array<{
+	pathFromRoot: NodeId[];
+	afterNode: NodeId | null;
+	node: ParsedFiber;
+}>;
+
+type MountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
-	type: PostMessageType.COMMIT_ROOT;
-	content: ParsedFiber;
+	type: PostMessageType.MOUNT_NODES;
+	content: MountNodesOperations;
 };
 
-type PostMessage = ReactAttachedPostMessage | CommitRootPostMessage;
+type UnmountNodesPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.UNMOUNT_NODES;
+	content: UnmountNodesOperations;
+};
+
+type PostMessage =
+	| ReactAttachedPostMessage
+	| MountNodesPostMessage
+	| UnmountNodesPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}

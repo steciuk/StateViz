@@ -19,9 +19,12 @@ const FiberRow = (props: { fiber: ParsedFiber }) => {
 				disabled={fiber.children.length === 0}
 			/>
 			{fiber.name + ' - '}
-			{fiber.tag}
+			{fiber.tag + ' - '}
+			{fiber.id}
 			{isExpanded &&
-				fiber.children.map((child, i) => <FiberRow key={i} fiber={child} />)}
+				fiber.children.map((child) => (
+					<FiberRow key={child.id} fiber={child} />
+				))}
 		</div>
 	);
 };

@@ -13,7 +13,7 @@ export type ChromeBridgeMessage = FullSkeletonBridgeMessage;
 
 type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
-	content: ParsedFiber;
+	content: ParsedFiber[];
 };
 
 abstract class ChromeBridge {

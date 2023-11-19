@@ -6,6 +6,8 @@ const TreeNode = (props: { id: number; removeNode?: (id: number) => void }) => {
 	const [treeNodes, setTreeNodes] = useState<number[]>([]);
 	const nodeIdRef = useRef(0);
 
+	const [counter, setCounter] = useState<number>(0);
+
 	const removeNode = useCallback((id: number) => {
 		setTreeNodes((treeNodes) => treeNodes.filter((nodeId) => nodeId !== id));
 	}, []);
@@ -23,6 +25,8 @@ const TreeNode = (props: { id: number; removeNode?: (id: number) => void }) => {
 			>
 				Add
 			</button>
+			{counter}
+			<button onClick={() => setCounter(counter + 1)}>State</button>
 			<div
 				style={{
 					display: 'flex',

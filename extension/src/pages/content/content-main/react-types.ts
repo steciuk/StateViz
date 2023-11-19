@@ -71,7 +71,14 @@ export type Fiber = {
 	updateQueue: any;
 
 	// ? The state used to create the output
-	memoizedState: any;
+	// Type was any. Added by me. TODO: Check what will be needed.
+	memoizedState: null | {
+		cache: null | unknown;
+		element: null | unknown;
+		isDehydrated: boolean;
+		pendingSuspenseBoundaries: null | unknown;
+		transitions: null | unknown;
+	};
 
 	// ? Dependencies (contexts, events) for this fiber, if it has any
 	// ? dependencies: Dependencies | null,
@@ -304,7 +311,7 @@ export type DevToolsHook = {
 
 	// ? React uses these methods.
 	checkDCE: (fn: (...args: unknown[]) => unknown) => void;
-	onCommitFiberUnmount: (rendererID: RendererID, fiber: object) => void;
+	onCommitFiberUnmount: (rendererID: RendererID, fiber: Fiber) => void;
 	onCommitFiberRoot: (
 		rendererID: RendererID,
 		fiber: FiberRoot, // TODO: was object instead of FiberRoot. Maybe other types are possible.

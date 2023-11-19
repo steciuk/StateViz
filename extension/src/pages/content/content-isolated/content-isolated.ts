@@ -15,7 +15,7 @@ import {
 	ChromeBridgeMessageType,
 } from '@src/shared/chrome-messages/ChromeBridge';
 import { runLog } from '@src/shared/run-log';
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 runLog('content-isolated.ts');
 
@@ -28,15 +28,15 @@ const chromeBridge = new ChromeBridgeListener(
 );
 chromeBridge.connect(() => {
 	console.log('connection from devtools panel established');
-	if (!parsedFiber) return;
+	if (currentFibers.size === 0) return;
 	chromeBridge.send({
 		type: ChromeBridgeMessageType.FULL_SKELETON,
-		content: parsedFiber,
+		content: Array.from(currentFibers.values()),
 	});
 });
 
 let react_attached = false;
-let parsedFiber: ParsedFiber | null = null;
+const currentFibers: Map<NodeId, ParsedFiber> = new Map();
 
 postMessageBridge.onMessage((message) => {
 	// console.log('onMessage', message);
@@ -51,15 +51,52 @@ postMessageBridge.onMessage((message) => {
 			});
 			break;
 
-		case PostMessageType.COMMIT_ROOT:
-			parsedFiber = message.content;
+		case PostMessageType.MOUNT_NODES:
+			console.log('MOUNT_NODES', message.content);
+			message.content.forEach((mountNode) => {
+				const pathFromRoot = mountNode.pathFromRoot;
+				if (pathFromRoot.length === 0) {
+					currentFibers.set(mountNode.node.id, mountNode.node);
+				} else {
+					const root = currentFibers.get(pathFromRoot[0]);
+					if (root) {
+						let current = root;
+						for (let i = 1; i < pathFromRoot.length; i++) {
+							const child = current.children.find(
+								(child) => child.id === pathFromRoot[i]
+							);
+							if (!child) {
+								console.error('child not found');
+								break;
+							}
+							current = child;
+						}
+						if (mountNode.afterNode === null) {
+							current.children.splice(0, 0, mountNode.node);
+						} else {
+							const afterNodeIndex = current.children.findIndex(
+								(child) => child.id === mountNode.afterNode
+							);
+							if (afterNodeIndex === -1) {
+								console.error('afterNode not found');
+							} else {
+								current.children.splice(afterNodeIndex + 1, 0, mountNode.node);
+							}
+						}
+					} else {
+						console.error('root not found');
+					}
+				}
+			});
 			if (chromeBridge.isConnected) {
-				// TODO: Don't send full skeleton, only updates on commit
 				chromeBridge.send({
 					type: ChromeBridgeMessageType.FULL_SKELETON,
-					content: message.content,
+					content: Array.from(currentFibers.values()),
 				});
 			}
+			break;
+		case PostMessageType.UNMOUNT_NODES:
+			console.log('UNMOUNT_NODES', message.content);
 			break;
 
 		default:

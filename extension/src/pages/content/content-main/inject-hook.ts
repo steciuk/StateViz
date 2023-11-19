@@ -1,10 +1,10 @@
 import { inject } from '@pages/content/content-main/hook-functions/inject';
-import { onCommitFiberRoot } from '@pages/content/content-main/hook-functions/onCommitFiberRoot';
-import { RENDERERS } from '@pages/content/content-main/hook-storage/hook-storage';
 import {
-	DevToolsHook,
-	RendererID,
-} from '@pages/content/content-main/react-types';
+	onCommitFiberRoot,
+	onCommitFiberUnmount,
+} from '@pages/content/content-main/hook-functions/onCommitFiberRoot';
+import { RENDERERS } from '@pages/content/content-main/hook-storage/hook-storage';
+import { DevToolsHook } from '@pages/content/content-main/react-types';
 
 declare global {
 	interface Window {
@@ -63,9 +63,7 @@ export function injectHook() {
 		checkDCE: () => {
 			return;
 		},
-		onCommitFiberUnmount: (rendererId: RendererID, fiber: any) => {
-			// console.log('onCommitFiberUnmount', rendererId, fiber);
-		},
+		onCommitFiberUnmount: onCommitFiberUnmount,
 		onCommitFiberRoot: onCommitFiberRoot,
 		// onPostCommitFiberRoot: (rendererID: number, root: any) => {
 		// 	// console.log('onPostCommitFiberRoot', rendererID, root);

@@ -9,6 +9,8 @@ import {
 // TODO: consider allowing more renderers
 const rendererId = 0;
 
+const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
+
 /**
  * Run at the beginning, when React connects to the DevTools.
  * */
@@ -20,9 +22,6 @@ export function inject(renderer: ReactRenderer): number | null {
 		return null;
 	}
 
-	const postMessageBridge = PostMessageBridge.getInstance(
-		PostMessageSource.MAIN
-	);
 	postMessageBridge.send({
 		type: PostMessageType.REACT_ATTACHED,
 	});

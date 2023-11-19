@@ -10,7 +10,7 @@ import {
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 const Panel: React.FC = () => {
-	const [fiberTree, setFiberTree] = useState<ParsedFiber | null>(null);
+	const [fiberTree, setFiberTree] = useState<ParsedFiber[] | null>(null);
 
 	useEffect(() => {
 		const chromeBridge = new ChromeBridgeToTabConnector(
@@ -41,7 +41,8 @@ const Panel: React.FC = () => {
 				minHeight: '100vh',
 			}}
 		>
-			{fiberTree && <FiberRow fiber={fiberTree} />}
+			{fiberTree &&
+				fiberTree.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
 		</div>
 	);
 };
