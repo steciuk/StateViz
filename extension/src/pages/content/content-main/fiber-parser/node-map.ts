@@ -1,15 +1,16 @@
 import { Fiber } from '@pages/content/content-main/react-types';
+import { NodeId } from '@src/shared/types/ParsedFiber';
 
 let nodeIdCounter = 0;
 
-export const NODE_TO_ID_MAP = new Map<Fiber, number>();
+const NODE_TO_ID_MAP = new Map<Fiber, NodeId>();
 
-export function getOrGenerateNodeId(fiber: Fiber): number {
+export function getOrGenerateNodeId(fiber: Fiber): NodeId {
 	const alternate = fiber.alternate;
 	const fiberId = NODE_TO_ID_MAP.get(fiber);
 
-	if (fiberId) {
-		if (alternate && !NODE_TO_ID_MAP.get(alternate)) {
+	if (fiberId !== undefined) {
+		if (alternate && !NODE_TO_ID_MAP.has(alternate)) {
 			NODE_TO_ID_MAP.set(alternate, fiberId);
 		}
 

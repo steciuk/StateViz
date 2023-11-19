@@ -40,67 +40,100 @@ const currentFibers: Map<NodeId, ParsedFiber> = new Map();
 
 postMessageBridge.onMessage((message) => {
 	// console.log('onMessage', message);
-	switch (message.type) {
-		case PostMessageType.REACT_ATTACHED:
-			react_attached = true;
+	if (message.type === PostMessageType.REACT_ATTACHED) {
+		react_attached = true;
 
-			// Send message to devtools panel that react is attached, devtools panel potentially opened before react attached
-			sendChromeMessage({
-				type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
-				source: ChromeMessageSource.CONTENT_SCRIPT,
-			});
-			break;
+		// Send message to devtools panel that react is attached, devtools panel potentially opened before react attached
+		sendChromeMessage({
+			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			source: ChromeMessageSource.CONTENT_SCRIPT,
+		});
+	} else if (message.type === PostMessageType.MOUNT_NODES) {
+		console.log('MOUNT_NODES', message.content);
+		message.content.forEach((mountNode) => {
+			const pathFromRoot = mountNode.pathFromRoot;
+			if (pathFromRoot.length === 0) {
+				currentFibers.set(mountNode.node.id, mountNode.node);
+			} else {
+				const [rootId, ...restOfPath] = pathFromRoot;
+				const root = currentFibers.get(rootId);
+				if (!root) {
+					console.error('root not found');
+					return;
+				}
 
-		case PostMessageType.MOUNT_NODES:
-			console.log('MOUNT_NODES', message.content);
-			message.content.forEach((mountNode) => {
-				const pathFromRoot = mountNode.pathFromRoot;
-				if (pathFromRoot.length === 0) {
-					currentFibers.set(mountNode.node.id, mountNode.node);
+				let current = root;
+				for (const nodeId of restOfPath) {
+					const child = current.children.find((child) => child.id === nodeId);
+					if (!child) {
+						console.error('child not found');
+						return;
+					}
+					current = child;
+				}
+				if (mountNode.afterNode === null) {
+					current.children.splice(0, 0, mountNode.node);
 				} else {
-					const root = currentFibers.get(pathFromRoot[0]);
-					if (root) {
-						let current = root;
-						for (let i = 1; i < pathFromRoot.length; i++) {
-							const child = current.children.find(
-								(child) => child.id === pathFromRoot[i]
-							);
-							if (!child) {
-								console.error('child not found');
-								break;
-							}
-							current = child;
-						}
-						if (mountNode.afterNode === null) {
-							current.children.splice(0, 0, mountNode.node);
-						} else {
-							const afterNodeIndex = current.children.findIndex(
-								(child) => child.id === mountNode.afterNode
-							);
-							if (afterNodeIndex === -1) {
-								console.error('afterNode not found');
-							} else {
-								current.children.splice(afterNodeIndex + 1, 0, mountNode.node);
-							}
-						}
+					const afterNodeIndex = current.children.findIndex(
+						(child) => child.id === mountNode.afterNode
+					);
+					if (afterNodeIndex === -1) {
+						console.error('afterNode not found');
 					} else {
-						console.error('root not found');
+						current.children.splice(afterNodeIndex + 1, 0, mountNode.node);
 					}
 				}
-			});
-			if (chromeBridge.isConnected) {
-				chromeBridge.send({
-					type: ChromeBridgeMessageType.FULL_SKELETON,
-					content: Array.from(currentFibers.values()),
-				});
 			}
-			break;
-		case PostMessageType.UNMOUNT_NODES:
-			console.log('UNMOUNT_NODES', message.content);
-			break;
+		});
 
-		default:
-			break;
+		if (chromeBridge.isConnected) {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: Array.from(currentFibers.values()),
+			});
+		}
+	} else if (message.type === PostMessageType.UNMOUNT_NODES) {
+		console.log('UNMOUNT_NODES', message.content);
+		const [rootId, ...restOfPath] = message.content;
+		if (restOfPath.length === 0) {
+			currentFibers.delete(rootId);
+		} else {
+			const root = currentFibers.get(rootId);
+			if (!root) {
+				console.error('root not found');
+				return;
+			}
+
+			let current = root;
+			for (let i = 0; i < restOfPath.length - 1; i++) {
+				const child = current.children.find(
+					(child) => child.id === restOfPath[i]
+				);
+				if (!child) {
+					console.error('node on path not found');
+					return;
+				}
+
+				current = child;
+			}
+
+			const nodeId = restOfPath[restOfPath.length - 1];
+			const childIndex = current.children.findIndex(
+				(child) => child.id === nodeId
+			);
+			if (childIndex === -1) {
+				console.error('node not found');
+				return;
+			}
+			current.children.splice(childIndex, 1);
+		}
+
+		if (chromeBridge.isConnected) {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: Array.from(currentFibers.values()),
+			});
+		}
 	}
 });
 

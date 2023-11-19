@@ -4,7 +4,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
 
-import Panel from '@pages/panel/Panel';
+import App from '@pages/panel/App';
 import { runLog } from '@src/shared/run-log';
 import { attachTwindStyle } from '@src/shared/style/twind';
 
@@ -19,7 +19,7 @@ function init() {
 	}
 	attachTwindStyle(appContainer, document);
 	const root = createRoot(appContainer);
-	root.render(<Panel />);
+	root.render(<App />);
 }
 
 init();

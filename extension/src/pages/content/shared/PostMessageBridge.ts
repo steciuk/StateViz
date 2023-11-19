@@ -18,7 +18,7 @@ type ReactAttachedPostMessage = {
 	content?: undefined;
 };
 
-export type UnmountNodesOperations = NodeId[];
+export type UnmountNodesOperation = NodeId[];
 export type MountNodesOperations = Array<{
 	pathFromRoot: NodeId[];
 	afterNode: NodeId | null;
@@ -34,7 +34,7 @@ type MountNodesPostMessage = {
 type UnmountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.UNMOUNT_NODES;
-	content: UnmountNodesOperations;
+	content: UnmountNodesOperation;
 };
 
 type PostMessage =

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import FiberRow from '@pages/panel/components/FiberRow';
+import Settings from '@pages/panel/components/Settings';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeMessage,
@@ -9,7 +10,7 @@ import {
 } from '@src/shared/chrome-messages/ChromeBridge';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
-const Panel: React.FC = () => {
+const Panel = () => {
 	const [fiberTree, setFiberTree] = useState<ParsedFiber[] | null>(null);
 
 	useEffect(() => {
@@ -26,6 +27,8 @@ const Panel: React.FC = () => {
 			}
 		);
 
+		// FIXME: refresh connection if page is reloaded
+
 		return () => {
 			removeChromeMessageListener();
 			chromeBridge.disconnect();
@@ -39,10 +42,15 @@ const Panel: React.FC = () => {
 				color: 'white',
 				width: '100%',
 				minHeight: '100vh',
+				display: 'grid',
+				gridTemplateColumns: '1fr 170px',
 			}}
 		>
-			{fiberTree &&
-				fiberTree.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
+			<div>
+				{fiberTree &&
+					fiberTree.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
+			</div>
+			<Settings />
 		</div>
 	);
 };
