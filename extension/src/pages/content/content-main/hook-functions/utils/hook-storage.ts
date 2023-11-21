@@ -8,5 +8,5 @@ export const RENDERERS: Map<RendererID, ReactRenderer> = new Map();
 export const LISTENERS = new ListenersStorage();
 
 // Not yet used
-export const RENDERER_INTERFACES = new Map();
-export const FIBER_ROOTS = new Map<RendererID, Set<any>>();
+// export const RENDERER_INTERFACES = new Map();
+// export const FIBER_ROOTS = new Map<RendererID, Set<FiberRoot>>();

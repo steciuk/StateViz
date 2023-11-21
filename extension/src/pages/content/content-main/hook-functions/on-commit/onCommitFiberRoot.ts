@@ -12,8 +12,8 @@ import {
 export function onCommitFiberRoot(
 	rendererID: RendererID,
 	root: FiberRoot,
-	priorityLevel?: number,
-	didError?: boolean
+	_priorityLevel?: number,
+	_didError?: boolean
 ): void {
 	const current = root.current;
 	const alternate = current.alternate;
