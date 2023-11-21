@@ -1,4 +1,4 @@
-import { RENDERERS } from '@pages/content/content-main/hook-storage/hook-storage';
+import { RENDERERS } from '@pages/content/content-main/hook-functions/utils/hook-storage';
 import { ReactRenderer } from '@pages/content/content-main/react-types';
 import {
 	PostMessageBridge,

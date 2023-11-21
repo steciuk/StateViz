@@ -1,4 +1,4 @@
-import { ListenersStorage } from '@pages/content/content-main/hook-storage/ListenersStorage';
+import { ListenersStorage } from '@pages/content/content-main/hook-functions/utils/ListenersStorage';
 import {
 	ReactRenderer,
 	RendererID,

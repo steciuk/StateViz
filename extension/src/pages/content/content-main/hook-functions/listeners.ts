@@ -1,4 +1,4 @@
-import { LISTENERS } from '@pages/content/content-main/hook-storage/hook-storage';
+import { LISTENERS } from '@pages/content/content-main/hook-functions/utils/hook-storage';
 import { Handler } from '@pages/content/content-main/react-types';
 
 /**

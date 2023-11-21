@@ -1,9 +1,7 @@
 import { inject } from '@pages/content/content-main/hook-functions/inject';
-import {
-	onCommitFiberRoot,
-	onCommitFiberUnmount,
-} from '@pages/content/content-main/hook-functions/onCommitFiberRoot';
-import { RENDERERS } from '@pages/content/content-main/hook-storage/hook-storage';
+import { onCommitFiberRoot } from '@pages/content/content-main/hook-functions/on-commit/onCommitFiberRoot';
+import { onCommitFiberUnmount } from '@pages/content/content-main/hook-functions/on-commit/onCommitFiberUnmount';
+import { RENDERERS } from '@pages/content/content-main/hook-functions/utils/hook-storage';
 import { DevToolsHook } from '@pages/content/content-main/react-types';
 
 declare global {
