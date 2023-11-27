@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { FiberRow } from '@pages/panel/components/FiberRow';
-import { Settings } from '@pages/panel/components/Settings';
+import { FiberRow } from '@pages/panel/pages/Panel/FiberRow';
+import { Settings } from '@pages/panel/pages/Settings/Settings';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeMessage,
@@ -37,9 +37,8 @@ const Panel = () => {
 
 	return (
 		<div
+			className="text-text bg-background"
 			style={{
-				backgroundColor: '#1f1f1f',
-				color: 'white',
 				width: '100%',
 				minHeight: '100vh',
 				display: 'grid',

@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 
 import { FilterProvider } from '@pages/panel/contexts/FilterContext';
-import Panel from '@pages/panel/pages/Panel';
+import Panel from '@pages/panel/pages/Panel/Panel';
 
 const App = () => {
 	return (
-		<FilterProvider>
-			<Panel />
-		</FilterProvider>
+		<StrictMode>
+			<FilterProvider>
+				<Panel />
+			</FilterProvider>
+		</StrictMode>
 	);
 };
 
