@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { FiberRow } from '@pages/panel/pages/Panel/FiberRow';
-import { Settings } from '@pages/panel/pages/Settings/Settings';
+import { Header } from '@pages/panel/pages/Panel/Header';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeMessage,
@@ -38,18 +38,20 @@ const Panel = () => {
 	return (
 		<div
 			className="text-text bg-background"
-			style={{
-				width: '100%',
-				minHeight: '100vh',
-				display: 'grid',
-				gridTemplateColumns: '1fr 170px',
-			}}
+			style={
+				{
+					// width: '100%',
+					// minHeight: '100vh',
+					// display: 'grid',
+					// gridTemplateColumns: '1fr 170px',
+				}
+			}
 		>
-			<div>
+			<Header />
+			<main>
 				{fiberRoot &&
 					fiberRoot.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
-			</div>
-			<Settings />
+			</main>
 		</div>
 	);
 };
