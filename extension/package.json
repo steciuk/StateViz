@@ -5,7 +5,7 @@
 	"license": "",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+		"url": "https://github.com/steciuk/state-viz.git"
 	},
 	"scripts": {
 		"build": "tsc --noEmit && vite build",
@@ -35,7 +35,7 @@
 		"@types/ws": "^8.5.4",
 		"@typescript-eslint/eslint-plugin": "5.56.0",
 		"@typescript-eslint/parser": "5.38.1",
-		"@vitejs/plugin-react": "2.2.0",
+		"@vitejs/plugin-react": "^4.1.0",
 		"chokidar": "^3.5.3",
 		"cross-env": "^7.0.3",
 		"eslint": "8.36.0",
@@ -52,7 +52,8 @@
 		"ts-jest": "29.0.2",
 		"ts-loader": "9.4.2",
 		"typescript": "4.8.4",
-		"vite": "^3.2.7",
+		"vite": "^4.4.10",
+		"vite-plugin-inline-imports": "^0.1.0",
 		"ws": "8.13.0"
 	}
 }

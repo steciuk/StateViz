@@ -1,20 +1,25 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import Panel from "@pages/panel/Panel";
-import "@pages/panel/index.css";
-import refreshOnUpdate from "virtual:reload-on-update-in-view";
-import { attachTwindStyle } from "@src/shared/style/twind";
+import '@pages/panel/index.css';
 
-refreshOnUpdate("pages/panel");
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import refreshOnUpdate from 'virtual:reload-on-update-in-view';
+
+import App from '@pages/panel/App';
+import { runLog } from '@src/shared/run-log';
+import { attachTwindStyle } from '@src/shared/style/twind';
+
+refreshOnUpdate('pages/panel');
+
+runLog('panel - index.tsx');
 
 function init() {
-  const appContainer = document.querySelector("#app-container");
-  if (!appContainer) {
-    throw new Error("Can not find #app-container");
-  }
-  attachTwindStyle(appContainer, document);
-  const root = createRoot(appContainer);
-  root.render(<Panel />);
+	const appContainer = document.querySelector('#app-container');
+	if (!appContainer) {
+		throw new Error('Can not find #app-container');
+	}
+	attachTwindStyle(appContainer, document);
+	const root = createRoot(appContainer);
+	root.render(<App />);
 }
 
 init();
