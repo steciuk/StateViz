@@ -1,7 +1,33 @@
-*,
-*:before,
-*:after {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	*,
+	*:before,
+	*:after {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	:root {
+		--text: #2b2103;
+		--text-disabled: #636363;
+		--background: #fffefa;
+		--primary: #2a5bef;
+		--secondary: #fbeec6;
+		--accent: #1146e4;
+		--disabled: #c4c4c4;
+	}
+
+	.dark {
+		--text: #fcf2d4;
+		--text-disabled: #636363;
+		--background: #050400;
+		--primary: #8da9ff;
+		--secondary: #392c04;
+		--accent: #1b50ee;
+		--disabled: #c4c4c4;
+	}
 }

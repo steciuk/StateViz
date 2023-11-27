@@ -10,12 +10,13 @@ const filterSettingsLabels = Object.keys(WorkTag).filter((key) =>
 	isNaN(Number(key))
 ) as Array<keyof typeof WorkTag>;
 
-const Settings = () => {
+export const FilterSettings = () => {
 	const filterSettings = useContext(FilterContext);
 	const updateFilter = useContext(FilterUpdateContext);
 
 	return (
 		<div>
+			<h2 className="text-lg">Show elements</h2>
 			{filterSettingsLabels.map((label) => (
 				<div key={label}>
 					<input
@@ -29,5 +30,3 @@ const Settings = () => {
 		</div>
 	);
 };
-
-export default Settings;
