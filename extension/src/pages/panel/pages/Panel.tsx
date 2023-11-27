@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import FiberRow from '@pages/panel/components/FiberRow';
-import Settings from '@pages/panel/components/Settings';
+import { FiberRow } from '@pages/panel/components/FiberRow';
+import { Settings } from '@pages/panel/components/Settings';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeMessage,
@@ -11,7 +11,7 @@ import {
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 const Panel = () => {
-	const [fiberTree, setFiberTree] = useState<ParsedFiber[] | null>(null);
+	const [fiberRoot, setFiberRoot] = useState<ParsedFiber[] | null>(null);
 
 	useEffect(() => {
 		const chromeBridge = new ChromeBridgeToTabConnector(
@@ -22,7 +22,7 @@ const Panel = () => {
 		const removeChromeMessageListener = chromeBridge.onMessage(
 			(message: ChromeBridgeMessage) => {
 				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
-					setFiberTree(message.content);
+					setFiberRoot(message.content);
 				}
 			}
 		);
@@ -47,8 +47,8 @@ const Panel = () => {
 			}}
 		>
 			<div>
-				{fiberTree &&
-					fiberTree.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
+				{fiberRoot &&
+					fiberRoot.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
 			</div>
 			<Settings />
 		</div>

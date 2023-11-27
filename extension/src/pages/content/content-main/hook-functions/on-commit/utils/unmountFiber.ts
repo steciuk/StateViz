@@ -1,5 +1,5 @@
-import { getOrGenerateNodeId } from '@pages/content/content-main/fiber-parser/node-map';
 import { EXISTING_NODES_DATA } from '@pages/content/content-main/hook-functions/on-commit/utils/existing-nodes-storage';
+import { getOrGenerateNodeId } from '@pages/content/content-main/hook-functions/on-commit/utils/getOrGenerateNodeId';
 import { sendUnmountOperations } from '@pages/content/content-main/hook-functions/on-commit/utils/send-operations';
 import { Fiber } from '@pages/content/content-main/react-types';
 import { NodeId } from '@src/shared/types/ParsedFiber';

@@ -1,5 +1,5 @@
-import { getOrGenerateNodeId } from '@pages/content/content-main/fiber-parser/node-map';
 import { getNodesUpdates } from '@pages/content/content-main/hook-functions/on-commit/utils/getNodesUpdates';
+import { getOrGenerateNodeId } from '@pages/content/content-main/hook-functions/on-commit/utils/getOrGenerateNodeId';
 import { mountNewRoot } from '@pages/content/content-main/hook-functions/on-commit/utils/mountNewRoot';
 import { sendMountOperations } from '@pages/content/content-main/hook-functions/on-commit/utils/send-operations';
 import { unmountFiber } from '@pages/content/content-main/hook-functions/on-commit/utils/unmountFiber';
@@ -15,6 +15,7 @@ export function onCommitFiberRoot(
 	_priorityLevel?: number,
 	_didError?: boolean
 ): void {
+	console.log(root);
 	const current = root.current;
 	const alternate = current.alternate;
 

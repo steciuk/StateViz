@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { FilterContext } from '@pages/panel/contexts/FilterContext';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
-const FiberRow = (props: { fiber: ParsedFiber }) => {
+export const FiberRow = (props: { fiber: ParsedFiber }) => {
 	const { fiber } = props;
 	const filterSettings = useContext(FilterContext);
 	const [isExpanded, setIsExpanded] = useState(true);
@@ -12,11 +12,7 @@ const FiberRow = (props: { fiber: ParsedFiber }) => {
 
 	if (shouldRender) {
 		return (
-			<div
-				style={{
-					marginLeft: `${20}px`,
-				}}
-			>
+			<div>
 				<input
 					type="checkbox"
 					checked={isExpanded}
@@ -26,21 +22,22 @@ const FiberRow = (props: { fiber: ParsedFiber }) => {
 				{fiber.name + ' - '}
 				{fiber.tag + ' - '}
 				{fiber.id}
-				{isExpanded &&
-					fiber.children.map((child) => (
-						<FiberRow key={child.id} fiber={child} />
-					))}
+				{isExpanded && <FiberChildren fibers={fiber.children} indent={true} />}
 			</div>
 		);
 	} else {
-		return (
-			<div>
-				{fiber.children.map((child) => (
-					<FiberRow key={child.id} fiber={child} />
-				))}
-			</div>
-		);
+		return <FiberChildren fibers={fiber.children} />;
 	}
 };
 
-export default FiberRow;
+const FiberChildren = (props: { fibers: ParsedFiber[]; indent?: boolean }) => {
+	return (
+		<div>
+			{props.fibers.map((fiber) => (
+				<div key={fiber.id} className={props.indent ? 'ml-5' : ''}>
+					<FiberRow fiber={fiber} />
+				</div>
+			))}
+		</div>
+	);
+};
