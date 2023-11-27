@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { FiberRow } from '@pages/panel/pages/Panel/FiberRow';
-import { Header } from '@pages/panel/pages/Panel/Header';
+import { Header } from '@pages/panel/pages/Panel/Header/Header';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeMessage,
@@ -36,17 +36,7 @@ const Panel = () => {
 	}, []);
 
 	return (
-		<div
-			className="text-text bg-background"
-			style={
-				{
-					// width: '100%',
-					// minHeight: '100vh',
-					// display: 'grid',
-					// gridTemplateColumns: '1fr 170px',
-				}
-			}
-		>
+		<div className="text-text bg-background h-screen">
 			<Header />
 			<main>
 				{fiberRoot &&

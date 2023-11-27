@@ -15,8 +15,8 @@ export const FilterSettings = () => {
 	const updateFilter = useContext(FilterUpdateContext);
 
 	return (
-		<>
-			<h2>Show elements</h2>
+		<div>
+			<h2 className="text-lg">Show elements</h2>
 			{filterSettingsLabels.map((label) => (
 				<div key={label}>
 					<input
@@ -27,6 +27,6 @@ export const FilterSettings = () => {
 					{label}
 				</div>
 			))}
-		</>
+		</div>
 	);
 };

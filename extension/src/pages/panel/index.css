@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base {
 	*,
 	*:before,
@@ -21,23 +25,9 @@
 		--text: #fcf2d4;
 		--text-disabled: #636363;
 		--background: #050400;
-		--primary: #1041d5;
+		--primary: #8da9ff;
 		--secondary: #392c04;
 		--accent: #1b50ee;
 		--disabled: #c4c4c4;
-	}
-
-	html {
-		color: var(--text);
-	}
-
-	h1 {
-		font-size: 1.25rem /* 20px */;
-		line-height: 1.75rem /* 28px */;
-	}
-
-	h2 {
-		font-size: 1.125rem /* 18px */;
-		line-height: 1.75rem /* 28px */;
 	}
 }
