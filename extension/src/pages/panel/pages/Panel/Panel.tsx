@@ -36,9 +36,9 @@ const Panel = () => {
 	}, []);
 
 	return (
-		<div className="text-text bg-background h-screen">
+		<div className="text-text bg-background h-screen flex flex-col">
 			<Header />
-			<main>
+			<main className="overflow-auto">
 				{fiberRoot &&
 					fiberRoot.map((fiber) => <FiberRow key={fiber.id} fiber={fiber} />)}
 			</main>
