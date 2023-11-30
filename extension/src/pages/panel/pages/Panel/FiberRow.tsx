@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
 import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
@@ -41,6 +42,8 @@ export const FiberRow = (props: {
 
 	const displayText = fiber.name + ' - ' + fiber.tag + ' - ' + fiber.id;
 
+	const indentSize = 12 * indent;
+
 	if (shouldRender) {
 		return (
 			<>
@@ -48,7 +51,7 @@ export const FiberRow = (props: {
 					className="whitespace-nowrap hover:bg-secondary"
 					onClick={handleRowClick}
 				>
-					<div className={`ml-[${indent * 10}px]`}>
+					<div className={`ml-[${indentSize}px]`}>
 						<ExpandArrow
 							isExpanded={hasUnfilteredChildren && isExpanded}
 							onClick={(expanded) => setIsExpanded(expanded)}
@@ -58,15 +61,24 @@ export const FiberRow = (props: {
 						<span>{displayText}</span>
 					</div>
 				</div>
-				{isExpanded &&
-					fiber.children.map((child) => (
-						<FiberRow
-							key={child.id}
-							fiber={child}
-							indent={indent + 1}
-							handleReportUnfilteredChildren={reportUnfilteredChildren}
+				{isExpanded && (
+					<div className="relative">
+						<div
+							className={classNames(
+								'absolute top-0 bottom-0 w-0.5 bg-secondary pointer-events-none',
+								`left-[${indentSize + 3}px]`
+							)}
 						/>
-					))}
+						{fiber.children.map((child) => (
+							<FiberRow
+								key={child.id}
+								fiber={child}
+								indent={indent + 1}
+								handleReportUnfilteredChildren={reportUnfilteredChildren}
+							/>
+						))}
+					</div>
+				)}
 			</>
 		);
 	} else {
