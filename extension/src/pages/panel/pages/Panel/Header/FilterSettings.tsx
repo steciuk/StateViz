@@ -4,11 +4,8 @@ import {
 	FilterContext,
 	FilterUpdateContext,
 } from '@pages/panel/contexts/FilterContext';
+import { workTagLabels } from '@pages/panel/utils/work-tag';
 import { WorkTag } from '@src/shared/types/react-types';
-
-const filterSettingsLabels = Object.keys(WorkTag).filter((key) =>
-	isNaN(Number(key))
-) as Array<keyof typeof WorkTag>;
 
 export const FilterSettings = () => {
 	const filterSettings = useContext(FilterContext);
@@ -17,7 +14,7 @@ export const FilterSettings = () => {
 	return (
 		<div>
 			<h2 className="text-lg">Show elements</h2>
-			{filterSettingsLabels.map((label) => (
+			{workTagLabels.map((label) => (
 				<div key={label}>
 					<input
 						type="checkbox"

@@ -8,18 +8,21 @@ export const ExpandArrow = (props: {
 	isExpanded: boolean;
 	onClick: (expanded: boolean) => void;
 	disabled?: boolean;
+	className?: string;
 }) => {
 	return (
 		<FontAwesomeIcon
 			icon={faAngleRight}
-			className={classNames('transition-transform', {
+			className={classNames(props.className, 'transition-transform', {
 				'text-disabled': props.disabled,
 				'text-primary': !props.disabled,
 				'rotate-90': props.isExpanded,
 				'cursor-pointer': !props.disabled,
 			})}
-			onClick={() => {
-				!props.disabled && props.onClick(!props.isExpanded);
+			onClick={(e) => {
+				if (props.disabled) return;
+				e.stopPropagation();
+				props.onClick(!props.isExpanded);
 			}}
 		/>
 	);
