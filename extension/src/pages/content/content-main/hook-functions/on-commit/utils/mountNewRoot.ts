@@ -9,6 +9,7 @@ import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 export function mountNewRoot(root: Fiber): void {
 	const rootId = getOrGenerateNodeId(root);
 	EXISTING_NODES_DATA.set(rootId, { pathFromRoot: [rootId], parentId: null });
+
 	const node: ParsedFiber = {
 		tag: root.tag,
 		name: getFiberName(root),

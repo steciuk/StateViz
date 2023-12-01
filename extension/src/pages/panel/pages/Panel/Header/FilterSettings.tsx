@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 
+import { Toggle } from '@pages/panel/components/Toggle';
 import {
 	FilterContext,
 	FilterUpdateContext,
@@ -15,14 +16,13 @@ export const FilterSettings = () => {
 		<div>
 			<h2 className="text-lg">Show elements</h2>
 			{workTagLabels.map((label) => (
-				<div key={label}>
-					<input
-						type="checkbox"
-						checked={filterSettings[WorkTag[label]]}
-						onChange={(e) => updateFilter(WorkTag[label], e.target.checked)}
-					/>
-					{label}
-				</div>
+				<Toggle
+					key={label}
+					value={filterSettings[WorkTag[label]]}
+					onChange={(value) => updateFilter(WorkTag[label], value)}
+					label={label}
+					type="checkbox"
+				/>
 			))}
 		</div>
 	);

@@ -1,19 +1,40 @@
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export enum ChromeBridgeConnection {
 	PANEL_TO_CONTENT = 'PANEL_TO_CONTENT_SCRIPT',
 }
 
 export enum ChromeBridgeMessageType {
-	COMMIT_ROOT = 'COMMIT_ROOT',
 	FULL_SKELETON = 'FULL_SKELETON',
+	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
+	INSPECTED_DATA = 'INSPECTED_DATA',
 }
 
-export type ChromeBridgeMessage = FullSkeletonBridgeMessage;
+export type ChromeBridgeMessage =
+	| FullSkeletonBridgeMessage
+	| InspectElementBridgeMessage
+	| InspectedDataPostMessage;
 
 type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
 	content: ParsedFiber[];
+};
+
+type InspectElementBridgeMessage = {
+	type: ChromeBridgeMessageType.INSPECT_ELEMENT;
+	content: NodeId | null;
+};
+
+export type InspectedDataMessageContent = [
+	{
+		id: NodeId;
+		data: InspectedData;
+	},
+];
+
+type InspectedDataPostMessage = {
+	type: ChromeBridgeMessageType.INSPECTED_DATA;
+	content: InspectedDataMessageContent;
 };
 
 abstract class ChromeBridge {
@@ -23,36 +44,24 @@ abstract class ChromeBridge {
 
 	constructor(protected connection: ChromeBridgeConnection) {}
 
-	protected abstract establishConnection():
-		| chrome.runtime.Port
-		| Promise<chrome.runtime.Port>;
+	protected abstract establishConnection(): chrome.runtime.Port | null;
 
 	get isConnected() {
 		return !!this.port;
 	}
 
-	connect(onConnect?: () => void): void {
+	connect(): void {
 		if (this.port) {
 			throw new Error('Already connected');
 		}
 
 		const port = this.establishConnection();
-		if (port instanceof Promise) {
-			port.then((port) => {
-				this.port = port;
-				this.port.onDisconnect.addListener(() => {
-					this.port = undefined;
-				});
-				this.flushPendingListeners();
-				onConnect?.();
-			});
-		} else {
+		if (port) {
 			this.port = port;
 			this.port.onDisconnect.addListener(() => {
 				this.port = undefined;
 			});
 			this.flushPendingListeners();
-			onConnect?.();
 		}
 	}
 
@@ -71,9 +80,7 @@ abstract class ChromeBridge {
 		this.port.postMessage(message);
 	}
 
-	onMessage(
-		callback: (message: FullSkeletonBridgeMessage) => void
-	): () => void {
+	onMessage(callback: (message: ChromeBridgeMessage) => void): () => void {
 		if (this.port) {
 			this.port.onMessage.addListener(callback);
 
@@ -86,7 +93,7 @@ abstract class ChromeBridge {
 			return () => {
 				this.port?.onMessage.removeListener(callback);
 				this.pendingListeners = this.pendingListeners.filter(
-					(listener) => listener !== callback
+					(listener) => listener !== callback,
 				);
 			};
 		}
@@ -94,16 +101,14 @@ abstract class ChromeBridge {
 
 	protected flushPendingListeners() {
 		this.pendingListeners.forEach(
-			(listener) => this.port?.onMessage.addListener(listener)
+			(listener) => this.port?.onMessage.addListener(listener),
 		);
 		this.pendingListeners = [];
 	}
 }
 
 export class ChromeBridgeConnector extends ChromeBridge {
-	protected establishConnection():
-		| chrome.runtime.Port
-		| Promise<chrome.runtime.Port> {
+	protected establishConnection() {
 		return chrome.runtime.connect({ name: this.connection });
 	}
 }
@@ -111,27 +116,37 @@ export class ChromeBridgeConnector extends ChromeBridge {
 export class ChromeBridgeToTabConnector extends ChromeBridge {
 	constructor(
 		connection: ChromeBridgeConnection,
-		private tabId: number
+		private tabId: number,
 	) {
 		super(connection);
 	}
 
-	protected establishConnection():
-		| chrome.runtime.Port
-		| Promise<chrome.runtime.Port> {
+	protected establishConnection() {
 		return chrome.tabs.connect(this.tabId, { name: this.connection });
 	}
 }
 
 export class ChromeBridgeListener extends ChromeBridge {
-	protected establishConnection():
-		| chrome.runtime.Port
-		| Promise<chrome.runtime.Port> {
-		return new Promise((resolve) => {
-			chrome.runtime.onConnect.addListener((port) => {
-				if (port.name !== this.connection) return;
-				resolve(port);
+	constructor(connection: ChromeBridgeConnection, onConnect?: () => void) {
+		super(connection);
+
+		chrome.runtime.onConnect.addListener((port) => {
+			if (port.name !== this.connection) return;
+			this.port = port;
+			this.port.onDisconnect.addListener(() => {
+				this.port = undefined;
 			});
+			this.flushPendingListeners();
+			onConnect?.();
 		});
 	}
+
+	protected establishConnection() {
+		return null;
+	}
 }
+
+// TODO: Move types somewhere else
+export type InspectedData = {
+	state: unknown;
+};

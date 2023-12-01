@@ -2,6 +2,7 @@ import { EXISTING_NODES_DATA } from '@pages/content/content-main/hook-functions/
 import { getFiberName } from '@pages/content/content-main/hook-functions/on-commit/utils/getFiberName';
 import { getOrGenerateNodeId } from '@pages/content/content-main/hook-functions/on-commit/utils/getOrGenerateNodeId';
 import { getParseChildren } from '@pages/content/content-main/hook-functions/on-commit/utils/parseChildren';
+import { handleNodeInspect } from '@pages/content/content-main/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react-types';
 import { MountNodesOperations } from '@pages/content/shared/PostMessageBridge';
 import { NodeId } from '@src/shared/types/ParsedFiber';
@@ -9,7 +10,7 @@ import { NodeId } from '@src/shared/types/ParsedFiber';
 export function getNodesUpdates(
 	nextFiber: Fiber,
 	prevFiber: Fiber,
-	pathFromRoot: NodeId[]
+	pathFromRoot: NodeId[],
 ): MountNodesOperations {
 	// TODO: handle node reordering
 	const operations: MountNodesOperations = [];
@@ -18,12 +19,13 @@ export function getNodesUpdates(
 	if (child !== prevFiber.child) {
 		const parentId = getOrGenerateNodeId(nextFiber);
 		while (child) {
+			handleNodeInspect(child);
 			const childId = getOrGenerateNodeId(child);
 			const prevChild = child.alternate;
 			if (prevChild) {
 				// there was a child before
 				operations.push(
-					...getNodesUpdates(child, prevChild, [...pathFromRoot, childId])
+					...getNodesUpdates(child, prevChild, [...pathFromRoot, childId]),
 				);
 			} else {
 				// there was no child before, we need to mount new child under this node

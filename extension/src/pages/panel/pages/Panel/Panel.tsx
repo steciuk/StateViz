@@ -7,7 +7,7 @@ import {
 } from '@pages/panel/contexts/SelectedFiberContext';
 import { FiberRow } from '@pages/panel/pages/Panel/FiberRow/FiberRow';
 import { Header } from '@pages/panel/pages/Panel/Header/Header';
-import InspectWindow from '@pages/panel/pages/Panel/InspectWindow';
+import { InspectWindow } from '@pages/panel/pages/Panel/InspectWindow';
 import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
@@ -55,7 +55,7 @@ const useFiberRoot = () => {
 					console.log('Set fiber root');
 					setFiberRoot(message.content);
 				}
-			}
+			},
 		);
 
 		return () => {

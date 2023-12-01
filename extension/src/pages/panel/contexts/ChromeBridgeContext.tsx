@@ -7,7 +7,7 @@ import {
 
 const chromeBridge = new ChromeBridgeToTabConnector(
 	ChromeBridgeConnection.PANEL_TO_CONTENT,
-	chrome.devtools.inspectedWindow.tabId
+	chrome.devtools.inspectedWindow.tabId,
 );
 
 export const ChromeBridgeContext = createContext(chromeBridge);
@@ -17,8 +17,10 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 	// So the dependent components can add again all the listeners?
 	// FIXME: reconnect after page reload
 	useEffect(() => {
+		console.log('Connecting chrome bridge');
 		chromeBridge.connect();
 		return () => {
+			console.log('Disconnecting chrome bridge');
 			chromeBridge.disconnect();
 		};
 	}, []);

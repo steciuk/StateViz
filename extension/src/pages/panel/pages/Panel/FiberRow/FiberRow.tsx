@@ -5,7 +5,10 @@ import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
 import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
 import { FilterContext } from '@pages/panel/contexts/FilterContext';
-import { SelectedFiberUpdateContext } from '@pages/panel/contexts/SelectedFiberContext';
+import {
+	SelectedFiberContext,
+	SelectedFiberUpdateContext,
+} from '@pages/panel/contexts/SelectedFiberContext';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export const FiberRow = (props: {
@@ -16,6 +19,7 @@ export const FiberRow = (props: {
 	const { fiber, indent, handleReportUnfilteredChildren } = props;
 	const filterSettings = useContext(FilterContext);
 	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
+	const selectedFiber = useContext(SelectedFiberContext);
 
 	const [isExpanded, setIsExpanded] = useState(true);
 	const [hasUnfilteredChildren, setHasUnfilteredChildren] = useState(false);
@@ -50,10 +54,9 @@ export const FiberRow = (props: {
 		return (
 			<>
 				<div
-					className={classNames(
-						'fiber-row',
-						'whitespace-nowrap hover:bg-secondary'
-					)}
+					className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
+						'bg-secondary': selectedFiber?.id === fiber.id,
+					})}
 					onClick={handleRowClick}
 				>
 					<div className={`ml-[${indentSize}px]`}>
@@ -70,9 +73,8 @@ export const FiberRow = (props: {
 					<div className={classNames('children-wrapper', 'relative')}>
 						<div
 							className={classNames(
-								'vertical-bar',
-								'pointer-events-none absolute bottom-0 top-0 w-0.5 bg-secondary',
-								`left-[${indentSize + 3}px]`
+								'vertical-bar pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-secondary',
+								`left-[${indentSize + 3}px]`,
 							)}
 						/>
 						{fiber.children.map((child) => (
