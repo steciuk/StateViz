@@ -1,3 +1,5 @@
+import './FiberRow.scss';
+
 import classNames from 'classnames';
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
@@ -48,7 +50,10 @@ export const FiberRow = (props: {
 		return (
 			<>
 				<div
-					className="whitespace-nowrap hover:bg-secondary"
+					className={classNames(
+						'fiber-row',
+						'whitespace-nowrap hover:bg-secondary'
+					)}
 					onClick={handleRowClick}
 				>
 					<div className={`ml-[${indentSize}px]`}>
@@ -58,13 +63,14 @@ export const FiberRow = (props: {
 							disabled={!hasUnfilteredChildren}
 							className="mr-1"
 						/>
-						<span>{displayText}</span>
+						<span className="cursor-default">{displayText}</span>
 					</div>
 				</div>
 				{isExpanded && (
-					<div className="relative">
+					<div className={classNames('children-wrapper', 'relative')}>
 						<div
 							className={classNames(
+								'vertical-bar',
 								'absolute top-0 bottom-0 w-0.5 bg-secondary pointer-events-none',
 								`left-[${indentSize + 3}px]`
 							)}

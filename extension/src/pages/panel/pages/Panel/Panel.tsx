@@ -4,7 +4,7 @@ import {
 	SelectedFiberContext,
 	SelectedFiberUpdateContext,
 } from '@pages/panel/contexts/SelectedFiberContext';
-import { FiberRow } from '@pages/panel/pages/Panel/FiberRow';
+import { FiberRow } from '@pages/panel/pages/Panel/FiberRow/FiberRow';
 import { Header } from '@pages/panel/pages/Panel/Header/Header';
 import InspectWindow from '@pages/panel/pages/Panel/InspectWindow';
 import {
