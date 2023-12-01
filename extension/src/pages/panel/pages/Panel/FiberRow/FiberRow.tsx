@@ -71,7 +71,7 @@ export const FiberRow = (props: {
 						<div
 							className={classNames(
 								'vertical-bar',
-								'absolute top-0 bottom-0 w-0.5 bg-secondary pointer-events-none',
+								'pointer-events-none absolute bottom-0 top-0 w-0.5 bg-secondary',
 								`left-[${indentSize + 3}px]`
 							)}
 						/>

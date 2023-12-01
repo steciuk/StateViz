@@ -55,7 +55,7 @@ const useFiberRoot = () => {
 					console.log('Set fiber root');
 					setFiberRoot(message.content);
 				}
-			},
+			}
 		);
 
 		return () => {

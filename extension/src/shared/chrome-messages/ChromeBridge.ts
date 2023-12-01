@@ -93,8 +93,8 @@ abstract class ChromeBridge {
 	}
 
 	protected flushPendingListeners() {
-		this.pendingListeners.forEach((listener) =>
-			this.port?.onMessage.addListener(listener)
+		this.pendingListeners.forEach(
+			(listener) => this.port?.onMessage.addListener(listener)
 		);
 		this.pendingListeners = [];
 	}
@@ -109,7 +109,10 @@ export class ChromeBridgeConnector extends ChromeBridge {
 }
 
 export class ChromeBridgeToTabConnector extends ChromeBridge {
-	constructor(connection: ChromeBridgeConnection, private tabId: number) {
+	constructor(
+		connection: ChromeBridgeConnection,
+		private tabId: number
+	) {
 		super(connection);
 	}
 

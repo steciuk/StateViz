@@ -25,7 +25,9 @@ export function createStorage<D>(
 
 	const _getDataFromStorage = async (): Promise<D> => {
 		if (chrome.storage[storageType] === undefined) {
-			throw new Error(`Check your storage permission into manifest.json: ${storageType} is not defined`);
+			throw new Error(
+				`Check your storage permission into manifest.json: ${storageType} is not defined`
+			);
 		}
 		const value = await chrome.storage[storageType].get([key]);
 		return value[key] ?? fallback;
