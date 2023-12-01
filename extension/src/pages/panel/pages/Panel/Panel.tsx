@@ -1,5 +1,6 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
+import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
 	SelectedFiberContext,
 	SelectedFiberUpdateContext,
@@ -8,45 +9,20 @@ import { FiberRow } from '@pages/panel/pages/Panel/FiberRow/FiberRow';
 import { Header } from '@pages/panel/pages/Panel/Header/Header';
 import InspectWindow from '@pages/panel/pages/Panel/InspectWindow';
 import {
-	ChromeBridgeConnection,
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-	ChromeBridgeToTabConnector,
 } from '@src/shared/chrome-messages/ChromeBridge';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
-const Panel = () => {
+export const Panel = () => {
 	const selectedFiber = useContext(SelectedFiberContext);
 	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
-
-	const [fiberRoot, setFiberRoot] = useState<ParsedFiber[] | null>(null);
+	const fiberRoot = useFiberRoot();
 
 	const deselectFiber = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		updateSelectedFiber(null);
 	};
-
-	useEffect(() => {
-		const chromeBridge = new ChromeBridgeToTabConnector(
-			ChromeBridgeConnection.PANEL_TO_CONTENT,
-			chrome.devtools.inspectedWindow.tabId
-		);
-		chromeBridge.connect();
-		const removeChromeMessageListener = chromeBridge.onMessage(
-			(message: ChromeBridgeMessage) => {
-				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
-					setFiberRoot(message.content);
-				}
-			}
-		);
-
-		// FIXME: refresh connection if page is reloaded
-
-		return () => {
-			removeChromeMessageListener();
-			chromeBridge.disconnect();
-		};
-	}, []);
 
 	return (
 		<div className="text-text bg-background h-screen flex flex-col">
@@ -68,4 +44,24 @@ const Panel = () => {
 	);
 };
 
-export default Panel;
+const useFiberRoot = () => {
+	const chromeBridge = useContext(ChromeBridgeContext);
+	const [fiberRoot, setFiberRoot] = useState<ParsedFiber[] | null>(null);
+
+	useEffect(() => {
+		const removeChromeMessageListener = chromeBridge.onMessage(
+			(message: ChromeBridgeMessage) => {
+				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
+					console.log('Set fiber root');
+					setFiberRoot(message.content);
+				}
+			}
+		);
+
+		return () => {
+			removeChromeMessageListener();
+		};
+	}, [chromeBridge]);
+
+	return fiberRoot;
+};

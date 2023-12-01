@@ -18,13 +18,42 @@ type FullSkeletonBridgeMessage = {
 
 abstract class ChromeBridge {
 	protected port?: chrome.runtime.Port;
+	protected pendingListeners: Array<(message: ChromeBridgeMessage) => void> =
+		[];
 
 	constructor(protected connection: ChromeBridgeConnection) {}
 
-	abstract connect(): void;
+	protected abstract establishConnection():
+		| chrome.runtime.Port
+		| Promise<chrome.runtime.Port>;
 
 	get isConnected() {
 		return !!this.port;
+	}
+
+	connect(onConnect?: () => void): void {
+		if (this.port) {
+			throw new Error('Already connected');
+		}
+
+		const port = this.establishConnection();
+		if (port instanceof Promise) {
+			port.then((port) => {
+				this.port = port;
+				this.port.onDisconnect.addListener(() => {
+					this.port = undefined;
+				});
+				this.flushPendingListeners();
+				onConnect?.();
+			});
+		} else {
+			this.port = port;
+			this.port.onDisconnect.addListener(() => {
+				this.port = undefined;
+			});
+			this.flushPendingListeners();
+			onConnect?.();
+		}
 	}
 
 	disconnect() {
@@ -42,33 +71,40 @@ abstract class ChromeBridge {
 		this.port.postMessage(message);
 	}
 
-	onMessage(callback: (message: ChromeBridgeMessage) => void): () => void {
-		if (!this.port) {
-			throw new Error('Not connected');
+	onMessage(
+		callback: (message: FullSkeletonBridgeMessage) => void
+	): () => void {
+		if (this.port) {
+			this.port.onMessage.addListener(callback);
+
+			return () => {
+				this.port?.onMessage.removeListener(callback);
+			};
+		} else {
+			this.pendingListeners.push(callback);
+
+			return () => {
+				this.port?.onMessage.removeListener(callback);
+				this.pendingListeners = this.pendingListeners.filter(
+					(listener) => listener !== callback
+				);
+			};
 		}
+	}
 
-		const eventListener = (message: ChromeBridgeMessage) => {
-			callback(message);
-		};
-
-		this.port.onMessage.addListener(eventListener);
-
-		return () => {
-			this.port?.onMessage.removeListener(eventListener);
-		};
+	protected flushPendingListeners() {
+		this.pendingListeners.forEach((listener) =>
+			this.port?.onMessage.addListener(listener)
+		);
+		this.pendingListeners = [];
 	}
 }
 
 export class ChromeBridgeConnector extends ChromeBridge {
-	override connect() {
-		if (this.port) {
-			throw new Error('Already connected');
-		}
-
-		this.port = chrome.runtime.connect({ name: this.connection });
-		this.port.onDisconnect.addListener(() => {
-			this.port = undefined;
-		});
+	protected establishConnection():
+		| chrome.runtime.Port
+		| Promise<chrome.runtime.Port> {
+		return chrome.runtime.connect({ name: this.connection });
 	}
 }
 
@@ -77,54 +113,22 @@ export class ChromeBridgeToTabConnector extends ChromeBridge {
 		super(connection);
 	}
 
-	override connect() {
-		if (this.port) {
-			throw new Error('Already connected');
-		}
-
-		this.port = chrome.tabs.connect(this.tabId, { name: this.connection });
-		this.port.onDisconnect.addListener(() => {
-			this.port = undefined;
-		});
+	protected establishConnection():
+		| chrome.runtime.Port
+		| Promise<chrome.runtime.Port> {
+		return chrome.tabs.connect(this.tabId, { name: this.connection });
 	}
 }
 
 export class ChromeBridgeListener extends ChromeBridge {
-	private listeners: Array<(message: ChromeBridgeMessage) => void> = [];
-
-	override connect(onConnect?: () => void): void {
-		if (this.port) {
-			throw new Error('Already connected');
-		}
-
-		chrome.runtime.onConnect.addListener((port) => {
-			if (port.name !== this.connection) return;
-
-			this.port = port;
-			this.port.onDisconnect.addListener(() => {
-				this.port = undefined;
+	protected establishConnection():
+		| chrome.runtime.Port
+		| Promise<chrome.runtime.Port> {
+		return new Promise((resolve) => {
+			chrome.runtime.onConnect.addListener((port) => {
+				if (port.name !== this.connection) return;
+				resolve(port);
 			});
-			this.listeners.forEach((listener) =>
-				port.onMessage.addListener(listener)
-			);
-			onConnect?.();
 		});
-	}
-
-	override onMessage(
-		callback: (message: FullSkeletonBridgeMessage) => void
-	): () => void {
-		if (this.port) {
-			return super.onMessage(callback);
-		} else {
-			this.listeners.push(callback);
-
-			return () => {
-				this.port?.onMessage.removeListener(callback);
-				this.listeners = this.listeners.filter(
-					(listener) => listener !== callback
-				);
-			};
-		}
 	}
 }
