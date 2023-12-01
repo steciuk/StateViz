@@ -25,9 +25,9 @@ export const Panel = () => {
 	};
 
 	return (
-		<div className="text-text bg-background h-screen flex flex-col">
+		<div className="flex h-screen flex-col bg-background text-text">
 			<Header />
-			<main className="flex-grow flex h-0">
+			<main className="flex h-0 flex-grow">
 				<div className="flex-grow overflow-auto" onClick={deselectFiber}>
 					{fiberRoot &&
 						fiberRoot.map((fiber) => (
@@ -35,7 +35,7 @@ export const Panel = () => {
 						))}
 				</div>
 				{selectedFiber && (
-					<div className="border-l-2 border-secondary w-48 flex-shrink-0">
+					<div className="w-48 flex-shrink-0 border-l-2 border-secondary">
 						<InspectWindow fiber={selectedFiber} />
 					</div>
 				)}
@@ -55,7 +55,7 @@ const useFiberRoot = () => {
 					console.log('Set fiber root');
 					setFiberRoot(message.content);
 				}
-			}
+			},
 		);
 
 		return () => {
