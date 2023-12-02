@@ -1,10 +1,7 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
-import {
-	SelectedFiberContext,
-	SelectedFiberUpdateContext,
-} from '@pages/panel/contexts/SelectedFiberContext';
+import { SelectedFiberUpdateContext } from '@pages/panel/contexts/SelectedFiberContext';
 import { FiberRow } from '@pages/panel/pages/Panel/FiberRow/FiberRow';
 import { Header } from '@pages/panel/pages/Panel/Header/Header';
 import { InspectWindow } from '@pages/panel/pages/Panel/InspectWindow';
@@ -15,7 +12,6 @@ import {
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export const Panel = () => {
-	const selectedFiber = useContext(SelectedFiberContext);
 	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
 	const fiberRoot = useFiberRoot();
 
@@ -34,11 +30,7 @@ export const Panel = () => {
 							<FiberRow key={fiber.id} fiber={fiber} indent={0} />
 						))}
 				</div>
-				{selectedFiber && (
-					<div className="w-48 flex-shrink-0 border-l-2 border-secondary">
-						<InspectWindow fiber={selectedFiber} />
-					</div>
-				)}
+				<InspectWindow className="w-48 flex-shrink-0 border-l-2 border-secondary" />
 			</main>
 		</div>
 	);
@@ -55,7 +47,7 @@ const useFiberRoot = () => {
 					console.log('Set fiber root');
 					setFiberRoot(message.content);
 				}
-			},
+			}
 		);
 
 		return () => {

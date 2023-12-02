@@ -22,15 +22,13 @@ type FullSkeletonBridgeMessage = {
 
 type InspectElementBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECT_ELEMENT;
-	content: NodeId | null;
+	content: NodeId[];
 };
 
-export type InspectedDataMessageContent = [
-	{
-		id: NodeId;
-		data: InspectedData;
-	},
-];
+export type InspectedDataMessageContent = {
+	id: NodeId;
+	data: NodeInspectedData;
+}[];
 
 type InspectedDataPostMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;
@@ -93,7 +91,7 @@ abstract class ChromeBridge {
 			return () => {
 				this.port?.onMessage.removeListener(callback);
 				this.pendingListeners = this.pendingListeners.filter(
-					(listener) => listener !== callback,
+					(listener) => listener !== callback
 				);
 			};
 		}
@@ -101,7 +99,7 @@ abstract class ChromeBridge {
 
 	protected flushPendingListeners() {
 		this.pendingListeners.forEach(
-			(listener) => this.port?.onMessage.addListener(listener),
+			(listener) => this.port?.onMessage.addListener(listener)
 		);
 		this.pendingListeners = [];
 	}
@@ -116,7 +114,7 @@ export class ChromeBridgeConnector extends ChromeBridge {
 export class ChromeBridgeToTabConnector extends ChromeBridge {
 	constructor(
 		connection: ChromeBridgeConnection,
-		private tabId: number,
+		private tabId: number
 	) {
 		super(connection);
 	}
@@ -147,6 +145,6 @@ export class ChromeBridgeListener extends ChromeBridge {
 }
 
 // TODO: Move types somewhere else
-export type InspectedData = {
+export type NodeInspectedData = {
 	state: unknown;
 };

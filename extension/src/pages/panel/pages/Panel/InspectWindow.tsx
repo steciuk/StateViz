@@ -1,59 +1,66 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
+import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
+import { SelectedFiberContext } from '@pages/panel/contexts/SelectedFiberContext';
 import { getWorkTagLabel } from '@pages/panel/utils/work-tag';
 import {
-	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-	InspectedDataMessageContent,
+	NodeInspectedData,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedFiber';
 
-export const InspectWindow = (props: { fiber: ParsedFiber }) => {
-	const { fiber } = props;
-	const chromeBridge = useContext(ChromeBridgeContext);
-	const nodeInspectData = useNodeInspectData();
+export const InspectWindow = (props: { className?: string }) => {
+	const selectedFiber = useContext(SelectedFiberContext);
+	const nodeInspectData = useInspectNodeData(selectedFiber?.id ?? null);
 
-	useEffect(() => {
-		chromeBridge.send({
-			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
-			content: fiber.id,
-		});
-	}, [fiber, chromeBridge]);
+	if (!selectedFiber) {
+		return null;
+	}
 
 	return (
-		<div className="p-2">
-			<h2 className="text-lg">Inspect window</h2>
-			<p>Name: {fiber.name}</p>
-			<p>Tag: {fiber.tag}</p>
-			<p>Type: {getWorkTagLabel(fiber.tag)}</p>
-			<p>ID: {fiber.id}</p>
-			{nodeInspectData && (
-				<p>State: {nodeInspectData[0].data.state as string}</p>
-			)}
+		<div className={props.className}>
+			<div className="p-2">
+				<h2 className="text-lg">Inspect window</h2>
+				<p>Name: {selectedFiber.name}</p>
+				<p>Tag: {selectedFiber.tag}</p>
+				<p>Type: {getWorkTagLabel(selectedFiber.tag)}</p>
+				<p>ID: {selectedFiber.id}</p>
+				{nodeInspectData && <p>State: {nodeInspectData.state as string}</p>}
+			</div>
 		</div>
 	);
 };
 
-const useNodeInspectData = () => {
+// TODO: Backend is ready to support multiple ids.
+// If needed, refactor this
+const useInspectNodeData = (nodeId: NodeId | null) => {
+	const inspectData = useContext(InspectDataContext);
 	const chromeBridge = useContext(ChromeBridgeContext);
 	const [nodeInspectData, setNodeInspectData] =
-		useState<InspectedDataMessageContent | null>(null);
+		useState<NodeInspectedData | null>(null);
+
+	const lastInspectedFiberId = React.useRef<NodeId | null>(null);
 
 	useEffect(() => {
-		const removeChromeMessageListener = chromeBridge.onMessage(
-			(message: ChromeBridgeMessage) => {
-				if (message.type === ChromeBridgeMessageType.INSPECTED_DATA) {
-					console.log('Set node inspect data');
-					setNodeInspectData(message.content);
-				}
-			},
-		);
+		if (nodeId === null) {
+			setNodeInspectData(null);
+		} else if (inspectData) {
+			const nodeInspectData = inspectData.find((data) => data.id === nodeId);
+			setNodeInspectData(nodeInspectData?.data ?? null);
+		}
+	}, [inspectData, nodeId]);
 
-		return () => {
-			removeChromeMessageListener();
-		};
-	}, [chromeBridge]);
+	useEffect(() => {
+		if (lastInspectedFiberId.current === nodeId) return;
+		lastInspectedFiberId.current = nodeId;
+
+		console.log('Requested', nodeId);
+		chromeBridge.send({
+			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
+			content: nodeId === null ? [] : [nodeId],
+		});
+	}, [nodeId, chromeBridge]);
 
 	return nodeInspectData;
 };

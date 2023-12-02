@@ -43,7 +43,7 @@ type UnmountNodesPostMessage = {
 type InspectElementPostMessage = {
 	source: PostMessageSource.ISOLATED;
 	type: PostMessageType.INSPECT_ELEMENT;
-	content: NodeId | null;
+	content: NodeId[];
 };
 
 type InspectedDataPostMessage = {
@@ -70,7 +70,7 @@ export class PostMessageBridge {
 
 		if (PostMessageBridge.instance.source !== source) {
 			throw new Error(
-				'PostMessageBridge already initialized with different source',
+				'PostMessageBridge already initialized with different source'
 			);
 		}
 
@@ -83,7 +83,7 @@ export class PostMessageBridge {
 				source: this.source,
 				...message,
 			},
-			window.origin,
+			window.origin
 		);
 	}
 
@@ -111,7 +111,7 @@ export class PostMessageBridge {
 
 				callback(event.data);
 			},
-			{ once: true },
+			{ once: true }
 		);
 	}
 }

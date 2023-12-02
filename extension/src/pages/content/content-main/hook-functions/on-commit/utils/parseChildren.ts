@@ -7,7 +7,7 @@ import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export function getParseChildren(
 	parent: Fiber,
-	pathFromRoot: NodeId[],
+	pathFromRoot: NodeId[]
 ): ParsedFiber[] {
 	let currentChild: Fiber | null = parent.child;
 	const children: ParsedFiber[] = [];
@@ -16,6 +16,7 @@ export function getParseChildren(
 		EXISTING_NODES_DATA.set(childId, {
 			pathFromRoot: pathFromRoot,
 			parentId: getOrGenerateNodeId(parent),
+			fiber: currentChild,
 		});
 
 		handleNodeInspect(currentChild);

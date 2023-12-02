@@ -10,7 +10,7 @@ import { NodeId } from '@src/shared/types/ParsedFiber';
 export function getNodesUpdates(
 	nextFiber: Fiber,
 	prevFiber: Fiber,
-	pathFromRoot: NodeId[],
+	pathFromRoot: NodeId[]
 ): MountNodesOperations {
 	// TODO: handle node reordering
 	const operations: MountNodesOperations = [];
@@ -19,20 +19,23 @@ export function getNodesUpdates(
 	if (child !== prevFiber.child) {
 		const parentId = getOrGenerateNodeId(nextFiber);
 		while (child) {
-			handleNodeInspect(child);
 			const childId = getOrGenerateNodeId(child);
+
+			handleNodeInspect(child);
+			EXISTING_NODES_DATA.set(childId, {
+				pathFromRoot: [...pathFromRoot, childId],
+				parentId: parentId,
+				fiber: child,
+			});
+
 			const prevChild = child.alternate;
 			if (prevChild) {
 				// there was a child before
 				operations.push(
-					...getNodesUpdates(child, prevChild, [...pathFromRoot, childId]),
+					...getNodesUpdates(child, prevChild, [...pathFromRoot, childId])
 				);
 			} else {
 				// there was no child before, we need to mount new child under this node
-				EXISTING_NODES_DATA.set(childId, {
-					pathFromRoot: [...pathFromRoot, childId],
-					parentId: parentId,
-				});
 				operations.push({
 					pathFromRoot: pathFromRoot,
 					afterNode: higherSibling ? getOrGenerateNodeId(higherSibling) : null,
