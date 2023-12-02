@@ -10,6 +10,16 @@ export type RefObject = {
 	current: any;
 };
 
+// Added by me.
+// TODO: make sure this is enough
+export type MemoizedState = {
+	baseState: unknown;
+	memoizedState: unknown;
+	next: MemoizedState | null;
+	element: unknown;
+	isDehydrated: boolean;
+};
+
 // ? A Fiber is work on a Component that needs to be done or was done. There can
 // ? be more than one per component.
 export type Fiber = {
@@ -72,13 +82,7 @@ export type Fiber = {
 
 	// ? The state used to create the output
 	// Type was any. Added by me. TODO: Check what will be needed.
-	memoizedState: null | {
-		cache: null | unknown;
-		element: null | unknown;
-		isDehydrated: boolean;
-		pendingSuspenseBoundaries: null | unknown;
-		transitions: null | unknown;
-	};
+	memoizedState: MemoizedState | null;
 
 	// ? Dependencies (contexts, events) for this fiber, if it has any
 	// ? dependencies: Dependencies | null,

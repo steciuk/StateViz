@@ -1,3 +1,4 @@
+import { NodeInspectedData } from '@src/shared/types/DataType';
 import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export enum ChromeBridgeConnection {
@@ -143,8 +144,3 @@ export class ChromeBridgeListener extends ChromeBridge {
 		return null;
 	}
 }
-
-// TODO: Move types somewhere else
-export type NodeInspectedData = {
-	state: unknown;
-};
