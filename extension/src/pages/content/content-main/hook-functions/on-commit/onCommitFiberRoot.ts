@@ -3,6 +3,7 @@ import { getOrGenerateNodeId } from '@pages/content/content-main/hook-functions/
 import { mountNewRoot } from '@pages/content/content-main/hook-functions/on-commit/utils/mountNewRoot';
 import { sendMountOperations } from '@pages/content/content-main/hook-functions/on-commit/utils/send-operations';
 import { unmountFiber } from '@pages/content/content-main/hook-functions/on-commit/utils/unmountFiber';
+import { sendInspectData } from '@pages/content/content-main/inspect-element/inspect-element';
 import {
 	Fiber,
 	FiberRoot,
@@ -13,7 +14,7 @@ export function onCommitFiberRoot(
 	rendererID: RendererID,
 	root: FiberRoot,
 	_priorityLevel?: number,
-	_didError?: boolean
+	_didError?: boolean,
 ): void {
 	console.log(root);
 	const current = root.current;
@@ -37,18 +38,18 @@ export function onCommitFiberRoot(
 	if (!wasMounted && isMounted) {
 		// ? Mount a new root.
 		console.log('mount new root');
-		return mountNewRoot(current);
-	}
-	if (wasMounted && isMounted) {
+		mountNewRoot(current);
+	} else if (wasMounted && isMounted) {
 		// ? Update an existing root.
 		console.log('update existing root');
-		return updateRoot(current, alternate);
-	}
-	if (wasMounted && !isMounted) {
+		updateRoot(current, alternate);
+	} else if (wasMounted && !isMounted) {
 		// ? Unmount an existing root.
 		console.log('unmount existing root');
-		return unmountFiber(current);
+		unmountFiber(current);
 	}
+
+	sendInspectData();
 }
 
 function updateRoot(current: Fiber, alternate: Fiber): void {

@@ -20,20 +20,20 @@ import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 runLog('content-isolated.ts');
 
 const postMessageBridge = PostMessageBridge.getInstance(
-	PostMessageSource.ISOLATED
+	PostMessageSource.ISOLATED,
 );
 
 const chromeBridge = new ChromeBridgeListener(
-	ChromeBridgeConnection.PANEL_TO_CONTENT
+	ChromeBridgeConnection.PANEL_TO_CONTENT,
+	() => {
+		console.log('connection from devtools panel established');
+		if (currentFibers.size === 0) return;
+		chromeBridge.send({
+			type: ChromeBridgeMessageType.FULL_SKELETON,
+			content: Array.from(currentFibers.values()),
+		});
+	},
 );
-chromeBridge.connect(() => {
-	console.log('connection from devtools panel established');
-	if (currentFibers.size === 0) return;
-	chromeBridge.send({
-		type: ChromeBridgeMessageType.FULL_SKELETON,
-		content: Array.from(currentFibers.values()),
-	});
-});
 
 let react_attached = false;
 const currentFibers: Map<NodeId, ParsedFiber> = new Map();
@@ -75,7 +75,7 @@ postMessageBridge.onMessage((message) => {
 					current.children.splice(0, 0, mountNode.node);
 				} else {
 					const afterNodeIndex = current.children.findIndex(
-						(child) => child.id === mountNode.afterNode
+						(child) => child.id === mountNode.afterNode,
 					);
 					if (afterNodeIndex === -1) {
 						console.error('afterNode not found');
@@ -107,7 +107,7 @@ postMessageBridge.onMessage((message) => {
 			let current = root;
 			for (let i = 0; i < restOfPath.length - 1; i++) {
 				const child = current.children.find(
-					(child) => child.id === restOfPath[i]
+					(child) => child.id === restOfPath[i],
 				);
 				if (!child) {
 					console.error('node on path not found');
@@ -119,7 +119,7 @@ postMessageBridge.onMessage((message) => {
 
 			const nodeId = restOfPath[restOfPath.length - 1];
 			const childIndex = current.children.findIndex(
-				(child) => child.id === nodeId
+				(child) => child.id === nodeId,
 			);
 			if (childIndex === -1) {
 				console.error('node not found');
@@ -134,6 +134,23 @@ postMessageBridge.onMessage((message) => {
 				content: Array.from(currentFibers.values()),
 			});
 		}
+	} else if (message.type === PostMessageType.INSPECTED_DATA) {
+		console.log('INSPECTED_DATA', message.content);
+		if (chromeBridge.isConnected) {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.INSPECTED_DATA,
+				content: message.content,
+			});
+		}
+	}
+});
+
+chromeBridge.onMessage((message) => {
+	if (message.type === ChromeBridgeMessageType.INSPECT_ELEMENT) {
+		postMessageBridge.send({
+			type: PostMessageType.INSPECT_ELEMENT,
+			content: message.content,
+		});
 	}
 });
 
@@ -142,7 +159,7 @@ onChromeMessage((message) => {
 	if (message.type === ChromeMessageType.IS_REACT_ATTACHED) {
 		console.log(
 			'question from devtools panel: is react attached?',
-			react_attached
+			react_attached,
 		);
 		message.responseCallback(react_attached);
 	}

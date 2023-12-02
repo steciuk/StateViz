@@ -1,3 +1,4 @@
+import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
@@ -10,6 +11,8 @@ export enum PostMessageType {
 	REACT_ATTACHED = 'REACT_ATTACHED',
 	UNMOUNT_NODES = 'UNMOUNT_NODES',
 	MOUNT_NODES = 'MOUNT_NODES',
+	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
+	INSPECTED_DATA = 'INSPECTED_DATA',
 }
 
 type ReactAttachedPostMessage = {
@@ -37,10 +40,24 @@ type UnmountNodesPostMessage = {
 	content: UnmountNodesOperation;
 };
 
+type InspectElementPostMessage = {
+	source: PostMessageSource.ISOLATED;
+	type: PostMessageType.INSPECT_ELEMENT;
+	content: NodeId[];
+};
+
+type InspectedDataPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.INSPECTED_DATA;
+	content: InspectedDataMessageContent;
+};
+
 type PostMessage =
 	| ReactAttachedPostMessage
 	| MountNodesPostMessage
-	| UnmountNodesPostMessage;
+	| UnmountNodesPostMessage
+	| InspectElementPostMessage
+	| InspectedDataPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}

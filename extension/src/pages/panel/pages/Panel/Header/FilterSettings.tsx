@@ -1,14 +1,12 @@
 import React, { useContext } from 'react';
 
+import { Toggle } from '@pages/panel/components/Toggle';
 import {
 	FilterContext,
 	FilterUpdateContext,
 } from '@pages/panel/contexts/FilterContext';
+import { workTagLabels } from '@pages/panel/utils/work-tag';
 import { WorkTag } from '@src/shared/types/react-types';
-
-const filterSettingsLabels = Object.keys(WorkTag).filter((key) =>
-	isNaN(Number(key))
-) as Array<keyof typeof WorkTag>;
 
 export const FilterSettings = () => {
 	const filterSettings = useContext(FilterContext);
@@ -17,15 +15,14 @@ export const FilterSettings = () => {
 	return (
 		<div>
 			<h2 className="text-lg">Show elements</h2>
-			{filterSettingsLabels.map((label) => (
-				<div key={label}>
-					<input
-						type="checkbox"
-						checked={filterSettings[WorkTag[label]]}
-						onChange={(e) => updateFilter(WorkTag[label], e.target.checked)}
-					/>
-					{label}
-				</div>
+			{workTagLabels.map((label) => (
+				<Toggle
+					key={label}
+					value={filterSettings[WorkTag[label]]}
+					onChange={(value) => updateFilter(WorkTag[label], value)}
+					label={label}
+					type="checkbox"
+				/>
 			))}
 		</div>
 	);

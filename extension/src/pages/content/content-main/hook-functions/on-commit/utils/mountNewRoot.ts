@@ -3,12 +3,20 @@ import { getFiberName } from '@pages/content/content-main/hook-functions/on-comm
 import { getOrGenerateNodeId } from '@pages/content/content-main/hook-functions/on-commit/utils/getOrGenerateNodeId';
 import { getParseChildren } from '@pages/content/content-main/hook-functions/on-commit/utils/parseChildren';
 import { sendMountOperations } from '@pages/content/content-main/hook-functions/on-commit/utils/send-operations';
+import { handleNodeInspect } from '@pages/content/content-main/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react-types';
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 export function mountNewRoot(root: Fiber): void {
 	const rootId = getOrGenerateNodeId(root);
-	EXISTING_NODES_DATA.set(rootId, { pathFromRoot: [rootId], parentId: null });
+
+	handleNodeInspect(root);
+	EXISTING_NODES_DATA.set(rootId, {
+		pathFromRoot: [rootId],
+		parentId: null,
+		fiber: root,
+	});
+
 	const node: ParsedFiber = {
 		tag: root.tag,
 		name: getFiberName(root),

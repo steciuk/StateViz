@@ -1,0 +1,8 @@
+// TODO: think of a solution to decrease specificity
+.fiber-row:hover {
+	& + .children-wrapper {
+		& > .vertical-bar {
+			background-color: var(--accent);
+		}
+	}
+}

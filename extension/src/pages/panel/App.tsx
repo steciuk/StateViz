@@ -1,14 +1,23 @@
 import React, { StrictMode } from 'react';
 
+import { ChromeBridgeProvider } from '@pages/panel/contexts/ChromeBridgeContext';
 import { FilterProvider } from '@pages/panel/contexts/FilterContext';
-import Panel from '@pages/panel/pages/Panel/Panel';
+import { SelectedFiberProvider } from '@pages/panel/contexts/SelectedFiberContext';
+import { Panel } from '@pages/panel/pages/Panel/Panel';
+import { InspectDataProvider } from '@pages/panel/contexts/NodeInspectDataContext';
 
 const App = () => {
 	return (
 		<StrictMode>
-			<FilterProvider>
-				<Panel />
-			</FilterProvider>
+			<ChromeBridgeProvider>
+				<FilterProvider>
+					<SelectedFiberProvider>
+						<InspectDataProvider>
+							<Panel />
+						</InspectDataProvider>
+					</SelectedFiberProvider>
+				</FilterProvider>
+			</ChromeBridgeProvider>
 		</StrictMode>
 	);
 };

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { Toggle } from '@pages/panel/components/Toggle';
+
 type Theme = 'light' | 'dark';
 
 export const ThemeSettings = () => {
@@ -17,26 +19,18 @@ export const ThemeSettings = () => {
 	return (
 		<div>
 			<h2 className="text-lg">Theme</h2>
-			<div>
-				<input
-					type="radio"
-					name="theme"
-					value="light"
-					checked={theme === 'light'}
-					onChange={(e) => handleThemeChange(e.target.value as Theme)}
-				/>
-				Light
-			</div>
-			<div>
-				<input
-					type="radio"
-					name="theme"
-					value="dark"
-					checked={theme === 'dark'}
-					onChange={(e) => handleThemeChange(e.target.value as Theme)}
-				/>
-				Dark
-			</div>
+			<Toggle
+				value={theme === 'light'}
+				onChange={(value) => handleThemeChange(value ? 'light' : 'dark')}
+				label="Light"
+				type="radio"
+			/>
+			<Toggle
+				value={theme === 'dark'}
+				onChange={(value) => handleThemeChange(value ? 'dark' : 'light')}
+				label="Dark"
+				type="radio"
+			/>
 		</div>
 	);
 };

@@ -9,9 +9,12 @@ const storageMap: Map<BaseStorage<any>, WrappedPromise> = new Map();
 
 export default function useStorage<
 	Storage extends BaseStorage<Data>,
-	Data = Storage extends BaseStorage<infer Data> ? Data : unknown
+	Data = Storage extends BaseStorage<infer Data> ? Data : unknown,
 >(storage: Storage) {
-	const _data = useSyncExternalStore<Data | null>(storage.subscribe, storage.getSnapshot);
+	const _data = useSyncExternalStore<Data | null>(
+		storage.subscribe,
+		storage.getSnapshot
+	);
 
 	if (!storageMap.has(storage)) {
 		storageMap.set(storage, wrapPromise(storage.get()));
