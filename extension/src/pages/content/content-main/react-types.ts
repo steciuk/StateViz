@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Copied from react repository
  * Types that are commented out are not used by StateViz
