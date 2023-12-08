@@ -1,4 +1,4 @@
-import '@pages/popup/Popup.css';
+import '@pages/sidepanel/SidePanel.css';
 
 import React from 'react';
 
@@ -8,7 +8,7 @@ import withSuspense from '@src/shared/hoc/withSuspense';
 import useStorage from '@src/shared/hooks/useStorage';
 import exampleThemeStorage from '@src/shared/storages/exampleThemeStorage';
 
-const Popup = () => {
+const SidePanel = () => {
 	const theme = useStorage(exampleThemeStorage);
 
 	return (
@@ -24,7 +24,8 @@ const Popup = () => {
 			>
 				<img src={logo} className="App-logo" alt="logo" />
 				<p>
-					Edit <code>src/pages/popup/Popup.tsx</code> and save to reload.
+					Edit <code>src/pages/sidepanel/SidePanel.tsx</code> and save to
+					reload.
 				</p>
 				<a
 					className="App-link"
@@ -53,6 +54,6 @@ const Popup = () => {
 };
 
 export default withErrorBoundary(
-	withSuspense(Popup, <div> Loading ... </div>),
+	withSuspense(SidePanel, <div> Loading ... </div>),
 	<div> Error Occur </div>
 );

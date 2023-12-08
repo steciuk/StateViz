@@ -14,7 +14,7 @@ export function onCommitFiberRoot(
 	rendererID: RendererID,
 	root: FiberRoot,
 	_priorityLevel?: number,
-	_didError?: boolean,
+	_didError?: boolean
 ): void {
 	console.log(root);
 	const current = root.current;

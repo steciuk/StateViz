@@ -1,8 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
 
-import App from '@src/pages/content/components/Demo/app';
-import { attachTwindStyle } from '@src/shared/style/twind';
+import App from '@pages/content/components/Demo/app';
+
+import injectedStyle from './injected.css?inline';
 
 refreshOnUpdate('pages/content');
 
@@ -17,6 +18,16 @@ rootIntoShadow.id = 'shadow-root';
 const shadowRoot = root.attachShadow({ mode: 'open' });
 shadowRoot.appendChild(rootIntoShadow);
 
-attachTwindStyle(rootIntoShadow, shadowRoot);
+/** Inject styles into shadow dom */
+const styleElement = document.createElement('style');
+styleElement.innerHTML = injectedStyle;
+shadowRoot.appendChild(styleElement);
+
+/**
+ * https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite/pull/174
+ *
+ * In the firefox environment, the adoptedStyleSheets bug may prevent contentStyle from being applied properly.
+ * Please refer to the PR link above and go back to the contentStyle.css implementation, or raise a PR if you have a better way to improve it.
+ */
 
 createRoot(rootIntoShadow).render(<App />);

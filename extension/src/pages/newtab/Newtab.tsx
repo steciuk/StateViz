@@ -1,17 +1,28 @@
-import React from 'react';
-import logo from '@assets/img/logo.svg';
 import '@pages/newtab/Newtab.css';
 import '@pages/newtab/Newtab.scss';
+
+import React from 'react';
+
+import logo from '@assets/img/logo.svg';
+import withErrorBoundary from '@src/shared/hoc/withErrorBoundary';
+import withSuspense from '@src/shared/hoc/withSuspense';
 import useStorage from '@src/shared/hooks/useStorage';
 import exampleThemeStorage from '@src/shared/storages/exampleThemeStorage';
-import withSuspense from '@src/shared/hoc/withSuspense';
 
 const Newtab = () => {
 	const theme = useStorage(exampleThemeStorage);
 
 	return (
-		<div className="App">
-			<header className="App-header">
+		<div
+			className="App"
+			style={{
+				backgroundColor: theme === 'light' ? '#ffffff' : '#000000',
+			}}
+		>
+			<header
+				className="App-header"
+				style={{ color: theme === 'light' ? '#000' : '#fff' }}
+			>
 				<img src={logo} className="App-logo" alt="logo" />
 				<p>
 					Edit <code>src/pages/newtab/Newtab.tsx</code> and save to reload.
@@ -21,24 +32,29 @@ const Newtab = () => {
 					href="https://reactjs.org"
 					target="_blank"
 					rel="noopener noreferrer"
+					style={{
+						color: theme === 'light' ? '#0281dc' : undefined,
+						marginBottom: '10px',
+					}}
 				>
 					Learn React!
 				</a>
 				<h6>The color of this paragraph is defined using SASS.</h6>
-				<span className="text-lime-400">
-					The color of this paragraph is defined using Tailwind CSS.
-				</span>
 				<button
 					style={{
-						color: theme === 'light' ? '#fff' : '#000',
+						backgroundColor: theme === 'light' ? '#fff' : '#000',
+						color: theme === 'light' ? '#000' : '#fff',
 					}}
 					onClick={exampleThemeStorage.toggle}
 				>
-					Toggle theme: [{theme}]
+					Toggle theme
 				</button>
 			</header>
 		</div>
 	);
 };
 
-export default withSuspense(Newtab);
+export default withErrorBoundary(
+	withSuspense(Newtab, <div> Loading ... </div>),
+	<div> Error Occur </div>
+);

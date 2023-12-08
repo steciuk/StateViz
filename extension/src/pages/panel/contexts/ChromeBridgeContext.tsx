@@ -7,7 +7,7 @@ import {
 
 const chromeBridge = new ChromeBridgeToTabConnector(
 	ChromeBridgeConnection.PANEL_TO_CONTENT,
-	chrome.devtools.inspectedWindow.tabId,
+	chrome.devtools.inspectedWindow.tabId
 );
 
 export const ChromeBridgeContext = createContext(chromeBridge);

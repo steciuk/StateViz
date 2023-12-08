@@ -10,22 +10,21 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"moduleResolution": "node",
-		"types": ["vite/client"], // FIXME: ["vite/client", "node"] was giving a ts error. Check if even needed.
+		"types": ["vite/client", "node"],
 		"noFallthroughCasesInSwitch": true,
 		"allowSyntheticDefaultImports": true,
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"forceConsistentCasingInFileNames": true,
-		"typeRoots": ["./src/global.d.ts"],
-		"strict": true,
-		"strictFunctionTypes": true,
+		"typeRoots": ["./src/global.d.ts", "node_modules/@types"],
 		"paths": {
+			"@root/*": ["./*"],
+			"@src/*": ["src/*"],
 			"@assets/*": ["src/assets/*"],
 			"@pages/*": ["src/pages/*"],
-			"@src/*": ["src/*"],
-			"@root/*": ["./*"],
 			"virtual:reload-on-update-in-background-script": ["./src/global.d.ts"],
 			"virtual:reload-on-update-in-view": ["./src/global.d.ts"]
-		}
+		},
+		"strict": true
 	},
 	"include": ["src", "utils", "vite.config.ts", "node_modules/@types"]
 }

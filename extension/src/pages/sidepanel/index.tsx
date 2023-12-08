@@ -1,12 +1,10 @@
-import '@pages/popup/index.css';
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import '@pages/sidepanel/index.css';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
+import SidePanel from '@pages/sidepanel/SidePanel';
 
-import Popup from '@pages/popup/Popup';
-
-refreshOnUpdate('pages/popup');
+refreshOnUpdate('pages/sidepanel');
 
 function init() {
 	const appContainer = document.querySelector('#app-container');
@@ -14,7 +12,7 @@ function init() {
 		throw new Error('Can not find #app-container');
 	}
 	const root = createRoot(appContainer);
-	root.render(<Popup />);
+	root.render(<SidePanel />);
 }
 
 init();
