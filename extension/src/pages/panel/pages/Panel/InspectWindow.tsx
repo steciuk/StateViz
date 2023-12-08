@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
 import { SelectedFiberContext } from '@pages/panel/contexts/SelectedFiberContext';
@@ -24,15 +25,17 @@ export const InspectWindow = (props: { className?: string }) => {
 		<div className={props.className}>
 			<div className="p-2">
 				<h2 className="text-lg">Inspect window</h2>
-				<p>Name: {selectedFiber.name}</p>
-				<p>Tag: {selectedFiber.tag}</p>
-				<p>Type: {getWorkTagLabel(selectedFiber.tag)}</p>
-				<p>ID: {selectedFiber.id}</p>
+				<span>Name: {selectedFiber.name}</span>
+				<span>Tag: {selectedFiber.tag}</span>
+				<span>Type: {getWorkTagLabel(selectedFiber.tag)}</span>
+				<span>ID: {selectedFiber.id}</span>
 				{nodeInspectData && (
 					<>
-						<p>State:</p>
+						<p className="font-semibold">State:</p>
 						{nodeInspectData.state.map((data, index) => (
-							<NodeStateInspectViewer key={index} inspectData={data} />
+							<div key={index} className="border-b-1 border-secondary">
+								<NodeStateValue inspectData={data} />
+							</div>
 						))}
 					</>
 				)}
@@ -41,20 +44,20 @@ export const InspectWindow = (props: { className?: string }) => {
 	);
 };
 
-const NodeStateInspectViewer = (props: { inspectData: InspectData }) => {
+const NodeStateValue = (props: { inspectData: InspectData }) => {
 	const { inspectData } = props;
 
 	switch (inspectData.type) {
 		case DataType.NULL:
-			return <p>null</p>;
+			return <span>null</span>;
 		case DataType.UNDEFINED:
-			return <p>undefined</p>;
+			return <span>undefined</span>;
 		case DataType.INFINITY:
-			return <p>Infinity</p>;
+			return <span>Infinity</span>;
 		case DataType.NAN:
-			return <p>NaN</p>;
+			return <span>NaN</span>;
 		case DataType.STRING:
-			return <p>{`"${inspectData.data}"`}</p>;
+			return <span>{`"${inspectData.data}"`}</span>;
 		case DataType.SYMBOL:
 		case DataType.REGEXP:
 		case DataType.DATE:
@@ -64,28 +67,91 @@ const NodeStateInspectViewer = (props: { inspectData: InspectData }) => {
 		case DataType.NUMBER:
 		case DataType.BIGINT:
 		case DataType.BOOLEAN:
-			return <p>{inspectData.data}</p>;
+			return <span>{inspectData.data}</span>;
 		case DataType.OBJECT:
 		case DataType.CLASS_INSTANCE:
-			return <p>Object</p>;
+			return <NodeStateObjectValue inspectData={inspectData} />;
 		case DataType.ARRAY:
-			return <p>Array</p>;
+			return <NodeStateArrayValue inspectData={inspectData} />;
 		case DataType.HTML_ALL_COLLECTION:
-			return <p>{`[${inspectData.data.join(', ')}]`}</p>;
+			return <span>{`[${inspectData.data.join(', ')}]`}</span>;
 		case 'MAX_DEPTH':
-			return <p>...</p>;
+			return <span>...</span>;
 		case DataType.TYPED_ARRAY:
 		case DataType.ARRAY_BUFFER:
 		case DataType.DATA_VIEW:
 		case DataType.ITERATOR:
 		case DataType.OPAQUE_ITERATOR:
-			return <p>Not yet implemented...</p>;
+			return <span>Not yet implemented...</span>;
 		case DataType.UNKNOWN:
-			return <p>Unknown</p>;
+			return <span>Unknown</span>;
 
 		default:
-			return <p>Unknown</p>;
+			return <span>Unknown</span>;
 	}
+};
+
+const NodeStateArrayValue = (props: {
+	inspectData: Extract<InspectData, { type: DataType.ARRAY }>;
+}) => {
+	const { inspectData } = props;
+	const [expanded, setExpanded] = useState<boolean>(false);
+
+	const isEmpty = inspectData.data.length === 0;
+
+	return (
+		<div>
+			<ExpandArrow
+				isExpanded={expanded}
+				onClick={(value) => setExpanded(value)}
+				disabled={isEmpty}
+			/>
+			{expanded ? (
+				<>
+					{inspectData.data.map((value, index) => (
+						<p key={index}>
+							{index}: <NodeStateValue inspectData={value} />
+						</p>
+					))}
+				</>
+			) : (
+				<span>{isEmpty ? '[]' : '[...]'}</span>
+			)}
+		</div>
+	);
+};
+
+const NodeStateObjectValue = (props: {
+	inspectData: Extract<
+		InspectData,
+		{ type: DataType.OBJECT | DataType.CLASS_INSTANCE }
+	>;
+}) => {
+	const { inspectData } = props;
+	const [expanded, setExpanded] = useState<boolean>(false);
+
+	const isEmpty = Object.keys(inspectData.data).length === 0;
+
+	return (
+		<div>
+			<ExpandArrow
+				isExpanded={expanded}
+				onClick={(value) => setExpanded(value)}
+				disabled={isEmpty}
+			/>
+			{expanded ? (
+				<>
+					{Object.entries(inspectData.data).map(([key, value]) => (
+						<p key={key}>
+							{key}: <NodeStateValue inspectData={value} />
+						</p>
+					))}
+				</>
+			) : (
+				<span>{isEmpty ? '{}' : '{...}'}</span>
+			)}
+		</div>
+	);
 };
 
 // TODO: Backend is ready to support multiple ids.
