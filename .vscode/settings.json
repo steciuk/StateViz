@@ -4,6 +4,8 @@
 		"fontawesome",
 		"fortawesome",
 		"newtab",
-		"twind"
+		"sidepanel",
+		"twind",
+		"webextension"
 	]
 }

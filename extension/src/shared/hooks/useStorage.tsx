@@ -3,9 +3,7 @@ import { useSyncExternalStore } from 'react';
 import { BaseStorage } from '@src/shared/storages/base';
 
 type WrappedPromise = ReturnType<typeof wrapPromise>;
-// TODO: was 'BaseStorage<unknown>' before. Changed it to 'any' because of ts strict mode. Investigate.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const storageMap: Map<BaseStorage<any>, WrappedPromise> = new Map();
+const storageMap: Map<BaseStorage<unknown>, WrappedPromise> = new Map();
 
 export default function useStorage<
 	Storage extends BaseStorage<Data>,
@@ -16,15 +14,17 @@ export default function useStorage<
 		storage.getSnapshot
 	);
 
-	if (!storageMap.has(storage)) {
-		storageMap.set(storage, wrapPromise(storage.get()));
+	// Template doesn't use strict. FIXME: remove this
+	const storageAny = storage as any;
+
+	if (!storageMap.has(storageAny)) {
+		storageMap.set(storageAny, wrapPromise(storage.get()));
 	}
 	if (_data !== null) {
-		storageMap.set(storage, { read: () => _data });
+		storageMap.set(storageAny, { read: () => _data });
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return _data ?? (storageMap.get(storage)!.read() as Data);
+	return _data ?? (storageMap.get(storageAny)!.read() as Data);
 }
 
 function wrapPromise<R>(promise: Promise<R>) {

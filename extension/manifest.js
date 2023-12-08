@@ -1,16 +1,18 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import packageJson from './package.json';
+import packageJson from './package.json' assert { type: 'json' };
 
 /**
  * After changing, please reload the extension at `chrome://extensions`
+ * @type {chrome.runtime.ManifestV3}
  */
-const manifest: chrome.runtime.ManifestV3 = {
+const manifest = {
 	manifest_version: 3,
 	name: packageJson.name,
 	version: packageJson.version,
 	description: packageJson.description,
-	permissions: ['storage'],
-	host_permissions: ['<all_urls>'],
+	permissions: ['storage', 'sidePanel'],
+	side_panel: {
+		default_path: 'src/pages/sidepanel/index.html',
+	},
 	options_page: 'src/pages/options/index.html',
 	background: {
 		service_worker: 'src/pages/background/index.js',
@@ -24,7 +26,7 @@ const manifest: chrome.runtime.ManifestV3 = {
 	//   newtab: "src/pages/newtab/index.html",
 	// },
 	icons: {
-		'128': 'icon-128.png',
+		128: 'icon-128.png',
 	},
 	content_scripts: [
 		{
@@ -34,21 +36,24 @@ const manifest: chrome.runtime.ManifestV3 = {
 			// TODO: uncomment, when using styles in content script
 			// css: ['assets/css/contentStyle<KEY>.chunk.css'],
 			run_at: 'document_start',
-			// @ts-ignore
 			world: 'MAIN',
 		},
 		{
 			matches: ['http://*/*', 'https://*/*', '<all_urls>'],
 			js: ['src/pages/content-isolated/index.js'],
 			run_at: 'document_start',
-			// @ts-ignore
 			world: 'ISOLATED',
 		},
 	],
 	devtools_page: 'src/pages/devtools/index.html',
 	web_accessible_resources: [
 		{
-			resources: ['assets/js/*.js', 'assets/css/*.css', 'icon-128.png', 'icon-34.png'],
+			resources: [
+				'assets/js/*.js',
+				'assets/css/*.css',
+				'icon-128.png',
+				'icon-34.png',
+			],
 			matches: ['*://*/*'],
 		},
 	],

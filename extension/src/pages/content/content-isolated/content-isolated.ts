@@ -20,7 +20,7 @@ import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 runLog('content-isolated.ts');
 
 const postMessageBridge = PostMessageBridge.getInstance(
-	PostMessageSource.ISOLATED,
+	PostMessageSource.ISOLATED
 );
 
 const chromeBridge = new ChromeBridgeListener(
@@ -32,7 +32,7 @@ const chromeBridge = new ChromeBridgeListener(
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: Array.from(currentFibers.values()),
 		});
-	},
+	}
 );
 
 let react_attached = false;
@@ -75,7 +75,7 @@ postMessageBridge.onMessage((message) => {
 					current.children.splice(0, 0, mountNode.node);
 				} else {
 					const afterNodeIndex = current.children.findIndex(
-						(child) => child.id === mountNode.afterNode,
+						(child) => child.id === mountNode.afterNode
 					);
 					if (afterNodeIndex === -1) {
 						console.error('afterNode not found');
@@ -107,7 +107,7 @@ postMessageBridge.onMessage((message) => {
 			let current = root;
 			for (let i = 0; i < restOfPath.length - 1; i++) {
 				const child = current.children.find(
-					(child) => child.id === restOfPath[i],
+					(child) => child.id === restOfPath[i]
 				);
 				if (!child) {
 					console.error('node on path not found');
@@ -119,7 +119,7 @@ postMessageBridge.onMessage((message) => {
 
 			const nodeId = restOfPath[restOfPath.length - 1];
 			const childIndex = current.children.findIndex(
-				(child) => child.id === nodeId,
+				(child) => child.id === nodeId
 			);
 			if (childIndex === -1) {
 				console.error('node not found');
@@ -159,7 +159,7 @@ onChromeMessage((message) => {
 	if (message.type === ChromeMessageType.IS_REACT_ATTACHED) {
 		console.log(
 			'question from devtools panel: is react attached?',
-			react_attached,
+			react_attached
 		);
 		message.responseCallback(react_attached);
 	}

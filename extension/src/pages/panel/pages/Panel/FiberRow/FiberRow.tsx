@@ -74,7 +74,7 @@ export const FiberRow = (props: {
 						<div
 							className={classNames(
 								'vertical-bar pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-secondary',
-								`left-[${indentSize + 3}px]`,
+								`left-[${indentSize + 3}px]`
 							)}
 						/>
 						{fiber.children.map((child) => (
