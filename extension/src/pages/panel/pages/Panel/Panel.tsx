@@ -20,6 +20,8 @@ export const Panel = () => {
 		updateSelectedFiber(null);
 	};
 
+	useDeselectFiberOnPageReload();
+
 	return (
 		<div className="flex h-screen flex-col bg-background text-text">
 			<Header />
@@ -34,6 +36,24 @@ export const Panel = () => {
 			</main>
 		</div>
 	);
+};
+
+const useDeselectFiberOnPageReload = () => {
+	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
+
+	useEffect(() => {
+		const deselectFiberOnPageReload = () => {
+			updateSelectedFiber(null);
+		};
+
+		chrome.devtools.network.onNavigated.addListener(deselectFiberOnPageReload);
+
+		return () => {
+			chrome.devtools.network.onNavigated.removeListener(
+				deselectFiberOnPageReload
+			);
+		};
+	}, [updateSelectedFiber]);
 };
 
 const useFiberRoot = () => {

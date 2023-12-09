@@ -60,7 +60,7 @@ abstract class ChromeBridge {
 			this.port.onDisconnect.addListener(() => {
 				this.port = undefined;
 			});
-			this.flushPendingListeners();
+			this.registerListeners();
 		}
 	}
 
@@ -98,11 +98,13 @@ abstract class ChromeBridge {
 		}
 	}
 
-	protected flushPendingListeners() {
+	protected registerListeners() {
+		console.log('registerListeners');
+		console.log(this.pendingListeners);
+		console.log(this.port);
 		this.pendingListeners.forEach(
 			(listener) => this.port?.onMessage.addListener(listener)
 		);
-		this.pendingListeners = [];
 	}
 }
 
@@ -135,7 +137,7 @@ export class ChromeBridgeListener extends ChromeBridge {
 			this.port.onDisconnect.addListener(() => {
 				this.port = undefined;
 			});
-			this.flushPendingListeners();
+			this.registerListeners();
 			onConnect?.();
 		});
 	}
