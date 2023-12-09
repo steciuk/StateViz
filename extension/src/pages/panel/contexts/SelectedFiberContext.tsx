@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useState } from 'react';
 
 import { ParsedFiber } from '@src/shared/types/ParsedFiber';
 
@@ -11,9 +11,9 @@ export const SelectedFiberUpdateContext = createContext<
 export const SelectedFiberProvider = (props: { children: React.ReactNode }) => {
 	const [selectedFiber, setSelectedFiber] = useState<ParsedFiber | null>(null);
 
-	const updateSelectedFiber = (fiber: ParsedFiber | null) => {
+	const updateSelectedFiber = useCallback((fiber: ParsedFiber | null) => {
 		setSelectedFiber(fiber);
-	};
+	}, []);
 
 	return (
 		<SelectedFiberContext.Provider value={selectedFiber}>
