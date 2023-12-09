@@ -1,4 +1,5 @@
-// for some reason vitest is using CommonJS, so we need to import it like this
-import * as chrome from 'vitest-chrome/lib/index.esm.js';
+// Temporal fix directly in vitest-chrome package.json
+// see: https://github.com/probil/vitest-chrome/pull/1
+import * as chrome from 'vitest-chrome';
 
 Object.assign(global, chrome);
