@@ -68,6 +68,7 @@
 		"vite": "^5.0.7",
 		"vite-plugin-inline-imports": "^0.1.1",
 		"vitest": "^0.34.6",
+		"vitest-chrome": "^0.1.0",
 		"ws": "8.14.2"
 	},
 	"overrides": {
