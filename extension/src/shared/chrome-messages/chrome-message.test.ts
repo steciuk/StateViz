@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { chrome } from 'vitest-chrome';
 
 import {
@@ -10,6 +10,13 @@ import {
 } from '@src/shared/chrome-messages/chrome-message';
 
 describe('onChromeMessage', () => {
+	afterEach(() => {
+		chrome.runtime.onMessage.clearListeners();
+		chrome.runtime.sendMessage.mockReset();
+		chrome.tabs.sendMessage.mockReset();
+		chrome.runtime.onMessage.clearListeners();
+	});
+
 	it('should add and remove a listener', () => {
 		const callback = vi.fn();
 
