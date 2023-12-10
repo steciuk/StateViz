@@ -52,7 +52,7 @@ type InspectedDataPostMessage = {
 	content: InspectedDataMessageContent;
 };
 
-type PostMessage =
+export type PostMessage =
 	| ReactAttachedPostMessage
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
@@ -90,6 +90,7 @@ export class PostMessageBridge {
 	onMessage(callback: (message: PostMessage) => void): () => void {
 		const eventListener = (event: MessageEvent<PostMessage>) => {
 			if (event.origin !== window.origin) return;
+			if (!event.data.source) return;
 			if (event.data.source === this.source) return;
 
 			callback(event.data);
@@ -107,7 +108,8 @@ export class PostMessageBridge {
 			'message',
 			(event: MessageEvent<PostMessage>) => {
 				if (event.origin !== window.origin) return;
-				if (event.data.source !== this.source) return;
+				if (!event.data.source) return;
+				if (event.data.source === this.source) return;
 
 				callback(event.data);
 			},
