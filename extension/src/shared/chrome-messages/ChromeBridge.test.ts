@@ -10,6 +10,7 @@ import {
 	ChromeBridgeToTabConnector,
 } from '@src/shared/chrome-messages/ChromeBridge';
 
+// TODO: add inner describe for each function
 describe('ChromeBridgeConnector', () => {
 	let portMock = new PortMock();
 

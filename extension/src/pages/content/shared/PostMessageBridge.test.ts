@@ -8,6 +8,7 @@ import {
 } from '@pages/content/shared/PostMessageBridge';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
+// TODO: add inner describe for each function
 describe('PostMessageBridge', () => {
 	it('should send a message with the correct content', () => {
 		const source = PostMessageSource.ISOLATED;
