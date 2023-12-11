@@ -14,14 +14,14 @@ export enum ChromeBridgeMessageType {
 export type ChromeBridgeMessage =
 	| FullSkeletonBridgeMessage
 	| InspectElementBridgeMessage
-	| InspectedDataPostMessage;
+	| InspectedDataBridgeMessage;
 
-type FullSkeletonBridgeMessage = {
+export type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
 	content: ParsedFiber[];
 };
 
-type InspectElementBridgeMessage = {
+export type InspectElementBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECT_ELEMENT;
 	content: NodeId[];
 };
@@ -31,7 +31,7 @@ export type InspectedDataMessageContent = {
 	data: NodeInspectedData;
 }[];
 
-type InspectedDataPostMessage = {
+export type InspectedDataBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;
 	content: InspectedDataMessageContent;
 };
