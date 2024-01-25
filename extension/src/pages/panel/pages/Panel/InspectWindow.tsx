@@ -6,11 +6,7 @@ import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext
 import { SelectedFiberContext } from '@pages/panel/contexts/SelectedFiberContext';
 import { getWorkTagLabel } from '@pages/panel/utils/work-tag';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
-import {
-	DataType,
-	InspectData,
-	NodeInspectedData,
-} from '@src/shared/types/DataType';
+import { DataType, InspectData, NodeInspectedData } from '@src/shared/types/DataType';
 import { NodeId } from '@src/shared/types/ParsedFiber';
 
 export const InspectWindow = (props: { className?: string }) => {
@@ -25,10 +21,10 @@ export const InspectWindow = (props: { className?: string }) => {
 		<div className={props.className}>
 			<div className="p-2">
 				<h2 className="text-lg">Inspect window</h2>
-				<span>Name: {selectedFiber.name}</span>
-				<span>Tag: {selectedFiber.tag}</span>
-				<span>Type: {getWorkTagLabel(selectedFiber.tag)}</span>
-				<span>ID: {selectedFiber.id}</span>
+				<p>Name: {selectedFiber.name}</p>
+				<p>Tag: {selectedFiber.tag}</p>
+				<p>Type: {getWorkTagLabel(selectedFiber.tag)}</p>
+				<p>ID: {selectedFiber.id}</p>
 				{nodeInspectData && (
 					<>
 						<p className="font-semibold">State:</p>
