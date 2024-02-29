@@ -19,6 +19,7 @@ const publicDir = resolve(rootDir, 'public');
 
 const isDev = process.env.__DEV__ === 'true';
 const isProduction = !isDev;
+const isVitest = process.env.VITEST === 'true';
 
 // ENABLE HMR IN BACKGROUND SCRIPT
 const enableHmrInBackgroundScript = true;
@@ -41,17 +42,18 @@ export default defineConfig({
 		customDynamicImport(),
 		addHmr({ background: enableHmrInBackgroundScript, view: true }),
 		isDev && watchRebuild({ afterWriteBundle: regenerateCacheInvalidationKey }),
-		inlineImports({
-			rules: [
-				{
-					for: [/src\/pages\/content\/.*\.ts/],
-					inline: [
-						/src\/shared\/.*\.ts/,
-						/src\/pages\/content\/shared\/.*\.ts/,
-					],
-				},
-			],
-		}),
+		!isVitest &&
+			inlineImports({
+				rules: [
+					{
+						for: [/src\/pages\/content\/.*\.ts/],
+						inline: [
+							/src\/shared\/.*\.ts/,
+							/src\/pages\/content\/shared\/.*\.ts/,
+						],
+					},
+				],
+			}),
 	],
 	publicDir,
 	build: {

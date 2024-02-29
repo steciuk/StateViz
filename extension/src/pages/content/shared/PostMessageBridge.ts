@@ -15,12 +15,6 @@ export enum PostMessageType {
 	INSPECTED_DATA = 'INSPECTED_DATA',
 }
 
-type ReactAttachedPostMessage = {
-	source: PostMessageSource.MAIN;
-	type: PostMessageType.REACT_ATTACHED;
-	content?: undefined;
-};
-
 export type UnmountNodesOperation = NodeId[];
 export type MountNodesOperations = Array<{
 	pathFromRoot: NodeId[];
@@ -28,31 +22,38 @@ export type MountNodesOperations = Array<{
 	node: ParsedFiber;
 }>;
 
-type MountNodesPostMessage = {
+// MESSAGE TYPES
+export type ReactAttachedPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.REACT_ATTACHED;
+	content?: undefined;
+};
+
+export type MountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_NODES;
 	content: MountNodesOperations;
 };
 
-type UnmountNodesPostMessage = {
+export type UnmountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.UNMOUNT_NODES;
 	content: UnmountNodesOperation;
 };
 
-type InspectElementPostMessage = {
-	source: PostMessageSource.ISOLATED;
-	type: PostMessageType.INSPECT_ELEMENT;
-	content: NodeId[];
-};
-
-type InspectedDataPostMessage = {
+export type InspectedDataPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.INSPECTED_DATA;
 	content: InspectedDataMessageContent;
 };
 
-type PostMessage =
+export type InspectElementPostMessage = {
+	source: PostMessageSource.ISOLATED;
+	type: PostMessageType.INSPECT_ELEMENT;
+	content: NodeId[];
+};
+
+export type PostMessage =
 	| ReactAttachedPostMessage
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
@@ -90,6 +91,7 @@ export class PostMessageBridge {
 	onMessage(callback: (message: PostMessage) => void): () => void {
 		const eventListener = (event: MessageEvent<PostMessage>) => {
 			if (event.origin !== window.origin) return;
+			if (!event.data.source) return;
 			if (event.data.source === this.source) return;
 
 			callback(event.data);
@@ -107,7 +109,8 @@ export class PostMessageBridge {
 			'message',
 			(event: MessageEvent<PostMessage>) => {
 				if (event.origin !== window.origin) return;
-				if (event.data.source !== this.source) return;
+				if (!event.data.source) return;
+				if (event.data.source === this.source) return;
 
 				callback(event.data);
 			},

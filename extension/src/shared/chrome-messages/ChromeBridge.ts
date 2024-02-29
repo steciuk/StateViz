@@ -14,14 +14,14 @@ export enum ChromeBridgeMessageType {
 export type ChromeBridgeMessage =
 	| FullSkeletonBridgeMessage
 	| InspectElementBridgeMessage
-	| InspectedDataPostMessage;
+	| InspectedDataBridgeMessage;
 
-type FullSkeletonBridgeMessage = {
+export type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
 	content: ParsedFiber[];
 };
 
-type InspectElementBridgeMessage = {
+export type InspectElementBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECT_ELEMENT;
 	content: NodeId[];
 };
@@ -31,7 +31,7 @@ export type InspectedDataMessageContent = {
 	data: NodeInspectedData;
 }[];
 
-type InspectedDataPostMessage = {
+export type InspectedDataBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;
 	content: InspectedDataMessageContent;
 };
@@ -82,26 +82,19 @@ abstract class ChromeBridge {
 	onMessage(callback: (message: ChromeBridgeMessage) => void): () => void {
 		if (this.port) {
 			this.port.onMessage.addListener(callback);
-
-			return () => {
-				this.port?.onMessage.removeListener(callback);
-			};
-		} else {
-			this.pendingListeners.push(callback);
-
-			return () => {
-				this.port?.onMessage.removeListener(callback);
-				this.pendingListeners = this.pendingListeners.filter(
-					(listener) => listener !== callback
-				);
-			};
 		}
+
+		this.pendingListeners.push(callback);
+
+		return () => {
+			this.port?.onMessage.removeListener(callback);
+			this.pendingListeners = this.pendingListeners.filter(
+				(listener) => listener !== callback
+			);
+		};
 	}
 
 	protected registerListeners() {
-		console.log('registerListeners');
-		console.log(this.pendingListeners);
-		console.log(this.port);
 		this.pendingListeners.forEach(
 			(listener) => this.port?.onMessage.addListener(listener)
 		);

@@ -33,18 +33,18 @@ type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
 
 // SPECIFIC TYPES
 // content-isolated -> devtools script
-type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
+export type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.CREATE_DEVTOOLS_PANEL;
 };
 
 // content-isolated -> devtools script
-type CommitRootChromeMessage = ContentScriptChromeMessage & {
+export type CommitRootChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.COMMIT_ROOT;
 	content: ParsedFiber;
 };
 
 // devtools script -> content-isolated on specific tab
-type IsReactAttachedChromeMessage = Omit<
+export type IsReactAttachedChromeMessage = Omit<
 	ChromeMessageBase,
 	'responseCallback'
 > & {
