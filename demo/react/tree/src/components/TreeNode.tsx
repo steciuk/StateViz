@@ -15,9 +15,7 @@ const TreeNode = (props: { id: number; removeNode?: (id: number) => void }) => {
 	return (
 		<div style={{ border: '1px solid black', padding: '1rem' }}>
 			{props.id}
-			{removeNodeFromParent && (
-				<button onClick={() => removeNodeFromParent(props.id)}>Remove</button>
-			)}
+			{removeNodeFromParent && <button onClick={() => removeNodeFromParent(props.id)}>Remove</button>}
 			<button
 				onClick={() => {
 					setTreeNodes([...treeNodes, nodeIdRef.current++]);
