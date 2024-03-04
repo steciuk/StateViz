@@ -1,8 +1,5 @@
-import { ListenersStorage } from '@pages/content/content-main/hook-functions/utils/ListenersStorage';
-import {
-	ReactRenderer,
-	RendererID,
-} from '@pages/content/content-main/react-types';
+import { ListenersStorage } from '@pages/content/content-main/react/hook-functions/utils/ListenersStorage';
+import { ReactRenderer, RendererID } from '@pages/content/content-main/react/react-types';
 
 export const RENDERERS: Map<RendererID, ReactRenderer> = new Map();
 export const LISTENERS = new ListenersStorage();
