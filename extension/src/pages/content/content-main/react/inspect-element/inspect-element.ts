@@ -1,7 +1,7 @@
 import { EXISTING_NODES_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
 import { getOrGenerateNodeId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateNodeId';
 import { typeData } from '@pages/content/content-main/react/inspect-element/getDataType';
-import { Fiber, MemoizedState } from '@pages/content/content-main/react/react-types';
+import { Fiber, HookType, MemoizedState } from '@pages/content/content-main/react/react-types';
 import {
   PostMessageBridge,
   PostMessageSource,
@@ -70,25 +70,32 @@ export function sendInspectData() {
 
 function getNodeData(fiber: Fiber): NodeInspectedData | null {
   // TODO: maybe try to check if changed and don't send if not
-  const state = parseState(fiber);
+  const hooks = parseHooks(fiber);
   // const props = TODO: implement
 
-  if (state.length === 0 /* && props.length === 0 */) return null;
+  if (hooks.length === 0 /* && props.length === 0 */) return null;
 
   return {
-    state: parseState(fiber),
+    hooks
   };
 }
 
-function parseState(fiber: Fiber): InspectData[] {
-  const data: InspectData[] = [];
+function parseHooks(fiber: Fiber): NodeInspectedData['hooks'] {
+  const state: InspectData[] = [];
   let current: MemoizedState | null = fiber.memoizedState;
   while (current) {
-    data.push(dehydrate(current.memoizedState, 0));
+    state.push(dehydrate(current.memoizedState, 0));
     current = current.next;
   }
 
-  return data;
+  const hooksNames = fiber._debugHookTypes && fiber._debugHookTypes.length === state.length
+    ? fiber._debugHookTypes
+    : new Array<HookType | 'unknown'>(state.length).fill('unknown');
+
+  return state.map((data, index) => ({
+    hookType: hooksNames[index],
+    data,
+  }));
 }
 
 const MAX_DEPTH = 5;

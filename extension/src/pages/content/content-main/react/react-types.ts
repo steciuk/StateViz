@@ -21,6 +21,26 @@ export type MemoizedState = {
   isDehydrated: boolean;
 };
 
+export type HookType =
+  | 'useState'
+  | 'useReducer'
+  | 'useContext'
+  | 'useRef'
+  | 'useEffect'
+  | 'useEffectEvent'
+  | 'useInsertionEffect'
+  | 'useLayoutEffect'
+  | 'useCallback'
+  | 'useMemo'
+  | 'useImperativeHandle'
+  | 'useDebugValue'
+  | 'useDeferredValue'
+  | 'useTransition'
+  | 'useSyncExternalStore'
+  | 'useId'
+  | 'useCacheRefresh'
+  | 'useOptimistic';
+
 // ? A Fiber is work on a Component that needs to be done or was done. There can
 // ? be more than one per component.
 export type Fiber = {
@@ -150,7 +170,7 @@ export type Fiber = {
   // _debugNeedsRemount?: boolean,
 
   // ? Used to verify that the order of hooks does not change between renders.
-  // _debugHookTypes?: Array<HookType> | null,
+  _debugHookTypes?: Array<HookType> | null,
 };
 
 export type CurrentDispatcherRef = { current: null | any };

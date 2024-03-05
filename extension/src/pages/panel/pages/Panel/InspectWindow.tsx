@@ -20,17 +20,16 @@ export const InspectWindow = (props: { className?: string }) => {
 	return (
 		<div className={props.className}>
 			<div className="p-2">
-				<h2 className="text-lg">Inspect window</h2>
-				<p>Name: {selectedFiber.name}</p>
+				<h2 className="text-lg">{selectedFiber.name}</h2>
 				<p>Tag: {selectedFiber.tag}</p>
 				<p>Type: {getWorkTagLabel(selectedFiber.tag)}</p>
 				<p>ID: {selectedFiber.id}</p>
 				{nodeInspectData && (
 					<>
-						<p className="font-semibold">State:</p>
-						{nodeInspectData.state.map((data, index) => (
+						<p className="font-semibold mt-2">Hooks</p>
+						{nodeInspectData.hooks.map((hook, index) => (
 							<div key={index} className="border-b-1 border-secondary">
-								<NodeStateValue inspectData={data} />
+								<span>{hook.hookType}: </span><NodeStateValue inspectData={hook.data} />
 							</div>
 						))}
 					</>
@@ -96,7 +95,7 @@ const NodeStateArrayValue = (props: {
 	const isEmpty = inspectData.data.length === 0;
 
 	return (
-		<div>
+		<span>
 			<ExpandArrow
 				isExpanded={expanded}
 				onClick={(value) => setExpanded(value)}
@@ -113,7 +112,7 @@ const NodeStateArrayValue = (props: {
 			) : (
 				<span>{isEmpty ? '[]' : '[...]'}</span>
 			)}
-		</div>
+		</span>
 	);
 };
 
@@ -129,7 +128,7 @@ const NodeStateObjectValue = (props: {
 	const isEmpty = Object.keys(inspectData.data).length === 0;
 
 	return (
-		<div>
+		<span>
 			<ExpandArrow
 				isExpanded={expanded}
 				onClick={(value) => setExpanded(value)}
@@ -146,7 +145,7 @@ const NodeStateObjectValue = (props: {
 			) : (
 				<span>{isEmpty ? '{}' : '{...}'}</span>
 			)}
-		</div>
+		</span>
 	);
 };
 
