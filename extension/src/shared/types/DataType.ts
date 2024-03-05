@@ -125,6 +125,9 @@ export type NodeInspectedData = {
     hookType: HookType | 'unknown';
     data: InspectData;
   }[];
+  props: {
+    [key: string]: InspectData;
+  }
 };
 
 export type InspectData =

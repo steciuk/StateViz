@@ -71,13 +71,26 @@ export function sendInspectData() {
 function getNodeData(fiber: Fiber): NodeInspectedData | null {
   // TODO: maybe try to check if changed and don't send if not
   const hooks = parseHooks(fiber);
-  // const props = TODO: implement
+  const props = parseProps(fiber);
 
-  if (hooks.length === 0 /* && props.length === 0 */) return null;
+  if (hooks.length === 0 && Object.keys(props).length === 0) return null;
 
   return {
-    hooks
+    hooks,
+    props
   };
+}
+
+function parseProps(fiber: Fiber): NodeInspectedData['props'] {
+  const props: NodeInspectedData['props'] = {}
+  const fiberProps = fiber.memoizedProps;
+  if (fiberProps) {
+    for (const [key, value] of Object.entries(fiberProps)) {
+      props[key] = dehydrate(value, 0);
+    }
+  }
+
+  return props;
 }
 
 function parseHooks(fiber: Fiber): NodeInspectedData['hooks'] {

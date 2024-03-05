@@ -6,7 +6,11 @@ import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext
 import { SelectedFiberContext } from '@pages/panel/contexts/SelectedFiberContext';
 import { getWorkTagLabel } from '@pages/panel/utils/work-tag';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
-import { DataType, InspectData, NodeInspectedData } from '@src/shared/types/DataType';
+import {
+	DataType,
+	InspectData,
+	NodeInspectedData,
+} from '@src/shared/types/DataType';
 import { NodeId } from '@src/shared/types/ParsedFiber';
 
 export const InspectWindow = (props: { className?: string }) => {
@@ -25,14 +29,30 @@ export const InspectWindow = (props: { className?: string }) => {
 				<p>Type: {getWorkTagLabel(selectedFiber.tag)}</p>
 				<p>ID: {selectedFiber.id}</p>
 				{nodeInspectData && (
-					<>
-						<p className="font-semibold mt-2">Hooks</p>
-						{nodeInspectData.hooks.map((hook, index) => (
-							<div key={index} className="border-b-1 border-secondary">
-								<span>{hook.hookType}: </span><NodeStateValue inspectData={hook.data} />
-							</div>
-						))}
-					</>
+					<div className="mt-2 flex flex-col gap-2">
+						<div>
+							<p className="font-semibold">Props</p>
+							{Object.entries(nodeInspectData.props).map(([key, value]) => (
+								<div key={key} className="border-b-1 border-secondary">
+									<span>{key}: </span>
+									<span className="font-mono">
+										<NodeStateValue inspectData={value} />
+									</span>
+								</div>
+							))}
+						</div>
+						<div>
+							<p className="font-semibold">Hooks</p>
+							{nodeInspectData.hooks.map((hook, index) => (
+								<div key={index} className="border-b-1 border-secondary">
+									<span>{hook.hookType}: </span>
+									<span className="font-mono">
+										<NodeStateValue inspectData={hook.data} />
+									</span>
+								</div>
+							))}
+						</div>
+					</div>
 				)}
 			</div>
 		</div>
@@ -181,3 +201,4 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 
 	return nodeInspectData;
 };
+
