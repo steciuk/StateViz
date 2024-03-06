@@ -68,12 +68,10 @@ export function sendInspectData() {
   });
 }
 
-function getNodeData(fiber: Fiber): NodeInspectedData | null {
+function getNodeData(fiber: Fiber): NodeInspectedData {
   // TODO: maybe try to check if changed and don't send if not
   const hooks = parseHooks(fiber);
   const props = parseProps(fiber);
-
-  if (hooks.length === 0 && Object.keys(props).length === 0) return null;
 
   return {
     hooks,

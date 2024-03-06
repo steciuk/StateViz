@@ -8,7 +8,7 @@ export enum PostMessageSource {
 }
 
 export enum PostMessageType {
-	REACT_ATTACHED = 'REACT_ATTACHED',
+	LIBRARY_ATTACHED = 'LIBRARY_ATTACHED',
 	UNMOUNT_NODES = 'UNMOUNT_NODES',
 	MOUNT_NODES = 'MOUNT_NODES',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
@@ -23,9 +23,9 @@ export type MountNodesOperations = Array<{
 }>;
 
 // MESSAGE TYPES
-export type ReactAttachedPostMessage = {
+export type LibraryAttachedPostMessage = {
 	source: PostMessageSource.MAIN;
-	type: PostMessageType.REACT_ATTACHED;
+	type: PostMessageType.LIBRARY_ATTACHED;
 	content?: undefined;
 };
 
@@ -54,7 +54,7 @@ export type InspectElementPostMessage = {
 };
 
 export type PostMessage =
-	| ReactAttachedPostMessage
+	| LibraryAttachedPostMessage
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage
@@ -118,3 +118,4 @@ export class PostMessageBridge {
 		);
 	}
 }
+

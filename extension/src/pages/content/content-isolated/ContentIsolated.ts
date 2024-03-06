@@ -4,7 +4,7 @@ import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
-	ReactAttachedPostMessage,
+	LibraryAttachedPostMessage,
 	UnmountNodesPostMessage,
 } from '@pages/content/shared/PostMessageBridge';
 import {
@@ -27,7 +27,7 @@ export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
 	private postMessageBridge: PostMessageBridge;
 	private chromeBridge: ChromeBridgeListener;
-	private reactAttached: boolean = false;
+	private libraryAttached: boolean = false;
 	private currentFibers: Map<NodeId, ParsedFiber> = new Map();
 
 	private constructor() {
@@ -66,7 +66,7 @@ export class ContentIsolated {
 		// messages from content-main
 		this.postMessageBridge.onMessage((message) => {
 			switch (message.type) {
-				case PostMessageType.REACT_ATTACHED:
+				case PostMessageType.LIBRARY_ATTACHED:
 					this.handleReactAttachedPostMessage(message);
 					break;
 
@@ -116,8 +116,8 @@ export class ContentIsolated {
 	}
 
 	// POST MESSAGE BRIDGE MESSAGES
-	private handleReactAttachedPostMessage(_message: ReactAttachedPostMessage) {
-		this.reactAttached = true;
+	private handleReactAttachedPostMessage(_message: LibraryAttachedPostMessage) {
+		this.libraryAttached = true;
 
 		// Send message to devtools panel that react is attached,
 		// devtools panel potentially opened before
@@ -263,7 +263,7 @@ export class ContentIsolated {
 		message: IsReactAttachedChromeMessage
 	): void {
 		console.log('question from devtools panel: is react attached?');
-		message.responseCallback(this.reactAttached);
+		message.responseCallback(this.libraryAttached);
 	}
 
 	private sendMessageThroughChromeBridgeIfConnected(
@@ -274,3 +274,4 @@ export class ContentIsolated {
 		}
 	}
 }
+

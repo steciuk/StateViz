@@ -44,7 +44,7 @@ describe('ContentIsolated', () => {
 
 	afterEach(() => {
 		ContentIsolated['instance'] = undefined;
-		contentIsolated['reactAttached'] = false;
+		contentIsolated['libraryAttached'] = false;
 		contentIsolated['currentFibers'].clear();
 		vi.clearAllMocks();
 	});
@@ -85,10 +85,10 @@ describe('ContentIsolated', () => {
 	});
 
 	describe('handleReactAttachedPostMessage', () => {
-		it('should set reactAttached to true', () => {
+		it('should set libraryAttached to true', () => {
 			contentIsolated['handleReactAttachedPostMessage']({} as any);
 
-			expect(contentIsolated['reactAttached']).toBe(true);
+			expect(contentIsolated['libraryAttached']).toBe(true);
 		});
 
 		it('should send CREATE_DEVTOOLS_PANEL message', () => {
@@ -288,7 +288,7 @@ describe('ContentIsolated', () => {
 	});
 
 	describe('handleIsReactAttachedChromeMessage', () => {
-		it('should send responseCallback with reactAttached value', () => {
+		it('should send responseCallback with libraryAttached value', () => {
 			const responseCallback = vi.fn();
 
 			contentIsolated['handleIsReactAttachedChromeMessage']({
@@ -348,3 +348,4 @@ vi.mock('@src/shared/chrome-messages/ChromeBridge', async () => {
 		ChromeBridgeListener,
 	};
 });
+
