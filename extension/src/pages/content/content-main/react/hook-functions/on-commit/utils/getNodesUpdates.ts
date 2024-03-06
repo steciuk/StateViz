@@ -1,6 +1,6 @@
-import { EXISTING_NODES_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
+import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
 import { getFiberName } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getFiberName';
-import { getOrGenerateNodeId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateNodeId';
+import { getOrGenerateFiberId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateFiberId';
 import { getParseChildren } from '@pages/content/content-main/react/hook-functions/on-commit/utils/parseChildren';
 import { handleNodeInspect } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react/react-types';
@@ -8,49 +8,50 @@ import { MountNodesOperations } from '@pages/content/shared/PostMessageBridge';
 import { NodeId } from '@src/shared/types/ParsedFiber';
 
 export function getNodesUpdates(
-  nextFiber: Fiber,
-  prevFiber: Fiber,
-  pathFromRoot: NodeId[]
+	nextFiber: Fiber,
+	prevFiber: Fiber,
+	pathFromRoot: NodeId[]
 ): MountNodesOperations {
-  // TODO: handle node reordering
-  const operations: MountNodesOperations = [];
-  let higherSibling: Fiber | null = null;
-  let child = nextFiber.child;
-  if (child !== prevFiber.child) {
-    const parentId = getOrGenerateNodeId(nextFiber);
-    while (child) {
-      const childId = getOrGenerateNodeId(child);
+	// TODO: handle node reordering
+	const operations: MountNodesOperations = [];
+	let higherSibling: Fiber | null = null;
+	let child = nextFiber.child;
+	if (child !== prevFiber.child) {
+		const parentId = getOrGenerateFiberId(nextFiber);
+		while (child) {
+			const childId = getOrGenerateFiberId(child);
 
-      handleNodeInspect(child);
-      EXISTING_NODES_DATA.set(childId, {
-        pathFromRoot: [...pathFromRoot, childId],
-        parentId: parentId,
-        fiber: child,
-      });
+			handleNodeInspect(child);
+			EXISTING_FIBERS_DATA.set(childId, {
+				pathFromRoot: [...pathFromRoot, childId],
+				parentId: parentId,
+				fiber: child,
+			});
 
-      const prevChild = child.alternate;
-      if (prevChild) {
-        // there was a child before
-        operations.push(
-          ...getNodesUpdates(child, prevChild, [...pathFromRoot, childId])
-        );
-      } else {
-        // there was no child before, we need to mount new child under this node
-        operations.push({
-          pathFromRoot: pathFromRoot,
-          afterNode: higherSibling ? getOrGenerateNodeId(higherSibling) : null,
-          node: {
-            tag: child.tag,
-            name: getFiberName(child),
-            children: getParseChildren(child, [...pathFromRoot, childId]),
-            id: getOrGenerateNodeId(child),
-          },
-        });
-      }
-      higherSibling = child;
-      child = child.sibling;
-    }
-  }
+			const prevChild = child.alternate;
+			if (prevChild) {
+				// there was a child before
+				operations.push(
+					...getNodesUpdates(child, prevChild, [...pathFromRoot, childId])
+				);
+			} else {
+				// there was no child before, we need to mount new child under this node
+				operations.push({
+					pathFromRoot: pathFromRoot,
+					afterNode: higherSibling ? getOrGenerateFiberId(higherSibling) : null,
+					node: {
+						tag: child.tag,
+						name: getFiberName(child),
+						children: getParseChildren(child, [...pathFromRoot, childId]),
+						id: getOrGenerateFiberId(child),
+					},
+				});
+			}
+			higherSibling = child;
+			child = child.sibling;
+		}
+	}
 
-  return operations;
+	return operations;
 }
+
