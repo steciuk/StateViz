@@ -1,9 +1,14 @@
-import { SvelteEventMap } from '@pages/content/content-main/svelte/svelte-types';
+import {
+	SvelteBlockType,
+	SvelteEventMap,
+} from '@pages/content/content-main/svelte/svelte-types';
 import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
+import { getOrGenerateNodeId } from '@pages/content/content-main/svelte/getOrGenerateNodeId';
+import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
 
 declare global {
 	interface Window {
@@ -53,68 +58,146 @@ export function injectForSvelte() {
 	});
 }
 
+const roots: SvelteNode[] = [];
+
+type SvelteNode = {
+	id: NodeId;
+	name: string;
+	type: SvelteBlockType;
+	children: SvelteNode[];
+};
+
+type SvelteNodeData = {
+	pathFromRoot: NodeId[];
+	parentId: NodeId | null;
+	node: SvelteNode;
+};
+
+type SendNodeData = {
+	pathFromRoot: NodeId[];
+	afterNode: NodeId | null;
+	node: SvelteNode;
+};
+
+const nodeMap = new Map<NodeId, SvelteNodeData>();
+// let currentBlock: unknown = null;
+
+function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
+	const { target, node, anchor } = detail;
+
+	function recursiveInsert(
+		node: Node,
+		parentId: NodeId | null,
+		pathFromRoot: NodeId[]
+	): SvelteNode {
+		const id = getOrGenerateNodeId(node);
+		const type =
+			node.nodeType === Node.ELEMENT_NODE
+				? SvelteBlockType.element
+				: node.nodeValue && node.nodeValue !== ' '
+				  ? SvelteBlockType.text
+				  : SvelteBlockType.anchor;
+
+		const block: SvelteNode = {
+			id,
+			name: node.nodeName.toLocaleLowerCase(),
+			type,
+			children: [...node.childNodes].map((child) =>
+				recursiveInsert(child, id, [...pathFromRoot, id])
+			),
+		};
+
+		nodeMap.set(id, {
+			pathFromRoot,
+			parentId,
+			node: block,
+		});
+
+		return block;
+	}
+
+	const parentId = getOrGenerateNodeId(target);
+	const block = recursiveInsert(node, parentId, []);
+	const afterNode = anchor ? getOrGenerateNodeId(anchor) : null;
+
+	send({
+		pathFromRoot: nodeMap.get(parentId)!.pathFromRoot,
+		afterNode,
+		node: block,
+	});
+}
+
+function send(data: SendNodeData) {
+	console.warn('send', data);
+}
+
 function inject() {
 	const listenerRemovers: (() => void)[] = [];
 
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
+	// 		console.log('SvelteRegisterComponent', detail);
+	// 		const { component } = detail;
+
+	// 		const id = getOrGenerateNodeId(component);
+	// 		console.log(id);
+	// 	})
+	// );
+
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteRegisterBlock', (event) => {
+	// 		console.log('SvelteRegisterBlock', event.detail);
+	// 	})
+	// );
+
 	listenerRemovers.push(
-		addSvelteListener('SvelteRegisterComponent', (event) => {
-			console.log('SvelteRegisterComponent', event.detail);
+		addSvelteListener('SvelteDOMInsert', ({ detail }) => {
+			console.log('SvelteDOMInsert', detail);
+			handleSvelteDOMInsert(detail);
 		})
 	);
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteRegisterBlock', (event) => {
-			console.log('SvelteRegisterBlock', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMRemove', (event) => {
+	// 		console.log('SvelteDOMRemove', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMInsert', (event) => {
-			console.log('SvelteDOMInsert', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMAddEventListener', (event) => {
+	// 		console.log('SvelteDOMAddEventListener', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMRemove', (event) => {
-			console.log('SvelteDOMRemove', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMRemoveEventListener', (event) => {
+	// 		console.log('SvelteDOMRemoveEventListener', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMAddEventListener', (event) => {
-			console.log('SvelteDOMAddEventListener', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMSetData', (event) => {
+	// 		console.log('SvelteDOMSetData', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMRemoveEventListener', (event) => {
-			console.log('SvelteDOMRemoveEventListener', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMSetProperty', (event) => {
+	// 		console.log('SvelteDOMSetProperty', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMSetData', (event) => {
-			console.log('SvelteDOMSetData', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMSetAttribute', (event) => {
+	// 		console.log('SvelteDOMSetAttribute', event.detail);
+	// 	})
+	// );
 
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMSetProperty', (event) => {
-			console.log('SvelteDOMSetProperty', event.detail);
-		})
-	);
-
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMSetAttribute', (event) => {
-			console.log('SvelteDOMSetAttribute', event.detail);
-		})
-	);
-
-	listenerRemovers.push(
-		addSvelteListener('SvelteDOMRemoveAttribute', (event) => {
-			console.log('SvelteDOMRemoveAttribute', event.detail);
-		})
-	);
+	// listenerRemovers.push(
+	// 	addSvelteListener('SvelteDOMRemoveAttribute', (event) => {
+	// 		console.log('SvelteDOMRemoveAttribute', event.detail);
+	// 	})
+	// );
 
 	return () => {
 		listenerRemovers.forEach((remover) => remover());

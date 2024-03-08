@@ -10,7 +10,9 @@ export interface SvelteEventMap {
 		detail: unknown;
 	};
 	SvelteDOMInsert: {
-		detail: unknown;
+		target: Node;
+		node: Node;
+		anchor?: Node;
 	};
 	SvelteDOMRemove: {
 		detail: unknown;
@@ -35,9 +37,16 @@ export interface SvelteEventMap {
 	};
 }
 
-export type SvelteNodeDetail = SvelteComponentDetail;
-
 // copied from svelte internal types
+export type SvelteComponentFragment = {
+	c(): void;
+	d(detaching: boolean): void;
+	h(): void;
+	l(nodes: unknown[]): void;
+	m(target: Node, anchor: Node): void;
+	p(changed: boolean, ctx: unknown): void;
+};
+
 type SvelteComponentDetail = {
 	id: string;
 	options: {
@@ -49,14 +58,7 @@ type SvelteComponentDetail = {
 	tagName: string;
 	component: {
 		$$: {
-			fragment: {
-				c(): void;
-				d(detaching: boolean): void;
-				h(): void;
-				l(nodes: unknown[]): void;
-				m(target: Node, anchor: Node): void;
-				p(changed: boolean, ctx: unknown): void;
-			};
+			fragment: SvelteComponentFragment;
 		};
 		// $$events_def?: {};
 		// $$prop_def?: {};
@@ -65,24 +67,27 @@ type SvelteComponentDetail = {
 	};
 };
 
+export enum SvelteBlockType {
+	anchor = 'anchor',
+	block = 'block',
+	catch = 'catch',
+	component = 'component',
+	each = 'each',
+	element = 'element',
+	else = 'else',
+	if = 'if',
+	iteration = 'iteration',
+	key = 'key',
+	pending = 'pending',
+	slot = 'slot',
+	text = 'text',
+	then = 'then',
+}
+
 type SvelteBlockDetail = {
 	id: number;
 	source: string;
-	type:
-		| 'anchor'
-		| 'block'
-		| 'catch'
-		| 'component'
-		| 'each'
-		| 'element'
-		| 'else'
-		| 'if'
-		| 'iteration'
-		| 'key'
-		| 'pending'
-		| 'slot'
-		| 'text'
-		| 'then';
+	type: SvelteBlockType;
 
 	detail?: unknown;
 	tagName?: string;
@@ -93,7 +98,7 @@ type SvelteBlockDetail = {
 	/** like `parent` but `type: 'component'`  */
 	container?: SvelteBlockDetail;
 
-	block: SvelteComponentDetail['component']['$$']['fragment'];
+	block: SvelteComponentFragment;
 	ctx: Array<unknown>; // TODO: do we need this typed?
 };
 
