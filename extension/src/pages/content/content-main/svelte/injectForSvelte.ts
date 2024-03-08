@@ -58,8 +58,6 @@ export function injectForSvelte() {
 	});
 }
 
-const roots: SvelteNode[] = [];
-
 type SvelteNode = {
 	id: NodeId;
 	name: string;
@@ -100,7 +98,7 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 
 		const block: SvelteNode = {
 			id,
-			name: node.nodeName.toLocaleLowerCase(),
+			name: node.nodeName.toLowerCase(),
 			type,
 			children: [...node.childNodes].map((child) =>
 				recursiveInsert(child, id, [...pathFromRoot, id])
@@ -116,19 +114,64 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 		return block;
 	}
 
+	// <div id="app"> is the target of root insert and it is not being added to the nodeMap
 	const parentId = getOrGenerateNodeId(target);
-	const block = recursiveInsert(node, parentId, []);
+	const parentNode = nodeMap.get(parentId);
+	const pathFromRoot = parentNode ? [...parentNode.pathFromRoot, parentId] : [];
+	const block = recursiveInsert(node, parentId, pathFromRoot);
 	const afterNode = anchor ? getOrGenerateNodeId(anchor) : null;
 
 	send({
-		pathFromRoot: nodeMap.get(parentId)!.pathFromRoot,
+		pathFromRoot,
 		afterNode,
 		node: block,
 	});
 }
 
+const roots: SvelteNode[] = [];
 function send(data: SendNodeData) {
-	console.warn('send', data);
+	console.log('send', data);
+	if (data.pathFromRoot.length === 0) {
+		roots.push(data.node);
+	} else {
+		const [rootId, ...restOfPath] = data.pathFromRoot;
+		const root = roots.find((root) => root.id === rootId);
+
+		if (!root) {
+			console.error('root not found');
+			console.log(rootId);
+			return;
+		}
+
+		// traverse the tree to find the parent node
+		let current = root;
+		for (const nodeId of restOfPath) {
+			const child = current.children.find((child) => child.id === nodeId);
+			if (!child) {
+				console.error('child not found');
+				return;
+			}
+
+			current = child;
+		}
+
+		if (data.afterNode === null) {
+			current.children.push(data.node);
+		} else {
+			const afterNodeIndex = current.children.findIndex(
+				(child) => child.id === data.afterNode
+			);
+			if (afterNodeIndex === -1) {
+				console.error('afterNode not found');
+				return;
+			}
+
+			// Insert after the afterNode
+			current.children.splice(afterNodeIndex + 1, 0, data.node);
+		}
+	}
+
+	console.warn(roots);
 }
 
 function inject() {

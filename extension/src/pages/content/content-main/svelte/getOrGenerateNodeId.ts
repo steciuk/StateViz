@@ -14,8 +14,8 @@ export function getOrGenerateNodeId(
 		return nodeId;
 	}
 
-	console.log('new element', node);
 	const id = nodeIdCounter++;
+	console.log('new element', id, node);
 	NODE_TO_ID_MAP.set(node, id);
 
 	return id;
