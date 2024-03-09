@@ -1,17 +1,17 @@
 import { createContext, useCallback, useState } from 'react';
 
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { ParsedReactNode } from '@src/shared/types/ParsedNode';
 
-export const SelectedFiberContext = createContext<ParsedFiber | null>(null);
+export const SelectedFiberContext = createContext<ParsedReactNode | null>(null);
 export const SelectedFiberUpdateContext = createContext<
-	(fiber: ParsedFiber | null) => void
+	(fiber: ParsedReactNode | null) => void
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 >(() => {});
 
 export const SelectedFiberProvider = (props: { children: React.ReactNode }) => {
-	const [selectedFiber, setSelectedFiber] = useState<ParsedFiber | null>(null);
+	const [selectedFiber, setSelectedFiber] = useState<ParsedReactNode | null>(null);
 
-	const updateSelectedFiber = useCallback((fiber: ParsedFiber | null) => {
+	const updateSelectedFiber = useCallback((fiber: ParsedReactNode | null) => {
 		setSelectedFiber(fiber);
 	}, []);
 

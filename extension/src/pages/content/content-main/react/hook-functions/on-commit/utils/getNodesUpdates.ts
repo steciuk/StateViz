@@ -1,6 +1,6 @@
 import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
 import { getFiberName } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getFiberName';
-import { getOrGenerateFiberId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateFiberId';
+import { getOrGenerateFiberId } from '@pages/content/content-main/utils/getOrGenerateId';
 import { getParseChildren } from '@pages/content/content-main/react/hook-functions/on-commit/utils/parseChildren';
 import { handleNodeInspect } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react/react-types';

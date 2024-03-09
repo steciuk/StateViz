@@ -6,6 +6,7 @@ import {
 	PostMessageType,
 	LibraryAttachedPostMessage,
 	UnmountNodesPostMessage,
+	MountRootsPostMessage,
 } from '@pages/content/shared/PostMessageBridge';
 import {
 	ChromeMessageSource,
@@ -21,7 +22,13 @@ import {
 	ChromeBridgeMessageType,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { Library } from '@src/shared/types/Library';
+import {
+	NodeId,
+	ParsedNode,
+	ParsedReactNode,
+	Root,
+} from '@src/shared/types/ParsedNode';
 
 export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
@@ -29,8 +36,8 @@ export class ContentIsolated {
 	private chromeBridge: ChromeBridgeListener;
 	private libraryAttached: boolean = false;
 
-	private currentFibers: Map<NodeId, ParsedFiber> = new Map();
-	private roots: ParsedFiber[] = [];
+	private currentNodes: Map<NodeId, ParsedNode> = new Map();
+	private roots: Root[] = [];
 
 	private constructor() {
 		this.postMessageBridge = PostMessageBridge.getInstance(
@@ -57,7 +64,7 @@ export class ContentIsolated {
 
 	private handleDevtoolsPanelConnection(): void {
 		console.log('connection from devtools panel established');
-		if (this.currentFibers.size === 0) return;
+		if (this.currentNodes.size === 0) return;
 		this.chromeBridge.send({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: this.roots,
@@ -70,6 +77,10 @@ export class ContentIsolated {
 			switch (message.type) {
 				case PostMessageType.LIBRARY_ATTACHED:
 					this.handleLibraryAttachedPostMessage(message);
+					break;
+
+				case PostMessageType.MOUNT_ROOTS:
+					this.handleMountRootsPostMessage(message);
 					break;
 
 				case PostMessageType.MOUNT_NODES:
@@ -131,10 +142,33 @@ export class ContentIsolated {
 		});
 	}
 
-	private addNodesRecursively(nodes: ParsedFiber[]) {
+	private addNodesRecursively(nodes: ParsedNode[]) {
 		nodes.forEach((node) => {
-			this.currentFibers.set(node.id, node);
+			this.currentNodes.set(node.id, node);
 			this.addNodesRecursively(node.children);
+		});
+	}
+
+	private handleMountRootsPostMessage(message: MountRootsPostMessage) {
+		console.log('MOUNT_ROOTS', message.content);
+
+		this.addNodesRecursively(
+			message.content.map((mountOperation) => mountOperation.root)
+		);
+
+		message.content.forEach((mountOperation) => {
+			// TODO: check if roots are not repeated
+			const inRootIndex = this.roots.findIndex(
+				(root) => root.root.id === mountOperation.root.id
+			);
+			if (inRootIndex !== -1) console.error('mounting existing root');
+
+			this.roots.push(mountOperation);
+		});
+
+		this.sendMessageThroughChromeBridgeIfConnected({
+			type: ChromeBridgeMessageType.FULL_SKELETON,
+			content: this.roots,
 		});
 	}
 
@@ -149,20 +183,15 @@ export class ContentIsolated {
 		message.content.forEach((mountOperation) => {
 			const { parentId, afterNode, node } = mountOperation;
 
-			if (parentId === null) {
-				this.roots.push(node);
-				areUpdates = true;
-				return;
-			}
-
-			const parent = this.currentFibers.get(parentId);
+			const parent = this.currentNodes.get(parentId);
 			if (!parent) {
 				console.error('parent not found');
 				return;
 			}
 
 			if (afterNode === null) {
-				parent.children.unshift(node);
+				// TODO: think of some type fix
+				parent.children.unshift(node as any);
 				areUpdates = true;
 				return;
 			}
@@ -176,7 +205,8 @@ export class ContentIsolated {
 			}
 
 			// Insert after the afterNode
-			parent.children.splice(afterNodeIndex + 1, 0, node);
+			// TODO: think of some type fix
+			parent.children.splice(afterNodeIndex + 1, 0, node as any);
 			areUpdates = true;
 		});
 
@@ -195,9 +225,11 @@ export class ContentIsolated {
 		const { parentId, id: nodeToUnmountId } = message.content;
 
 		if (parentId === null) {
-			this.roots = this.roots.filter((node) => node.id !== nodeToUnmountId);
+			this.roots = this.roots.filter(
+				(root) => root.root.id !== nodeToUnmountId
+			);
 		} else {
-			const parent = this.currentFibers.get(parentId);
+			const parent = this.currentNodes.get(parentId);
 
 			if (!parent) {
 				console.error('parent not found');
@@ -206,7 +238,7 @@ export class ContentIsolated {
 
 			parent.children = parent.children.filter(
 				(node) => node.id !== nodeToUnmountId
-			);
+			) as any; // TODO: think of some type fix
 		}
 
 		console.warn(this.roots);

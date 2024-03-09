@@ -11,7 +11,7 @@ import {
 	InspectData,
 	NodeInspectedData,
 } from '@src/shared/types/DataType';
-import { NodeId } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedNode';
 
 export const InspectWindow = (props: { className?: string }) => {
 	const selectedFiber = useContext(SelectedFiberContext);

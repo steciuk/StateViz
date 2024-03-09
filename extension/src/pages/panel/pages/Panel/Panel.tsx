@@ -9,11 +9,13 @@ import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { ParsedReactNode, Root } from '@src/shared/types/ParsedNode';
+import { Library } from '@src/shared/types/Library';
+import { SvelteRow } from './FiberRow/SvelteRow';
 
 export const Panel = () => {
 	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
-	const fiberRoot = useFiberRoot();
+	const roots = useRoots();
 
 	const deselectFiber = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -27,9 +29,15 @@ export const Panel = () => {
 			<Header />
 			<main className="flex h-0 flex-grow">
 				<div className="flex-grow overflow-auto" onClick={deselectFiber}>
-					{fiberRoot &&
-						fiberRoot.map((fiber) => (
-							<FiberRow key={fiber.id} fiber={fiber} indent={0} />
+					{roots &&
+						roots.map((root) => (
+              <div key={root.root.id}>
+              <p>{root.library}</p>
+              {root.library === Library.REACT
+              ? <FiberRow fiber={root.root} indent={0} /> 
+              : <SvelteRow fiber={root.root} indent={0}/> }
+							
+              </div>
 						))}
 				</div>
 				<InspectWindow className="w-48 flex-shrink-0 border-l-2 border-secondary" />
@@ -56,9 +64,9 @@ const useDeselectFiberOnPageReload = () => {
 	}, [updateSelectedFiber]);
 };
 
-const useFiberRoot = () => {
+const useRoots = () => {
 	const chromeBridge = useContext(ChromeBridgeContext);
-	const [fiberRoot, setFiberRoot] = useState<ParsedFiber[] | null>(null);
+	const [fiberRoot, setFiberRoot] = useState<Root[] | null>(null);
 
 	useEffect(() => {
 		const removeChromeMessageListener = chromeBridge.onMessage(

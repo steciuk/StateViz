@@ -1,4 +1,4 @@
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { ParsedReactNode } from '@src/shared/types/ParsedNode';
 
 import { OmitFromUnion, WithRequired } from '../utility-types';
 
@@ -40,7 +40,7 @@ export type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
 // content-isolated -> devtools script
 export type CommitRootChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.COMMIT_ROOT;
-	content: ParsedFiber;
+	content: ParsedReactNode;
 };
 
 // devtools script -> content-isolated on specific tab
@@ -88,3 +88,4 @@ export function onChromeMessage(callback: (message: ChromeMessage) => void) {
 		chrome.runtime.onMessage.removeListener(eventHandler);
 	};
 }
+

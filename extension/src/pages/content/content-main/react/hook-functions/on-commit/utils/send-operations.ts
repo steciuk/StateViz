@@ -1,5 +1,6 @@
 import {
 	MountNodesOperations,
+	MountRootsOperations,
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
@@ -8,7 +9,18 @@ import {
 
 const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
 
-export function sendMountOperations(operations: MountNodesOperations): void {
+export function sendMountRootsOperations(
+	operations: MountRootsOperations
+): void {
+	postMessageBridge.send({
+		type: PostMessageType.MOUNT_ROOTS,
+		content: operations,
+	});
+}
+
+export function sendMountNodesOperations(
+	operations: MountNodesOperations
+): void {
 	postMessageBridge.send({
 		type: PostMessageType.MOUNT_NODES,
 		content: operations,
@@ -21,3 +33,4 @@ export function sendUnmountOperations(operations: UnmountNodesOperation): void {
 		content: operations,
 	});
 }
+

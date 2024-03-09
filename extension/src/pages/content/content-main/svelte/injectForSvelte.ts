@@ -1,14 +1,13 @@
-import {
-	SvelteBlockType,
-	SvelteEventMap,
-} from '@pages/content/content-main/svelte/svelte-types';
+import { SvelteEventMap } from '@pages/content/content-main/svelte/svelte-types';
+import { SvelteBlockType } from '@src/shared/types/svelte-types';
 import {
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { getOrGenerateNodeId } from '@pages/content/content-main/svelte/getOrGenerateNodeId';
-import { NodeId } from '@src/shared/types/ParsedFiber';
+import { getOrGenerateNodeId } from '../utils/getOrGenerateId';
+import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
+import { Library } from '@src/shared/types/Library';
 
 declare global {
 	interface Window {
@@ -58,26 +57,8 @@ export function injectForSvelte() {
 	});
 }
 
-type SvelteNode = {
-	id: NodeId;
-	name: string;
-	type: SvelteBlockType;
-	children: SvelteNode[];
-};
-
-type SvelteNodeData = {
-	pathFromRoot: NodeId[];
-	parentId: NodeId | null;
-	node: SvelteNode;
-};
-
-type SendNodeData = {
-	pathFromRoot: NodeId[];
-	afterNode: NodeId | null;
-	node: SvelteNode;
-};
-
-const nodeMap = new Map<NodeId, SvelteNodeData>();
+// TODO: type
+const nodeMap = new Map<NodeId, any>();
 // let currentBlock: unknown = null;
 
 function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
@@ -85,9 +66,8 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 
 	function recursiveInsert(
 		node: Node,
-		parentId: NodeId | null,
-		pathFromRoot: NodeId[]
-	): SvelteNode {
+		parentId: NodeId | null
+	): ParsedSvelteNode {
 		const id = getOrGenerateNodeId(node);
 		const type =
 			node.nodeType === Node.ELEMENT_NODE
@@ -96,17 +76,14 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 				  ? SvelteBlockType.text
 				  : SvelteBlockType.anchor;
 
-		const block: SvelteNode = {
+		const block: ParsedSvelteNode = {
 			id,
 			name: node.nodeName.toLowerCase(),
 			type,
-			children: [...node.childNodes].map((child) =>
-				recursiveInsert(child, id, [...pathFromRoot, id])
-			),
+			children: [...node.childNodes].map((child) => recursiveInsert(child, id)),
 		};
 
 		nodeMap.set(id, {
-			pathFromRoot,
 			parentId,
 			node: block,
 		});
@@ -116,62 +93,22 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 
 	// <div id="app"> is the target of root insert and it is not being added to the nodeMap
 	const parentId = getOrGenerateNodeId(target);
-	const parentNode = nodeMap.get(parentId);
-	const pathFromRoot = parentNode ? [...parentNode.pathFromRoot, parentId] : [];
-	const block = recursiveInsert(node, parentId, pathFromRoot);
+	const block = recursiveInsert(node, parentId);
 	const afterNode = anchor ? getOrGenerateNodeId(anchor) : null;
 
-	send({
-		pathFromRoot,
-		afterNode,
-		node: block,
-	});
-}
+	const parentNode = nodeMap.get(parentId);
 
-const roots: SvelteNode[] = [];
-function send(data: SendNodeData) {
-	console.log('send', data);
-	if (data.pathFromRoot.length === 0) {
-		roots.push(data.node);
+	if (!parentNode) {
+		postMessageBridge.send({
+			type: PostMessageType.MOUNT_ROOTS,
+			content: [{ library: Library.SVELTE, root: block }],
+		});
 	} else {
-		const [rootId, ...restOfPath] = data.pathFromRoot;
-		const root = roots.find((root) => root.id === rootId);
-
-		if (!root) {
-			console.error('root not found');
-			console.log(rootId);
-			return;
-		}
-
-		// traverse the tree to find the parent node
-		let current = root;
-		for (const nodeId of restOfPath) {
-			const child = current.children.find((child) => child.id === nodeId);
-			if (!child) {
-				console.error('child not found');
-				return;
-			}
-
-			current = child;
-		}
-
-		if (data.afterNode === null) {
-			current.children.unshift(data.node);
-		} else {
-			const afterNodeIndex = current.children.findIndex(
-				(child) => child.id === data.afterNode
-			);
-			if (afterNodeIndex === -1) {
-				console.error('afterNode not found');
-				return;
-			}
-
-			// Insert after the afterNode
-			current.children.splice(afterNodeIndex + 1, 0, data.node);
-		}
+		postMessageBridge.send({
+			type: PostMessageType.MOUNT_NODES,
+			content: [{ parentId, afterNode, node: block }],
+		});
 	}
-
-	console.warn(roots);
 }
 
 function inject() {

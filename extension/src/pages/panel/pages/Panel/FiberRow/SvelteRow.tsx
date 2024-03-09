@@ -9,10 +9,10 @@ import {
 	SelectedFiberContext,
 	SelectedFiberUpdateContext,
 } from '@pages/panel/contexts/SelectedFiberContext';
-import { ParsedReactNode } from '@src/shared/types/ParsedNode';
+import { ParsedReactNode, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 
-export const FiberRow = (props: {
-	fiber: ParsedReactNode;
+export const SvelteRow = (props: {
+	fiber: ParsedSvelteNode;
 	indent: number;
 	handleReportUnfilteredChildren?: () => void;
 }) => {
@@ -31,33 +31,33 @@ export const FiberRow = (props: {
 		}
 	};
 
-	const handleRowClick = (e: MouseEvent<HTMLElement>) => {
-		e.stopPropagation();
-		updateSelectedFiber(fiber);
-	};
+	// const handleRowClick = (e: MouseEvent<HTMLElement>) => {
+	// 	e.stopPropagation();
+	// 	updateSelectedFiber(fiber);
+	// };
 
-	const shouldRender = filterSettings[fiber.tag] ?? true;
-	if (shouldRender) {
-		handleReportUnfilteredChildren?.();
-	}
+	// const shouldRender = filterSettings[fiber.tag] ?? true;
+	// if (shouldRender) {
+	// 	handleReportUnfilteredChildren?.();
+	// }
 
 	// TODO: think if there is a better way to do this
 	useEffect(() => {
 		setHasUnfilteredChildren(false);
 	}, [filterSettings]);
 
-	const displayText = fiber.name + ' - ' + fiber.tag + ' - ' + fiber.id;
+	const displayText = fiber.name + ' - ' + fiber.type + ' - ' + fiber.id;
 
 	const indentSize = 12 * indent;
 
-	if (shouldRender) {
+	// if (shouldRender) {
 		return (
 			<>
 				<div
 					className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
 						'bg-secondary': selectedFiber?.id === fiber.id,
 					})}
-					onClick={handleRowClick}
+					// onClick={handleRowClick}
 				>
 					<div className={`ml-[${indentSize}px]`}>
 						<ExpandArrow
@@ -78,7 +78,7 @@ export const FiberRow = (props: {
 							)}
 						/>
 						{fiber.children.map((child) => (
-							<FiberRow
+							<SvelteRow
 								key={child.id}
 								fiber={child}
 								indent={indent + 1}
@@ -89,18 +89,18 @@ export const FiberRow = (props: {
 				)}
 			</>
 		);
-	} else {
-		return (
-			<>
-				{fiber.children.map((child) => (
-					<FiberRow
-						key={child.id}
-						fiber={child}
-						indent={indent}
-						handleReportUnfilteredChildren={reportUnfilteredChildren}
-					/>
-				))}
-			</>
-		);
-	}
+	// } else {
+	// 	return (
+	// 		<>
+	// 			{fiber.children.map((child) => (
+	// 				<FiberRow
+	// 					key={child.id}
+	// 					fiber={child}
+	// 					indent={indent}
+	// 					handleReportUnfilteredChildren={reportUnfilteredChildren}
+	// 				/>
+	// 			))}
+	// 		</>
+	// 	);
+	// }
 };

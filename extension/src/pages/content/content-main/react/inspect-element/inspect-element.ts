@@ -1,5 +1,5 @@
 import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
-import { getOrGenerateFiberId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateFiberId';
+import { getOrGenerateFiberId } from '../../utils/getOrGenerateId';
 import { typeData } from '@pages/content/content-main/react/inspect-element/getDataType';
 import {
 	Fiber,
@@ -17,7 +17,7 @@ import {
 	InspectData,
 	NodeInspectedData,
 } from '@src/shared/types/DataType';
-import { NodeId } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedNode';
 
 const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
 

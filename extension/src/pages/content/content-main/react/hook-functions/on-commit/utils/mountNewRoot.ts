@@ -1,11 +1,12 @@
 import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
 import { getFiberName } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getFiberName';
-import { getOrGenerateFiberId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateFiberId';
+import { getOrGenerateFiberId } from '@pages/content/content-main/utils/getOrGenerateId';
 import { getParseChildren } from '@pages/content/content-main/react/hook-functions/on-commit/utils/parseChildren';
-import { sendMountOperations } from '@pages/content/content-main/react/hook-functions/on-commit/utils/send-operations';
+import { sendMountRootsOperations } from '@pages/content/content-main/react/hook-functions/on-commit/utils/send-operations';
 import { handleNodeInspect } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react/react-types';
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { Library } from '@src/shared/types/Library';
+import { ParsedReactNode } from '@src/shared/types/ParsedNode';
 
 export function mountNewRoot(root: Fiber): void {
 	const rootId = getOrGenerateFiberId(root);
@@ -16,18 +17,17 @@ export function mountNewRoot(root: Fiber): void {
 		fiber: root,
 	});
 
-	const node: ParsedFiber = {
+	const node: ParsedReactNode = {
 		tag: root.tag,
 		name: getFiberName(root),
 		children: getParseChildren(root),
 		id: rootId,
 	};
 
-	sendMountOperations([
+	sendMountRootsOperations([
 		{
-			parentId: null,
-			afterNode: null,
-			node: node,
+			library: Library.REACT,
+			root: node,
 		},
 	]);
 }

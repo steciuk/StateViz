@@ -1,6 +1,6 @@
 import { getNodesUpdates } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getNodesUpdates';
 import { mountNewRoot } from '@pages/content/content-main/react/hook-functions/on-commit/utils/mountNewRoot';
-import { sendMountOperations } from '@pages/content/content-main/react/hook-functions/on-commit/utils/send-operations';
+import { sendMountNodesOperations } from '@pages/content/content-main/react/hook-functions/on-commit/utils/send-operations';
 import { unmountFiber } from '@pages/content/content-main/react/hook-functions/on-commit/utils/unmountFiber';
 import { sendInspectData } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import {
@@ -54,6 +54,6 @@ export function onCommitFiberRoot(
 function updateRoot(current: Fiber, alternate: Fiber): void {
 	const operations = getNodesUpdates(current, alternate);
 	if (operations.length === 0) return;
-	sendMountOperations(operations);
+	sendMountNodesOperations(operations);
 }
 

@@ -1,9 +1,28 @@
-import { Fiber } from '@pages/content/content-main/react/react-types';
-import { NodeId } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedNode';
+import { SvelteComponentFragment } from '../svelte/svelte-types';
 
-let fiberIdCounter = 0;
+import { Fiber } from '../react/react-types';
 
+let idCounter = 0;
+
+const NODE_TO_ID_MAP = new Map<SvelteComponentFragment | Node, NodeId>();
 const FIBER_TO_ID_MAP = new Map<Fiber, NodeId>();
+
+export function getOrGenerateNodeId(
+	node: SvelteComponentFragment | Node
+): NodeId {
+	const nodeId = NODE_TO_ID_MAP.get(node);
+
+	if (nodeId !== undefined) {
+		return nodeId;
+	}
+
+	const id = idCounter++;
+	console.log('new element', id, node);
+	NODE_TO_ID_MAP.set(node, id);
+
+	return id;
+}
 
 export function getOrGenerateFiberId(fiber: Fiber): NodeId {
 	const alternate = fiber.alternate;
@@ -26,7 +45,7 @@ export function getOrGenerateFiberId(fiber: Fiber): NodeId {
 		}
 	}
 
-	const id = fiberIdCounter++;
+	const id = idCounter++;
 	FIBER_TO_ID_MAP.set(fiber, id);
 
 	if (alternate) {

@@ -1,5 +1,5 @@
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId, ParsedNode, Root } from '@src/shared/types/ParsedNode';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
 export enum PostMessageSource {
@@ -11,6 +11,7 @@ export enum PostMessageType {
 	LIBRARY_ATTACHED = 'LIBRARY_ATTACHED',
 	UNMOUNT_NODES = 'UNMOUNT_NODES',
 	MOUNT_NODES = 'MOUNT_NODES',
+	MOUNT_ROOTS = 'MOUNT_ROOTS',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
 	INSPECTED_DATA = 'INSPECTED_DATA',
 }
@@ -20,16 +21,23 @@ export type UnmountNodesOperation = {
 	id: NodeId;
 };
 export type MountNodesOperations = Array<{
-	parentId: NodeId | null;
+	parentId: NodeId;
 	afterNode: NodeId | null;
-	node: ParsedFiber;
+	node: ParsedNode;
 }>;
+export type MountRootsOperations = Root[];
 
 // MESSAGE TYPES
 export type LibraryAttachedPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.LIBRARY_ATTACHED;
 	content?: undefined;
+};
+
+export type MountRootsPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.MOUNT_ROOTS;
+	content: MountRootsOperations;
 };
 
 export type MountNodesPostMessage = {
@@ -58,6 +66,7 @@ export type InspectElementPostMessage = {
 
 export type PostMessage =
 	| LibraryAttachedPostMessage
+	| MountRootsPostMessage
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage

@@ -1,9 +1,9 @@
 import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
-import { getOrGenerateFiberId } from '@pages/content/content-main/react/hook-functions/on-commit/utils/getOrGenerateFiberId';
+import { getOrGenerateFiberId } from '@pages/content/content-main/utils/getOrGenerateId';
 import { sendUnmountOperations } from '@pages/content/content-main/react/hook-functions/on-commit/utils/send-operations';
 import { INSPECTED_DATA_MAP } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { Fiber } from '@pages/content/content-main/react/react-types';
-import { NodeId } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedNode';
 
 export function unmountFiber(fiber: Fiber): void {
 	const id = getOrGenerateFiberId(fiber);
