@@ -57,9 +57,16 @@ export function injectForSvelte() {
 	});
 }
 
-// TODO: type
-const nodeMap = new Map<NodeId, any>();
+const EXISTING_NODES = new Map<NodeId, { parentId: NodeId | null }>();
+// const COMPONENTS_TO_CONSUME = new Map<NodeId, any>();
 // let currentBlock: unknown = null;
+
+function handleSvelteRegisterComponent(
+	detail: SvelteEventMap['SvelteRegisterComponent']
+) {
+	const { component, tagName } = detail;
+	const id = getOrGenerateNodeId(component.$$.fragment);
+}
 
 function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 	const { target, node, anchor } = detail;
@@ -83,9 +90,8 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 			children: [...node.childNodes].map((child) => recursiveInsert(child, id)),
 		};
 
-		nodeMap.set(id, {
+		EXISTING_NODES.set(id, {
 			parentId,
-			node: block,
 		});
 
 		return block;
@@ -96,9 +102,7 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 	const block = recursiveInsert(node, parentId);
 	const afterNode = anchor ? getOrGenerateNodeId(anchor) : null;
 
-	const parentNode = nodeMap.get(parentId);
-
-	if (!parentNode) {
+	if (!EXISTING_NODES.has(parentId)) {
 		postMessageBridge.send({
 			type: PostMessageType.MOUNT_ROOTS,
 			content: [{ library: Library.SVELTE, root: block }],
@@ -111,18 +115,36 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 	}
 }
 
+function handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
+	const { node } = detail;
+	const id = getOrGenerateNodeId(node);
+	const nodeInfo = EXISTING_NODES.get(id);
+
+	if (!nodeInfo) {
+		console.error('node not found');
+		return;
+	}
+
+	EXISTING_NODES.delete(id);
+
+	postMessageBridge.send({
+		type: PostMessageType.UNMOUNT_NODES,
+		content: {
+			parentId: nodeInfo.parentId,
+			id,
+		},
+	});
+}
+
 function inject() {
 	const listenerRemovers: (() => void)[] = [];
 
-	// listenerRemovers.push(
-	// 	addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
-	// 		console.log('SvelteRegisterComponent', detail);
-	// 		const { component } = detail;
-
-	// 		const id = getOrGenerateNodeId(component);
-	// 		console.log(id);
-	// 	})
-	// );
+	listenerRemovers.push(
+		addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
+			console.log('SvelteRegisterComponent', detail);
+			handleSvelteRegisterComponent(detail);
+		})
+	);
 
 	// listenerRemovers.push(
 	// 	addSvelteListener('SvelteRegisterBlock', (event) => {
@@ -137,11 +159,12 @@ function inject() {
 		})
 	);
 
-	// listenerRemovers.push(
-	// 	addSvelteListener('SvelteDOMRemove', (event) => {
-	// 		console.log('SvelteDOMRemove', event.detail);
-	// 	})
-	// );
+	listenerRemovers.push(
+		addSvelteListener('SvelteDOMRemove', ({ detail }) => {
+			console.log('SvelteDOMRemove', detail);
+			handleSvelteDOMRemove(detail);
+		})
+	);
 
 	// listenerRemovers.push(
 	// 	addSvelteListener('SvelteDOMAddEventListener', (event) => {

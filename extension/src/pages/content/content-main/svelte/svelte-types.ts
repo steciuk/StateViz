@@ -5,9 +5,7 @@ export type SvelteDevToolsHook = {
 };
 
 export interface SvelteEventMap {
-	SvelteRegisterComponent: {
-		component: SvelteComponentDetail;
-	};
+	SvelteRegisterComponent: SvelteComponentDetail;
 	SvelteRegisterBlock: {
 		detail: unknown;
 	};
@@ -17,7 +15,7 @@ export interface SvelteEventMap {
 		anchor?: Node;
 	};
 	SvelteDOMRemove: {
-		detail: unknown;
+		node: Node;
 	};
 	SvelteDOMAddEventListener: {
 		detail: unknown;

@@ -241,8 +241,6 @@ export class ContentIsolated {
 			) as any; // TODO: think of some type fix
 		}
 
-		console.warn(this.roots);
-
 		this.sendMessageThroughChromeBridgeIfConnected({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: this.roots,

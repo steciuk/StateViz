@@ -38,7 +38,7 @@ export const SvelteRow = (props: {
 
 	// const shouldRender = filterSettings[fiber.tag] ?? true;
 	// if (shouldRender) {
-	// 	handleReportUnfilteredChildren?.();
+		handleReportUnfilteredChildren?.();
 	// }
 
 	// TODO: think if there is a better way to do this
