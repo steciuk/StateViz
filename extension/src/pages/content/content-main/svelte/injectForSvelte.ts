@@ -8,7 +8,7 @@ import {
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
 import { getOrGenerateNodeId } from '@pages/content/content-main/svelte/getOrGenerateNodeId';
-import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { NodeId } from '@src/shared/types/ParsedFiber';
 
 declare global {
 	interface Window {
@@ -156,7 +156,7 @@ function send(data: SendNodeData) {
 		}
 
 		if (data.afterNode === null) {
-			current.children.push(data.node);
+			current.children.unshift(data.node);
 		} else {
 			const afterNodeIndex = current.children.findIndex(
 				(child) => child.id === data.afterNode

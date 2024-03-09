@@ -3,6 +3,6 @@ import { NodeId } from '@src/shared/types/ParsedFiber';
 
 export const EXISTING_FIBERS_DATA = new Map<
 	NodeId,
-	{ pathFromRoot: NodeId[]; parentId: NodeId | null; fiber: Fiber }
+	{ parentId: NodeId | null; fiber: Fiber }
 >();
 

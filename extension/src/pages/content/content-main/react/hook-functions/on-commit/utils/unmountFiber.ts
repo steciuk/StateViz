@@ -24,7 +24,10 @@ export function unmountFiber(fiber: Fiber): void {
 	}
 
 	if (shouldSendUnmount) {
-		sendUnmountOperations(nodeData.pathFromRoot);
+		sendUnmountOperations({
+			parentId: nodeData.parentId,
+			id,
+		});
 	}
 
 	EXISTING_FIBERS_DATA.delete(id);

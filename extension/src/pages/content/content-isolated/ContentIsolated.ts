@@ -28,7 +28,9 @@ export class ContentIsolated {
 	private postMessageBridge: PostMessageBridge;
 	private chromeBridge: ChromeBridgeListener;
 	private libraryAttached: boolean = false;
+
 	private currentFibers: Map<NodeId, ParsedFiber> = new Map();
+	private roots: ParsedFiber[] = [];
 
 	private constructor() {
 		this.postMessageBridge = PostMessageBridge.getInstance(
@@ -58,7 +60,7 @@ export class ContentIsolated {
 		if (this.currentFibers.size === 0) return;
 		this.chromeBridge.send({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
-			content: Array.from(this.currentFibers.values()),
+			content: this.roots,
 		});
 	}
 
@@ -67,7 +69,7 @@ export class ContentIsolated {
 		this.postMessageBridge.onMessage((message) => {
 			switch (message.type) {
 				case PostMessageType.LIBRARY_ATTACHED:
-					this.handleReactAttachedPostMessage(message);
+					this.handleLibraryAttachedPostMessage(message);
 					break;
 
 				case PostMessageType.MOUNT_NODES:
@@ -116,10 +118,12 @@ export class ContentIsolated {
 	}
 
 	// POST MESSAGE BRIDGE MESSAGES
-	private handleReactAttachedPostMessage(_message: LibraryAttachedPostMessage) {
+	private handleLibraryAttachedPostMessage(
+		_message: LibraryAttachedPostMessage
+	) {
 		this.libraryAttached = true;
 
-		// Send message to devtools panel that react is attached,
+		// Send message to devtools panel that library is attached,
 		// devtools panel potentially opened before
 		sendChromeMessage({
 			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
@@ -127,48 +131,44 @@ export class ContentIsolated {
 		});
 	}
 
+	private addNodesRecursively(nodes: ParsedFiber[]) {
+		nodes.forEach((node) => {
+			this.currentFibers.set(node.id, node);
+			this.addNodesRecursively(node.children);
+		});
+	}
+
 	private handleMountNodesPostMessage(message: MountNodesPostMessage) {
 		console.log('MOUNT_NODES', message.content);
+
+		this.addNodesRecursively(
+			message.content.map((mountOperation) => mountOperation.node)
+		);
 		let areUpdates = false;
 
-		message.content.forEach((mountNode) => {
-			const pathFromRoot = mountNode.pathFromRoot;
+		message.content.forEach((mountOperation) => {
+			const { parentId, afterNode, node } = mountOperation;
 
-			if (pathFromRoot.length === 0) {
-				// no pathFromRoot means it's a root node
-				this.currentFibers.set(mountNode.node.id, mountNode.node);
+			if (parentId === null) {
+				this.roots.push(node);
 				areUpdates = true;
 				return;
 			}
 
-			const [rootId, ...restOfPath] = pathFromRoot;
-			const root = this.currentFibers.get(rootId);
-			if (!root) {
-				console.error('root not found');
+			const parent = this.currentFibers.get(parentId);
+			if (!parent) {
+				console.error('parent not found');
 				return;
 			}
 
-			// traverse the tree to find the parent node
-			let current = root;
-			for (const nodeId of restOfPath) {
-				const child = current.children.find((child) => child.id === nodeId);
-				if (!child) {
-					console.error('child not found');
-					return;
-				}
-
-				current = child;
-			}
-
-			if (mountNode.afterNode === null) {
-				// Insert at the beginning of the children array
-				current.children.unshift(mountNode.node);
+			if (afterNode === null) {
+				parent.children.unshift(node);
 				areUpdates = true;
 				return;
 			}
 
-			const afterNodeIndex = current.children.findIndex(
-				(child) => child.id === mountNode.afterNode
+			const afterNodeIndex = parent.children.findIndex(
+				(child) => child.id === afterNode
 			);
 			if (afterNodeIndex === -1) {
 				console.error('afterNode not found');
@@ -176,7 +176,7 @@ export class ContentIsolated {
 			}
 
 			// Insert after the afterNode
-			current.children.splice(afterNodeIndex + 1, 0, mountNode.node);
+			parent.children.splice(afterNodeIndex + 1, 0, node);
 			areUpdates = true;
 		});
 
@@ -185,58 +185,35 @@ export class ContentIsolated {
 		// TODO: maybe consider only sending info for updated roots?
 		this.sendMessageThroughChromeBridgeIfConnected({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
-			content: Array.from(this.currentFibers.values()),
+			content: this.roots,
 		});
 	}
 
 	private handleUnmountNodesPostMessage(message: UnmountNodesPostMessage) {
 		console.log('UNMOUNT_NODES', message.content);
 
-		const [rootId, ...restOfPath] = message.content;
-		if (restOfPath.length === 0) {
-			this.currentFibers.delete(rootId);
+		const { parentId, id: nodeToUnmountId } = message.content;
+
+		if (parentId === null) {
+			this.roots = this.roots.filter((node) => node.id !== nodeToUnmountId);
 		} else {
-			const root = this.currentFibers.get(rootId);
-			if (!root) {
-				console.error('root not found');
+			const parent = this.currentFibers.get(parentId);
+
+			if (!parent) {
+				console.error('parent not found');
 				return;
 			}
 
-			const nodeToUnmount = restOfPath.pop();
-			if (!nodeToUnmount) {
-				console.error('node to unmount not found');
-				return;
-			}
-
-			// traverse the tree to find the parent node
-			let current = root;
-			restOfPath.forEach((nodeOnPathId: NodeId) => {
-				const child = current.children.find(
-					(child) => child.id === nodeOnPathId
-				);
-				if (!child) {
-					console.error('node on path not found');
-					return;
-				}
-
-				current = child;
-			});
-
-			const childIndex = current.children.findIndex(
-				(child) => child.id === nodeToUnmount
+			parent.children = parent.children.filter(
+				(node) => node.id !== nodeToUnmountId
 			);
-			if (childIndex === -1) {
-				console.error('node not found');
-				return;
-			}
-
-			// remove the node from the parent's children array
-			current.children.splice(childIndex, 1);
 		}
+
+		console.warn(this.roots);
 
 		this.sendMessageThroughChromeBridgeIfConnected({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
-			content: Array.from(this.currentFibers.values()),
+			content: this.roots,
 		});
 	}
 

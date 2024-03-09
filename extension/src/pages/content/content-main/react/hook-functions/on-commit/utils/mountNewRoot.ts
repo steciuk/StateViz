@@ -12,7 +12,6 @@ export function mountNewRoot(root: Fiber): void {
 
 	handleNodeInspect(root);
 	EXISTING_FIBERS_DATA.set(rootId, {
-		pathFromRoot: [rootId],
 		parentId: null,
 		fiber: root,
 	});
@@ -20,13 +19,13 @@ export function mountNewRoot(root: Fiber): void {
 	const node: ParsedFiber = {
 		tag: root.tag,
 		name: getFiberName(root),
-		children: getParseChildren(root, [rootId]),
+		children: getParseChildren(root),
 		id: rootId,
 	};
 
 	sendMountOperations([
 		{
-			pathFromRoot: [],
+			parentId: null,
 			afterNode: null,
 			node: node,
 		},

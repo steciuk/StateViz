@@ -15,9 +15,12 @@ export enum PostMessageType {
 	INSPECTED_DATA = 'INSPECTED_DATA',
 }
 
-export type UnmountNodesOperation = NodeId[];
+export type UnmountNodesOperation = {
+	parentId: NodeId | null;
+	id: NodeId;
+};
 export type MountNodesOperations = Array<{
-	pathFromRoot: NodeId[];
+	parentId: NodeId | null;
 	afterNode: NodeId | null;
 	node: ParsedFiber;
 }>;
