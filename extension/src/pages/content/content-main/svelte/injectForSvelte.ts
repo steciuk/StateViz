@@ -69,8 +69,8 @@ type ExistingNodeData = {
 type PendingComponentData = { name: string };
 const EXISTING_NODES = new Map<NodeId, ExistingNodeData>();
 const PENDING_COMPONENTS = new Map<NodeId, PendingComponentData>();
-const EACHES = new Map<NodeId, NodeId>();
-let currentBlockId: NodeId | null = null;
+const EACHES = new Map<NodeId, { id: NodeId; count: number }>();
+let CURRENT_BLOCK_ID: NodeId | null = null;
 
 function handleSvelteRegisterComponent(
 	detail: SvelteEventMap['SvelteRegisterComponent']
@@ -91,19 +91,15 @@ function handleSvelteRegisterBlock(
 ) {
 	const { type, block, ...rest } = detail;
 
-	if (type !== SvelteBlockType.component) {
-		return; // TODO: maybe support other block types
-	}
-
-	const id = getOrGenerateNodeId(block);
+	let id = getOrGenerateNodeId(block);
 
 	if (block.m) {
 		const original = block.m;
 
 		// patch mount function
 		block.m = (target, anchor) => {
-			console.warn(currentBlockId);
-			const previousBlockId = currentBlockId;
+			console.warn(CURRENT_BLOCK_ID);
+			const previousBlockId = CURRENT_BLOCK_ID;
 
 			const node: ParsedSvelteNode = {
 				type,
@@ -112,20 +108,47 @@ function handleSvelteRegisterBlock(
 				id,
 			};
 
-			const component = PENDING_COMPONENTS.get(id);
-			if (component) {
-				node.name = component.name;
-				PENDING_COMPONENTS.delete(id);
-			} else {
-				console.error('mounting unregistered component', detail);
-				node.name = 'Unknown';
+			switch (type) {
+				case 'then':
+				case 'catch':
+					console.error('mounting then/catch block', detail);
+					break;
+				case 'slot':
+					node.type = SvelteBlockType.slot;
+					break;
+				case 'component': {
+					const component = PENDING_COMPONENTS.get(id);
+					if (component) {
+						node.name = component.name;
+						PENDING_COMPONENTS.delete(id);
+					} else {
+						console.error('mounting unregistered component', detail);
+						node.name = 'Unknown';
+					}
+					break;
+				}
 			}
 
-			mount({ ...node, containingBlockId: previousBlockId }, target, anchor);
+			if (type === 'each') {
+				if (previousBlockId === null) {
+					console.error('each without parent block', detail);
+				} else {
+					let each = EACHES.get(previousBlockId);
+					if (each === undefined) {
+						each = { id, count: 0 };
+						mount(node, target, previousBlockId, anchor);
+					}
 
-			currentBlockId = id;
+					id = each.id;
+					EACHES.set(previousBlockId, { id: each.id, count: each.count + 1 });
+				}
+			} else {
+				mount(node, target, previousBlockId, anchor);
+			}
+
+			CURRENT_BLOCK_ID = id;
 			original(target, anchor);
-			currentBlockId = previousBlockId;
+			CURRENT_BLOCK_ID = previousBlockId;
 		};
 	}
 
@@ -134,15 +157,11 @@ function handleSvelteRegisterBlock(
 
 		// patch patch function
 		block.p = (changed, ctx) => {
-			if (EXISTING_NODES.has(id)) {
-				const parent = currentBlockId;
+			const parent = CURRENT_BLOCK_ID;
 
-				currentBlockId = id;
-				original(changed, ctx);
-				currentBlockId = parent;
-			} else {
-				original(changed, ctx);
-			}
+			CURRENT_BLOCK_ID = id;
+			original(changed, ctx);
+			CURRENT_BLOCK_ID = parent;
 		};
 	}
 
@@ -151,7 +170,25 @@ function handleSvelteRegisterBlock(
 
 		block.d = (detaching) => {
 			console.error('detaching', detail);
-			unmount(id);
+			if (type === 'each') {
+				console.log('detaching each', detail, CURRENT_BLOCK_ID, id);
+				if (CURRENT_BLOCK_ID === null) {
+					console.error('each without parent block', detail);
+					return;
+				}
+
+				let counter = EACHES.get(CURRENT_BLOCK_ID)?.count ?? 0;
+				counter -= 1;
+
+				if (counter <= 0) {
+					EACHES.delete(CURRENT_BLOCK_ID);
+					unmount(id);
+				} else {
+					EACHES.set(CURRENT_BLOCK_ID, { id, count: counter });
+				}
+			} else {
+				unmount(id);
+			}
 			original(detaching);
 		};
 	}
@@ -160,10 +197,7 @@ function handleSvelteRegisterBlock(
 function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 	const { target, node, anchor } = detail;
 
-	function recursiveInsert(
-		node: Node,
-		parentId: NodeId | null
-	): ParsedSvelteNode {
+	function recursiveInsert(node: Node): ParsedSvelteNode {
 		const id = getOrGenerateNodeId(node);
 		const type =
 			node.nodeType === Node.ELEMENT_NODE
@@ -176,17 +210,16 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 			id,
 			name: node.nodeName.toLowerCase(),
 			type,
-			children: [...node.childNodes].map((child) => recursiveInsert(child, id)),
+			children: [...node.childNodes].map((child) => recursiveInsert(child)),
 		};
 
 		return block;
 	}
 
 	// <div id="app"> is the target of root insert and it is not being added to the nodeMap
-	const parentId = getOrGenerateNodeId(target);
-	const block = recursiveInsert(node, parentId);
+	const block = recursiveInsert(node);
 
-	mount({ ...block, containingBlockId: currentBlockId }, target, anchor);
+	mount(block, target, CURRENT_BLOCK_ID, anchor);
 }
 
 function handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
@@ -231,11 +264,11 @@ function unmount(id: NodeId) {
 }
 
 function mount(
-	node: ParsedSvelteNode & { containingBlockId: NodeId | null },
+	node: ParsedSvelteNode,
 	target: Node,
+	containingBlockId: NodeId | null,
 	anchor?: Node
 ) {
-	const { containingBlockId } = node;
 	let targetId = getOrGenerateNodeId(target);
 	const targetNode = EXISTING_NODES.get(targetId);
 
