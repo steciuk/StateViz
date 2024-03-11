@@ -6,9 +6,7 @@ export type SvelteDevToolsHook = {
 
 export interface SvelteEventMap {
 	SvelteRegisterComponent: SvelteComponentDetail;
-	SvelteRegisterBlock: {
-		detail: unknown;
-	};
+	SvelteRegisterBlock: SvelteBlockDetail;
 	SvelteDOMInsert: {
 		target: Node;
 		node: Node;
@@ -67,7 +65,7 @@ type SvelteComponentDetail = {
 	};
 };
 
-type SvelteBlockDetail = {
+export type SvelteBlockDetail = {
 	id: number;
 	source: string;
 	type: SvelteBlockType;

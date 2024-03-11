@@ -185,7 +185,7 @@ export class ContentIsolated {
 
 			const parent = this.currentNodes.get(parentId);
 			if (!parent) {
-				console.error('parent not found');
+				console.error('parent not found', parentId);
 				return;
 			}
 
@@ -219,10 +219,24 @@ export class ContentIsolated {
 		});
 	}
 
+	private removeNodesRecursively(nodeId: NodeId) {
+		const node = this.currentNodes.get(nodeId);
+
+		if (!node) {
+			console.error('Could not find the node to remove');
+			return;
+		}
+
+		this.currentNodes.delete(node.id);
+		node.children.forEach((node) => this.removeNodesRecursively(node.id));
+	}
+
 	private handleUnmountNodesPostMessage(message: UnmountNodesPostMessage) {
 		console.log('UNMOUNT_NODES', message.content);
 
 		const { parentId, id: nodeToUnmountId } = message.content;
+
+		this.removeNodesRecursively(nodeToUnmountId);
 
 		if (parentId === null) {
 			this.roots = this.roots.filter(
