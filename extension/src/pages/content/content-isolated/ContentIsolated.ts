@@ -181,7 +181,7 @@ export class ContentIsolated {
 		let areUpdates = false;
 
 		message.content.forEach((mountOperation) => {
-			const { parentId, afterNode, node } = mountOperation;
+			const { parentId, anchor, node } = mountOperation;
 
 			const parent = this.currentNodes.get(parentId);
 			if (!parent) {
@@ -189,24 +189,27 @@ export class ContentIsolated {
 				return;
 			}
 
-			if (afterNode === null) {
+			if (anchor.id === null) {
 				// TODO: think of some type fix
-				parent.children.unshift(node as any);
+				if (anchor.type === 'after') parent.children.unshift(node as any);
+				else parent.children.push(node as any);
+
 				areUpdates = true;
 				return;
 			}
 
-			const afterNodeIndex = parent.children.findIndex(
-				(child) => child.id === afterNode
+			const anchorNodeIndex = parent.children.findIndex(
+				(child) => child.id === anchor.id
 			);
-			if (afterNodeIndex === -1) {
-				console.error('afterNode not found');
+			if (anchorNodeIndex === -1) {
+				console.error('anchorNode not found');
 				return;
 			}
 
-			// Insert after the afterNode
 			// TODO: think of some type fix
-			parent.children.splice(afterNodeIndex + 1, 0, node as any);
+			const spliceIndex =
+				anchor.type === 'after' ? anchorNodeIndex + 1 : anchorNodeIndex;
+			parent.children.splice(spliceIndex, 0, node as any);
 			areUpdates = true;
 		});
 

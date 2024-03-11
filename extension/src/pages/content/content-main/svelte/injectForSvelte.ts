@@ -91,7 +91,11 @@ function handleSvelteRegisterBlock(
 ) {
 	const { type, block, ...rest } = detail;
 
-	let id = getOrGenerateNodeId(block);
+	if (type !== SvelteBlockType.component) {
+		return; // TODO: maybe support other block types
+	}
+
+	const id = getOrGenerateNodeId(block);
 
 	if (block.m) {
 		const original = block.m;
@@ -99,7 +103,7 @@ function handleSvelteRegisterBlock(
 		// patch mount function
 		block.m = (target, anchor) => {
 			console.warn(currentBlockId);
-			const parentId = currentBlockId;
+			const previousBlockId = currentBlockId;
 
 			const node: ParsedSvelteNode = {
 				type,
@@ -108,53 +112,20 @@ function handleSvelteRegisterBlock(
 				id,
 			};
 
-			switch (type) {
-				case SvelteBlockType.then:
-				case SvelteBlockType.catch:
-				case SvelteBlockType.slot:
-					console.error(type, 'not implemented', detail); //TODO: implement
-					break;
-
-				case SvelteBlockType.component: {
-					const component = PENDING_COMPONENTS.get(id);
-					if (component) {
-						node.name = component.name;
-						PENDING_COMPONENTS.delete(id);
-					} else {
-						console.error('mounting unregistered component', detail);
-						node.name = 'Unknown';
-					}
-					break;
-				}
-				default:
-					console.error(type, 'default', detail); //TODO: implement
-			}
-
-			if (type === SvelteBlockType.each) {
-				if (parentId === null) {
-					console.error('each outside a block');
-					return; // FIXME: original not called
-				}
-
-				const currentBlocksEachId = EACHES.get(parentId);
-				if (currentBlocksEachId === undefined) {
-					EACHES.set(parentId, id);
-					mount({ ...node, containingBlockId: currentBlockId }, target, anchor);
-				} else {
-					id = currentBlocksEachId;
-				}
+			const component = PENDING_COMPONENTS.get(id);
+			if (component) {
+				node.name = component.name;
+				PENDING_COMPONENTS.delete(id);
 			} else {
-				mount({ ...node, containingBlockId: currentBlockId }, target, anchor);
+				console.error('mounting unregistered component', detail);
+				node.name = 'Unknown';
 			}
 
-			EXISTING_NODES.set(id, {
-				parentId: getOrGenerateNodeId(target),
-				containingBlockId: currentBlockId,
-			});
+			mount({ ...node, containingBlockId: previousBlockId }, target, anchor);
 
 			currentBlockId = id;
 			original(target, anchor);
-			currentBlockId = parentId;
+			currentBlockId = previousBlockId;
 		};
 	}
 
@@ -163,13 +134,15 @@ function handleSvelteRegisterBlock(
 
 		// patch patch function
 		block.p = (changed, ctx) => {
-			console.warn(currentBlockId);
-			const parent = currentBlockId;
-			currentBlockId = id;
-			console.error('update current block? in patch', detail);
+			if (EXISTING_NODES.has(id)) {
+				const parent = currentBlockId;
 
-			original(changed, ctx);
-			currentBlockId = parent;
+				currentBlockId = id;
+				original(changed, ctx);
+				currentBlockId = parent;
+			} else {
+				original(changed, ctx);
+			}
 		};
 	}
 
@@ -178,20 +151,7 @@ function handleSvelteRegisterBlock(
 
 		block.d = (detaching) => {
 			console.error('detaching', detail);
-			const nodeInfo = EXISTING_NODES.get(id);
-			if (!nodeInfo) {
-				console.error('node already detached?', id);
-				return; // FIXME: not calling 'original'
-			}
-
-			postMessageBridge.send({
-				type: PostMessageType.UNMOUNT_NODES,
-				content: {
-					parentId: nodeInfo.parentId,
-					id,
-				},
-			});
-
+			unmount(id);
 			original(detaching);
 		};
 	}
@@ -219,11 +179,6 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 			children: [...node.childNodes].map((child) => recursiveInsert(child, id)),
 		};
 
-		EXISTING_NODES.set(id, {
-			parentId,
-			containingBlockId: currentBlockId,
-		});
-
 		return block;
 	}
 
@@ -237,6 +192,10 @@ function handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 function handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
 	const { node } = detail;
 	const id = getOrGenerateNodeId(node);
+	unmount(id);
+}
+
+function unmount(id: NodeId) {
 	const nodeInfo = EXISTING_NODES.get(id);
 
 	if (!nodeInfo) {
@@ -246,13 +205,29 @@ function handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
 
 	EXISTING_NODES.delete(id);
 
-	postMessageBridge.send({
-		type: PostMessageType.UNMOUNT_NODES,
-		content: {
-			parentId: nodeInfo.parentId,
-			id,
-		},
-	});
+	let sendUpdates = true;
+	let parentId = nodeInfo.parentId;
+
+	while (parentId !== null) {
+		const parent = EXISTING_NODES.get(parentId);
+
+		if (parent === undefined) {
+			sendUpdates = false;
+			break;
+		}
+
+		parentId = parent.parentId;
+	}
+
+	if (sendUpdates) {
+		postMessageBridge.send({
+			type: PostMessageType.UNMOUNT_NODES,
+			content: {
+				parentId: nodeInfo.parentId,
+				id,
+			},
+		});
+	}
 }
 
 function mount(
@@ -263,8 +238,6 @@ function mount(
 	const { containingBlockId } = node;
 	let targetId = getOrGenerateNodeId(target);
 	const targetNode = EXISTING_NODES.get(targetId);
-
-	const afterNode = anchor ? getOrGenerateNodeId(anchor) : null;
 
 	if (
 		// we have not inserted the target
@@ -279,6 +252,11 @@ function mount(
 				type: PostMessageType.MOUNT_ROOTS,
 				content: [{ library: Library.SVELTE, root: node }],
 			});
+
+			EXISTING_NODES.set(node.id, {
+				parentId: null,
+				containingBlockId: null,
+			});
 			return;
 		}
 
@@ -286,9 +264,22 @@ function mount(
 		targetId = containingBlockId;
 	}
 
+	const anchorId = anchor ? getOrGenerateNodeId(anchor) : null;
+
 	postMessageBridge.send({
 		type: PostMessageType.MOUNT_NODES,
-		content: [{ parentId: targetId, afterNode, node: node }],
+		content: [
+			{
+				parentId: targetId,
+				anchor: { type: 'before', id: anchorId },
+				node: node,
+			},
+		],
+	});
+
+	EXISTING_NODES.set(node.id, {
+		parentId: targetId,
+		containingBlockId: containingBlockId,
 	});
 }
 

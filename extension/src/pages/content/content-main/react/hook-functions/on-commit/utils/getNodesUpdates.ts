@@ -33,7 +33,10 @@ export function getNodesUpdates(
 				// there was no child before, we need to mount new child under this node
 				operations.push({
 					parentId,
-					afterNode: higherSibling ? getOrGenerateFiberId(higherSibling) : null,
+					anchor: {
+						type: 'after',
+						id: higherSibling ? getOrGenerateFiberId(higherSibling) : null,
+					},
 					node: {
 						tag: child.tag,
 						name: getFiberName(child),

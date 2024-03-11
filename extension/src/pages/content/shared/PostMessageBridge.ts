@@ -22,7 +22,10 @@ export type UnmountNodesOperation = {
 };
 export type MountNodesOperations = Array<{
 	parentId: NodeId;
-	afterNode: NodeId | null;
+	anchor: {
+		type: 'before' | 'after';
+		id: NodeId | null;
+	};
 	node: ParsedNode;
 }>;
 export type MountRootsOperations = Root[];
