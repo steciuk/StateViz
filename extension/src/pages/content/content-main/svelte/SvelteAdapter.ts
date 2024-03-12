@@ -1,11 +1,16 @@
 import { Adapter } from '@pages/content/content-main/Adapter';
-import { SvelteEventMap } from '@pages/content/content-main/svelte/svelte-types';
+import {
+	SvelteDevToolsHook,
+	SvelteEventMap,
+} from '@pages/content/content-main/svelte/svelte-types';
+import { PostMessage } from '@pages/content/shared/PostMessageBridge';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 
 declare global {
 	interface Window {
+		__svelte?: SvelteDevToolsHook;
 		addEventListener<K extends keyof SvelteEventMap>(
 			type: K,
 			listener: (event: CustomEvent<SvelteEventMap[K]>) => void,
@@ -26,16 +31,15 @@ declare global {
 const SUPPORTED_SVELTE_MAJOR = 4;
 
 export class SvelteAdapter extends Adapter {
+	protected override readonly adapterPrefix = 'sv';
+
 	private readonly existingNodes = new Map<
 		NodeId,
 		{ parentId: NodeId | null; containingBlockId: NodeId | null }
 	>();
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
 	private readonly eaches = new Map<NodeId, { id: NodeId; count: number }>();
-
 	private currentBlockId: NodeId | null = null;
-
-	override adapterPrefix = 'sv';
 
 	protected override inject() {
 		// pre-inject in order not to miss any events
@@ -60,6 +64,8 @@ export class SvelteAdapter extends Adapter {
 			this.sendLibraryAttached();
 		});
 	}
+
+	protected override handlePostMessageBridgeMessage(message: PostMessage) {}
 
 	private injectListeners() {
 		console.error('injectForSvelte');

@@ -2,11 +2,13 @@ import { NodeId, Root } from '@src/shared/types/ParsedNode';
 import {
 	MountNodesOperations,
 	MountRootsOperations,
+	PostMessage,
 	PostMessageBridge,
 	PostMessageType,
 	UnmountNodesOperation,
 	UpdateNodesOperations,
 } from '@pages/content/shared/PostMessageBridge';
+import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 
 export abstract class Adapter {
 	private static ID_COUNTER = 0;
@@ -17,8 +19,9 @@ export abstract class Adapter {
 
 	constructor(protected readonly postMessageBridge: PostMessageBridge) {}
 
-	protected abstract adapterPrefix: string;
+	protected abstract readonly adapterPrefix: string;
 	protected abstract inject(): void;
+	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
 
 	initialize() {
 		if (this.isInitialized) {
@@ -30,6 +33,10 @@ export abstract class Adapter {
 		}
 
 		Adapter.REGISTERED_ADAPTERS.add(this.adapterPrefix);
+
+		this.postMessageBridge.onMessage((message) => {
+			this.handlePostMessageBridgeMessage(message);
+		});
 
 		this.isInitialized = true;
 		this.inject();
@@ -66,6 +73,13 @@ export abstract class Adapter {
 		this.postMessageBridge.send({
 			type: PostMessageType.UNMOUNT_NODES,
 			content: operations,
+		});
+	}
+
+	protected sendInspectedData(content: InspectedDataMessageContent) {
+		this.postMessageBridge.send({
+			type: PostMessageType.INSPECTED_DATA,
+			content,
 		});
 	}
 

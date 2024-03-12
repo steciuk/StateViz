@@ -1,5 +1,3 @@
-import { EXISTING_FIBERS_DATA } from '@pages/content/content-main/react/hook-functions/on-commit/utils/existing-nodes-storage';
-import { getOrGenerateFiberId } from '../../utils/getOrGenerateId';
 import { typeData } from '@pages/content/content-main/react/inspect-element/getDataType';
 import {
 	Fiber,
@@ -7,76 +5,12 @@ import {
 	MemoizedState,
 } from '@pages/content/content-main/react/react-types';
 import {
-	PostMessageBridge,
-	PostMessageSource,
-	PostMessageType,
-} from '@pages/content/shared/PostMessageBridge';
-import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import {
 	DataType,
 	InspectData,
 	NodeInspectedData,
 } from '@src/shared/types/DataType';
-import { NodeId } from '@src/shared/types/ParsedNode';
 
-const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
-
-let inspectedElementsIds: NodeId[] = [];
-export const INSPECTED_DATA_MAP = new Map<NodeId, NodeInspectedData>();
-
-postMessageBridge.onMessage((message) => {
-	// Request to inspect nodes
-	if (message.type === PostMessageType.INSPECT_ELEMENT) {
-		inspectedElementsIds = message.content;
-		console.log('INSPECT_ELEMENT', inspectedElementsIds);
-		// if empty array it means that front stopped inspecting
-		if (inspectedElementsIds.length === 0) return;
-
-		const fibersToInspect = inspectedElementsIds
-			.map((id) => EXISTING_FIBERS_DATA.get(id)?.fiber)
-			.filter((fiber): fiber is Fiber => fiber !== undefined);
-
-		// did not find any fibers to inspect, maybe they were unmounted
-		if (fibersToInspect.length === 0) return;
-
-		fibersToInspect.forEach((fiber) => handleNodeInspect(fiber));
-		sendInspectData();
-	}
-});
-
-export function handleNodeInspect(fiber: Fiber) {
-	const id = getOrGenerateFiberId(fiber);
-
-	if (inspectedElementsIds.includes(id)) {
-		console.log(fiber);
-		const nodeData = getNodeData(fiber);
-		if (nodeData) {
-			INSPECTED_DATA_MAP.set(id, nodeData);
-		}
-	}
-}
-
-export function sendInspectData() {
-	const data: InspectedDataMessageContent = [];
-	inspectedElementsIds.forEach((id) => {
-		const inspectedData = INSPECTED_DATA_MAP.get(id);
-		if (inspectedData) {
-			data.push({
-				id,
-				data: inspectedData,
-			});
-		}
-	});
-
-	if (data.length === 0) return;
-
-	postMessageBridge.send({
-		type: PostMessageType.INSPECTED_DATA,
-		content: data,
-	});
-}
-
-function getNodeData(fiber: Fiber): NodeInspectedData {
+export function getNodeData(fiber: Fiber): NodeInspectedData {
 	// TODO: maybe try to check if changed and don't send if not
 	const hooks = parseHooks(fiber);
 	const props = parseProps(fiber);

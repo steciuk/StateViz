@@ -1,5 +1,7 @@
-import { LISTENERS } from '@pages/content/content-main/react/hook-functions/utils/hook-storage';
 import { Handler } from '@pages/content/content-main/react/react-types';
+import { ListenersStorage } from './ListenersStorage';
+
+const LISTENERS = new ListenersStorage();
 
 /**
  * Registers a listener for a specific event.
@@ -7,8 +9,8 @@ import { Handler } from '@pages/content/content-main/react/react-types';
  * @param listener - The listener function.
  * */
 export function on(event: string, listener: Handler): void {
-  // console.log('on', event, listener);
-  LISTENERS.add(event, listener);
+	// console.log('on', event, listener);
+	LISTENERS.add(event, listener);
 }
 /**
  * Removes a listener
@@ -16,8 +18,8 @@ export function on(event: string, listener: Handler): void {
  * @param listener - The listener function to remove.
  */
 export function off(event: string, listener: Handler): void {
-  // console.log('off', event, listener);
-  LISTENERS.remove(event, listener);
+	// console.log('off', event, listener);
+	LISTENERS.remove(event, listener);
 }
 
 /**
@@ -27,12 +29,13 @@ export function off(event: string, listener: Handler): void {
  * @returns A function to remove the listener.
  */
 export function sub(event: string, listener: Handler): () => void {
-  // console.log('sub', event, listener);
-  on(event, listener);
-  return () => off(event, listener);
+	// console.log('sub', event, listener);
+	on(event, listener);
+	return () => off(event, listener);
 }
 
 export function emit(event: string, data: unknown) {
-  // console.log('emit', event, data);
-  LISTENERS.emit(event, data);
+	// console.log('emit', event, data);
+	LISTENERS.emit(event, data);
 }
+
