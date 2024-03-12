@@ -7,6 +7,7 @@ import {
 	LibraryAttachedPostMessage,
 	UnmountNodesPostMessage,
 	MountRootsPostMessage,
+	UpdateNodesPostMessage,
 } from '@pages/content/shared/PostMessageBridge';
 import {
 	ChromeMessageSource,
@@ -85,6 +86,10 @@ export class ContentIsolated {
 
 				case PostMessageType.MOUNT_NODES:
 					this.handleMountNodesPostMessage(message);
+					break;
+
+				case PostMessageType.UPDATE_NODES:
+					this.handleNodeUpdatePostMessage(message);
 					break;
 
 				case PostMessageType.UNMOUNT_NODES:
@@ -216,6 +221,26 @@ export class ContentIsolated {
 		if (!areUpdates) return;
 
 		// TODO: maybe consider only sending info for updated roots?
+		this.sendMessageThroughChromeBridgeIfConnected({
+			type: ChromeBridgeMessageType.FULL_SKELETON,
+			content: this.roots,
+		});
+	}
+
+	private handleNodeUpdatePostMessage(message: UpdateNodesPostMessage) {
+		console.log('UPDATE_NODES', message.content);
+
+		message.content.forEach((node) => {
+			const existingNode = this.currentNodes.get(node.id);
+
+			if (!existingNode) {
+				console.error('node not found');
+				return;
+			}
+
+			Object.assign(existingNode, node);
+		});
+
 		this.sendMessageThroughChromeBridgeIfConnected({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: this.roots,

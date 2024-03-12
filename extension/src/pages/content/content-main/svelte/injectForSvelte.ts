@@ -79,7 +79,8 @@ function handleSvelteRegisterComponent(
 	const id = getOrGenerateNodeId(component.$$.fragment);
 
 	if (PENDING_COMPONENTS.has(id)) {
-		console.error('re-register of a component');
+		update({ id, name: tagName });
+		PENDING_COMPONENTS.delete(id);
 		return;
 	}
 
@@ -124,6 +125,7 @@ function handleSvelteRegisterBlock(
 					} else {
 						console.error('mounting unregistered component', detail);
 						node.name = 'Unknown';
+						PENDING_COMPONENTS.set(id, { name: 'Unknown' });
 					}
 					break;
 				}
@@ -261,6 +263,13 @@ function unmount(id: NodeId) {
 			},
 		});
 	}
+}
+
+function update(node: { id: NodeId; name: string }) {
+	postMessageBridge.send({
+		type: PostMessageType.UPDATE_NODES,
+		content: [node],
+	});
 }
 
 function mount(

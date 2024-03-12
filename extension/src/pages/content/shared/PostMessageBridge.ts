@@ -12,6 +12,7 @@ export enum PostMessageType {
 	UNMOUNT_NODES = 'UNMOUNT_NODES',
 	MOUNT_NODES = 'MOUNT_NODES',
 	MOUNT_ROOTS = 'MOUNT_ROOTS',
+	UPDATE_NODES = 'UPDATE_NODES',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
 	INSPECTED_DATA = 'INSPECTED_DATA',
 }
@@ -29,6 +30,9 @@ export type MountNodesOperations = Array<{
 	node: ParsedNode;
 }>;
 export type MountRootsOperations = Root[];
+export type UpdateNodesOperations = Array<
+	Partial<ParsedNode> & Pick<ParsedNode, 'id'>
+>;
 
 // MESSAGE TYPES
 export type LibraryAttachedPostMessage = {
@@ -47,6 +51,12 @@ export type MountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_NODES;
 	content: MountNodesOperations;
+};
+
+export type UpdateNodesPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.UPDATE_NODES;
+	content: UpdateNodesOperations;
 };
 
 export type UnmountNodesPostMessage = {
@@ -73,7 +83,8 @@ export type PostMessage =
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage
-	| InspectedDataPostMessage;
+	| InspectedDataPostMessage
+	| UpdateNodesPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}
