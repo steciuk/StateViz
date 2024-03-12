@@ -1,6 +1,5 @@
 import { injectForReact } from '@pages/content/content-main/react/injectForReact';
 import { ReactDevToolsHook } from '@pages/content/content-main/react/react-types';
-import { injectForSvelte } from '@pages/content/content-main/svelte/injectForSvelte';
 import { SvelteDevToolsHook } from '@pages/content/content-main/svelte/svelte-types';
 
 declare global {
@@ -17,6 +16,5 @@ declare global {
 
 export function injectHook() {
 	injectForReact();
-	injectForSvelte();
 }
 

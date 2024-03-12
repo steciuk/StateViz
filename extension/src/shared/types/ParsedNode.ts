@@ -2,7 +2,7 @@ import { WorkTag } from '@src/shared/types/react-types';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 import { Library } from '@src/shared/types/Library';
 
-export type NodeId = number;
+export type NodeId = string;
 
 export type ParsedNode = ParsedReactNode | ParsedSvelteNode;
 export type Root =
