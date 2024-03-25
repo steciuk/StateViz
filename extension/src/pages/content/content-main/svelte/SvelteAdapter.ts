@@ -349,7 +349,7 @@ export class SvelteAdapter extends Adapter {
 		) {
 			if (containingBlockId === null) {
 				// we are not processing any block, node has to be the root
-				this.sendMountRoots([{ root: node, library: Library.SVELTE }]);
+				this.sendMountRoots([{ node: node, library: Library.SVELTE }]);
 
 				this.existingNodes.set(node.id, {
 					parentId: null,

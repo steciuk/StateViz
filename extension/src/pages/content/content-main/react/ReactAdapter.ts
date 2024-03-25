@@ -250,7 +250,7 @@ export class ReactAdapter extends Adapter {
 		});
 
 		const node: ParsedReactNode = {
-			tag: root.tag,
+			type: root.tag,
 			name: getFiberName(root),
 			children: this.getParseChildren(root),
 			id: rootId,
@@ -259,7 +259,7 @@ export class ReactAdapter extends Adapter {
 		this.sendMountRoots([
 			{
 				library: Library.REACT,
-				root: node,
+				node: node,
 			},
 		]);
 	}
@@ -277,7 +277,7 @@ export class ReactAdapter extends Adapter {
 			this.refreshInspectedData(currentChild);
 
 			children.push({
-				tag: currentChild.tag,
+				type: currentChild.tag,
 				name: getFiberName(currentChild),
 				children: this.getParseChildren(currentChild),
 				id: childId,
@@ -358,7 +358,7 @@ export class ReactAdapter extends Adapter {
 								: null,
 						},
 						node: {
-							tag: child.tag,
+							type: child.tag,
 							name: getFiberName(child),
 							children: this.getParseChildren(child),
 							id: this.getOrGenerateElementId(child),

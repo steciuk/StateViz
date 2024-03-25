@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FilterSettings } from '@pages/panel/pages/Panel/Header/FilterSettings';
-import { ThemeSettings } from '@pages/panel/pages/Panel/Header/ThemeSettings';
+import { FilterSettings } from '@pages/panel/library-specific/components/FilterSettings';
+import { ThemeSettings } from '@pages/panel/sections/Header/ThemeSettings';
 
 export const Header = () => {
 	const [settingsOpened, setSettingsOpened] = useState<boolean>(false);
@@ -36,3 +36,4 @@ export const Header = () => {
 		</div>
 	);
 };
+

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
-import { SelectedFiberContext } from '@pages/panel/contexts/SelectedFiberContext';
+import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { getWorkTagLabel } from '@pages/panel/utils/work-tag';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
 import {
@@ -14,7 +14,7 @@ import {
 import { NodeId } from '@src/shared/types/ParsedNode';
 
 export const InspectWindow = (props: { className?: string }) => {
-	const selectedFiber = useContext(SelectedFiberContext);
+	const selectedFiber = useContext(SelectedNodeContext)?.node;
 	const nodeInspectData = useInspectNodeData(selectedFiber?.id ?? null);
 
 	if (!selectedFiber) {

@@ -23,13 +23,7 @@ import {
 	ChromeBridgeMessageType,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { Library } from '@src/shared/types/Library';
-import {
-	NodeId,
-	ParsedNode,
-	ParsedReactNode,
-	Root,
-} from '@src/shared/types/ParsedNode';
+import { NodeId, ParsedNode, Root } from '@src/shared/types/ParsedNode';
 
 export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
@@ -158,13 +152,13 @@ export class ContentIsolated {
 		console.log('MOUNT_ROOTS', message.content);
 
 		this.addNodesRecursively(
-			message.content.map((mountOperation) => mountOperation.root)
+			message.content.map((mountOperation) => mountOperation.node)
 		);
 
 		message.content.forEach((mountOperation) => {
 			// TODO: check if roots are not repeated
 			const inRootIndex = this.roots.findIndex(
-				(root) => root.root.id === mountOperation.root.id
+				(root) => root.node.id === mountOperation.node.id
 			);
 			if (inRootIndex !== -1) console.error('mounting existing root');
 
@@ -268,7 +262,7 @@ export class ContentIsolated {
 
 		if (parentId === null) {
 			this.roots = this.roots.filter(
-				(root) => root.root.id !== nodeToUnmountId
+				(root) => root.node.id !== nodeToUnmountId
 			);
 		} else {
 			const parent = this.currentNodes.get(parentId);

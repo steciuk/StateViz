@@ -1,25 +1,28 @@
-import './FiberRow.scss';
+import './Row.scss';
 
 import classNames from 'classnames';
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
 import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
-import { FilterContext } from '@pages/panel/contexts/FilterContext';
+import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import {
-	SelectedFiberContext,
-	SelectedFiberUpdateContext,
-} from '@pages/panel/contexts/SelectedFiberContext';
-import { ParsedReactNode, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
+	SelectedNodeContext,
+	SelectedNodeUpdateContext,
+} from '@pages/panel/contexts/SelectedNodeContext';
+import { Root } from '@src/shared/types/ParsedNode';
+import NodeRowText from '../../library-specific/components/NodeRowText';
 
-export const SvelteRow = (props: {
-	fiber: ParsedSvelteNode;
+export const Row = (props: {
+	nodeAndLibrary: Root;
 	indent: number;
 	handleReportUnfilteredChildren?: () => void;
 }) => {
-	const { fiber, indent, handleReportUnfilteredChildren } = props;
-	const filterSettings = useContext(FilterContext);
-	const updateSelectedFiber = useContext(SelectedFiberUpdateContext);
-	const selectedFiber = useContext(SelectedFiberContext);
+	const { nodeAndLibrary, indent, handleReportUnfilteredChildren } = props;
+	const { node, library } = nodeAndLibrary;
+
+	const filterFunc = useContext(FilterContext);
+	const updateSelectedNode = useContext(SelectedNodeUpdateContext);
+	const selectedNode = useContext(SelectedNodeContext);
 
 	const [isExpanded, setIsExpanded] = useState(true);
 	const [hasUnfilteredChildren, setHasUnfilteredChildren] = useState(false);
@@ -31,33 +34,31 @@ export const SvelteRow = (props: {
 		}
 	};
 
-	// const handleRowClick = (e: MouseEvent<HTMLElement>) => {
-	// 	e.stopPropagation();
-	// 	updateSelectedFiber(fiber);
-	// };
+	const handleRowClick = (e: MouseEvent<HTMLElement>) => {
+		e.stopPropagation();
+		updateSelectedNode(nodeAndLibrary);
+	};
 
-	// const shouldRender = filterSettings[fiber.tag] ?? true;
-	// if (shouldRender) {
+	const shouldRender: boolean = filterFunc(nodeAndLibrary);
+	if (shouldRender) {
 		handleReportUnfilteredChildren?.();
-	// }
+	}
 
 	// TODO: think if there is a better way to do this
 	useEffect(() => {
 		setHasUnfilteredChildren(false);
-	}, [filterSettings]);
-
-	const displayText = fiber.name + ' - ' + fiber.type + ' - ' + fiber.id;
+	}, [shouldRender]);
 
 	const indentSize = 12 * indent;
 
-	// if (shouldRender) {
+	if (shouldRender) {
 		return (
 			<>
 				<div
 					className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
-						'bg-secondary': selectedFiber?.id === fiber.id,
+						'bg-secondary': selectedNode?.node.id === node.id,
 					})}
-					// onClick={handleRowClick}
+					onClick={handleRowClick}
 				>
 					<div className={`ml-[${indentSize}px]`}>
 						<ExpandArrow
@@ -66,7 +67,9 @@ export const SvelteRow = (props: {
 							disabled={!hasUnfilteredChildren}
 							className="mr-1"
 						/>
-						<span className="cursor-default">{displayText}</span>
+						<span className="cursor-default">
+							<NodeRowText nodeAndLibrary={nodeAndLibrary} />
+						</span>
 					</div>
 				</div>
 				{isExpanded && (
@@ -77,10 +80,10 @@ export const SvelteRow = (props: {
 								`left-[${indentSize + 3}px]`
 							)}
 						/>
-						{fiber.children.map((child) => (
-							<SvelteRow
+						{node.children.map((child) => (
+							<Row
 								key={child.id}
-								fiber={child}
+								nodeAndLibrary={{ node: child, library } as Root}
 								indent={indent + 1}
 								handleReportUnfilteredChildren={reportUnfilteredChildren}
 							/>
@@ -89,18 +92,19 @@ export const SvelteRow = (props: {
 				)}
 			</>
 		);
-	// } else {
-	// 	return (
-	// 		<>
-	// 			{fiber.children.map((child) => (
-	// 				<FiberRow
-	// 					key={child.id}
-	// 					fiber={child}
-	// 					indent={indent}
-	// 					handleReportUnfilteredChildren={reportUnfilteredChildren}
-	// 				/>
-	// 			))}
-	// 		</>
-	// 	);
-	// }
+	} else {
+		return (
+			<>
+				{node.children.map((child) => (
+					<Row
+						key={child.id}
+						nodeAndLibrary={{ node: child, library } as Root}
+						indent={indent}
+						handleReportUnfilteredChildren={reportUnfilteredChildren}
+					/>
+				))}
+			</>
+		);
+	}
 };
+

@@ -7,16 +7,16 @@ export type NodeId = string;
 export type ParsedNode = ParsedReactNode | ParsedSvelteNode;
 export type Root =
 	| {
-			root: ParsedReactNode;
+			node: ParsedReactNode;
 			library: Library.REACT;
 	  }
 	| {
-			root: ParsedSvelteNode;
+			node: ParsedSvelteNode;
 			library: Library.SVELTE;
 	  };
 
 export type ParsedReactNode = {
-	tag: WorkTag;
+	type: WorkTag;
 	name: string;
 	children: ParsedReactNode[];
 	id: NodeId;

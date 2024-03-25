@@ -1,9 +1,9 @@
 import React, { StrictMode } from 'react';
 
 import { ChromeBridgeProvider } from '@pages/panel/contexts/ChromeBridgeContext';
-import { FilterProvider } from '@pages/panel/contexts/FilterContext';
-import { SelectedFiberProvider } from '@pages/panel/contexts/SelectedFiberContext';
-import { Panel } from '@pages/panel/pages/Panel/Panel';
+import { FilterProvider } from '@pages/panel/library-specific/contexts/FilterContext';
+import { SelectedNodeProvider } from '@pages/panel/contexts/SelectedNodeContext';
+import { Panel } from '@pages/panel/sections/Panel';
 import { InspectDataProvider } from '@pages/panel/contexts/NodeInspectDataContext';
 
 const App = () => {
@@ -11,11 +11,11 @@ const App = () => {
 		<StrictMode>
 			<ChromeBridgeProvider>
 				<FilterProvider>
-					<SelectedFiberProvider>
+					<SelectedNodeProvider>
 						<InspectDataProvider>
 							<Panel />
 						</InspectDataProvider>
-					</SelectedFiberProvider>
+					</SelectedNodeProvider>
 				</FilterProvider>
 			</ChromeBridgeProvider>
 		</StrictMode>
@@ -23,3 +23,4 @@ const App = () => {
 };
 
 export default App;
+
