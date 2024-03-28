@@ -47,21 +47,22 @@ export type SvelteComponentFragment = {
 
 type SvelteComponentDetail = {
 	id: string;
-	options: {
-		$$inline?: boolean;
-		hydrate?: boolean;
-		target?: Element;
-		props?: Record<string, unknown>;
-	};
+	// options: {
+	// 	$$inline?: boolean;
+	// 	hydrate?: boolean;
+	// 	target?: Element;
+	// 	props?: Record<string, unknown>;
+	// };
 	tagName: string;
 	component: {
 		$$: {
 			fragment: SvelteComponentFragment;
+			props: Record<string, unknown>;
 		};
 		// $$events_def?: {};
 		// $$prop_def?: {};
 		// $$slot_def?: {};
-		$capture_state(): unknown;
+		$capture_state(): Record<string, unknown>;
 	};
 };
 

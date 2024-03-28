@@ -1,9 +1,14 @@
 import { Adapter } from '@pages/content/content-main/Adapter';
+import { dehydrate } from '@pages/content/content-main/dehydrate';
 import {
 	SvelteDevToolsHook,
 	SvelteEventMap,
 } from '@pages/content/content-main/svelte/svelte-types';
-import { PostMessage } from '@pages/content/shared/PostMessageBridge';
+import {
+	PostMessage,
+	PostMessageType,
+} from '@pages/content/shared/PostMessageBridge';
+import { SvelteInspectedData } from '@src/shared/types/DataType';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
@@ -39,6 +44,16 @@ export class SvelteAdapter extends Adapter {
 	>();
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
 	private readonly eaches = new Map<NodeId, { id: NodeId; count: number }>();
+
+	private readonly componentsCaptureStates = new Map<
+		NodeId,
+		{
+			captureState: () => Record<string, unknown>;
+			propsKeys: string[];
+		}
+	>();
+	private inspectedComponentsIds = new Set<NodeId>();
+
 	private currentBlockId: NodeId | null = null;
 
 	protected override inject() {
@@ -65,7 +80,25 @@ export class SvelteAdapter extends Adapter {
 		});
 	}
 
-	protected override handlePostMessageBridgeMessage(message: PostMessage) {}
+	protected override handlePostMessageBridgeMessage(message: PostMessage) {
+		// Request to inspect nodes
+		if (message.type === PostMessageType.INSPECT_ELEMENT) {
+			// filter out not existing or other library elements
+			const ownInspectedElementsIds = message.content.filter((id) =>
+				this.existingNodes.has(id)
+			);
+
+			this.inspectedComponentsIds = new Set(ownInspectedElementsIds);
+			// if empty array it means that front stopped inspecting
+			if (ownInspectedElementsIds.length === 0) return;
+
+			console.log('INSPECT_ELEMENT', ownInspectedElementsIds);
+
+			ownInspectedElementsIds.forEach((id) => {
+				this.handleNodeInspect(id);
+			});
+		}
+	}
 
 	private injectListeners() {
 		console.error('injectForSvelte');
@@ -88,7 +121,7 @@ export class SvelteAdapter extends Adapter {
 
 		listenerRemovers.push(
 			this.addSvelteListener('SvelteDOMInsert', ({ detail }) => {
-				console.log('SvelteDOMInsert', detail);
+				// console.log('SvelteDOMInsert', detail);
 				this.handleSvelteDOMInsert(detail);
 			})
 		);
@@ -156,6 +189,11 @@ export class SvelteAdapter extends Adapter {
 		const { component, tagName } = detail;
 		const id = this.getOrGenerateElementId(component.$$.fragment);
 
+		this.componentsCaptureStates.set(id, {
+			captureState: component.$capture_state,
+			propsKeys: Object.keys(component.$$.props),
+		});
+
 		if (this.pendingComponents.has(id)) {
 			// root component is mounted before it's registered
 			this.update({ id, name: tagName });
@@ -164,6 +202,42 @@ export class SvelteAdapter extends Adapter {
 		}
 
 		this.pendingComponents.set(id, { name: tagName });
+	}
+
+	// TODO: cache node data similar to React Adapter so
+	// we don't have to traverse and dehydrate data if user
+	// inspects the same node again and nothing changed
+	private handleNodeInspect(nodeId: NodeId) {
+		if (!this.inspectedComponentsIds.has(nodeId)) {
+			return;
+		}
+
+		const componentCaptureState = this.componentsCaptureStates.get(nodeId);
+		if (!componentCaptureState) {
+			console.error('State info not found');
+			return;
+		}
+
+		const { captureState, propsKeys } = componentCaptureState;
+		const capturedState = captureState();
+
+		const state: SvelteInspectedData['state'] = {};
+		const props: SvelteInspectedData['props'] = {};
+
+		Object.entries(capturedState).forEach(([key, value]) => {
+			if (propsKeys.includes(key)) {
+				props[key] = dehydrate(value);
+			} else {
+				state[key] = dehydrate(value);
+			}
+		});
+
+		this.sendInspectedData([
+			{
+				id: nodeId,
+				data: { state, props },
+			},
+		]);
 	}
 
 	private handleSvelteRegisterBlock(
@@ -205,6 +279,9 @@ export class SvelteAdapter extends Adapter {
 								node.name = 'Unknown';
 								this.pendingComponents.set(blockId, { name: 'Unknown' });
 							}
+
+							this.handleNodeInspect(blockId);
+
 							break;
 						}
 					}
@@ -254,6 +331,10 @@ export class SvelteAdapter extends Adapter {
 			block.p = (changed, ctx) => {
 				// set last block id for successors
 				const blockId = this.getOrGenerateElementId(block);
+
+				if (type === SvelteBlockType.component) {
+					this.handleNodeInspect(blockId);
+				}
 
 				const previousBlockId = this.currentBlockId;
 				this.currentBlockId = blockId;
@@ -447,6 +528,8 @@ export class SvelteAdapter extends Adapter {
 		}
 
 		this.existingNodes.delete(id);
+		this.componentsCaptureStates.delete(id);
+
 		let sendUpdates = true;
 		let parentId = nodeInfo.parentId;
 

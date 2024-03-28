@@ -190,7 +190,9 @@ export class ContentIsolated {
 
 			if (anchor.id === null) {
 				// TODO: think of some type fix
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (anchor.type === 'after') parent.children.unshift(node as any);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				else parent.children.push(node as any);
 
 				areUpdates = true;
@@ -208,6 +210,7 @@ export class ContentIsolated {
 			// TODO: think of some type fix
 			const spliceIndex =
 				anchor.type === 'after' ? anchorNodeIndex + 1 : anchorNodeIndex;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			parent.children.splice(spliceIndex, 0, node as any);
 			areUpdates = true;
 		});
@@ -274,6 +277,7 @@ export class ContentIsolated {
 
 			parent.children = parent.children.filter(
 				(node) => node.id !== nodeToUnmountId
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			) as any; // TODO: think of some type fix
 		}
 
