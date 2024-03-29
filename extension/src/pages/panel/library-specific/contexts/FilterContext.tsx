@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useState } from 'react';
 
 import { WorkTag } from '@src/shared/types/react-types';
-import { Root } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 import { Library } from '@src/shared/types/Library';
 
@@ -58,11 +58,12 @@ type SettingIdentifier<T extends Library> = T extends Library.REACT
 	  ? SvelteBlockType
 	  : never;
 
-type FilterDifferentiatorHelper<T extends Root> = T extends Root
-	? { library: T['library'] } & { node: Pick<T['node'], 'type'> }
-	: never;
+type FilterDifferentiatorHelper<T extends NodeAndLibrary> =
+	T extends NodeAndLibrary
+		? { library: T['library'] } & { node: Pick<T['node'], 'type'> }
+		: never;
 
-type FilterDifferentiator = FilterDifferentiatorHelper<Root>;
+type FilterDifferentiator = FilterDifferentiatorHelper<NodeAndLibrary>;
 
 export const FilterContext = createContext<
 	(nodeAndLibrary: FilterDifferentiator) => boolean

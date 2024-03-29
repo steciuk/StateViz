@@ -1,9 +1,9 @@
 import { Library } from '@src/shared/types/Library';
-import { Root } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import { WorkTag } from '@src/shared/types/react-types';
 import React from 'react';
 
-const NodeInspectInfo = (props: { selectedNode: Root }) => {
+const NodeInspectInfo = (props: { selectedNode: NodeAndLibrary }) => {
 	const { node, library } = props.selectedNode;
 
 	const nodeType =
@@ -23,3 +23,4 @@ function getWorkTagLabel(tag: WorkTag): string {
 }
 
 export default NodeInspectInfo;
+

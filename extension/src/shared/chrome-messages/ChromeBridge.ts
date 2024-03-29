@@ -1,5 +1,9 @@
 import { NodeInspectedData } from '@src/shared/types/DataType';
-import { NodeId, ParsedNode, Root } from '@src/shared/types/ParsedNode';
+import {
+	NodeId,
+	ParsedNode,
+	NodeAndLibrary,
+} from '@src/shared/types/ParsedNode';
 
 export enum ChromeBridgeConnection {
 	PANEL_TO_CONTENT = 'PANEL_TO_CONTENT_SCRIPT',
@@ -18,7 +22,7 @@ export type ChromeBridgeMessage =
 
 export type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
-	content: Root[];
+	content: NodeAndLibrary[];
 };
 
 export type InspectElementBridgeMessage = {

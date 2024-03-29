@@ -23,7 +23,11 @@ import {
 	ChromeBridgeMessageType,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeId, ParsedNode, Root } from '@src/shared/types/ParsedNode';
+import {
+	NodeId,
+	ParsedNode,
+	NodeAndLibrary,
+} from '@src/shared/types/ParsedNode';
 
 export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
@@ -32,7 +36,7 @@ export class ContentIsolated {
 	private libraryAttached: boolean = false;
 
 	private currentNodes: Map<NodeId, ParsedNode> = new Map();
-	private roots: Root[] = [];
+	private roots: NodeAndLibrary[] = [];
 
 	private constructor() {
 		this.postMessageBridge = PostMessageBridge.getInstance(

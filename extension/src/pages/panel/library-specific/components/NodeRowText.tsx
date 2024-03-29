@@ -1,8 +1,8 @@
 import { Library } from '@src/shared/types/Library';
-import { Root } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import React from 'react';
 
-const NodeRowText = (props: { nodeAndLibrary: Root }) => {
+const NodeRowText = (props: { nodeAndLibrary: NodeAndLibrary }) => {
 	const { nodeAndLibrary } = props;
 	const { node, library } = nodeAndLibrary;
 
@@ -15,3 +15,4 @@ const NodeRowText = (props: { nodeAndLibrary: Root }) => {
 };
 
 export default NodeRowText;
+

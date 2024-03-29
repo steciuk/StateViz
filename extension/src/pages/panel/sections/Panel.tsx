@@ -8,7 +8,7 @@ import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { Root } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import Roots from '@pages/panel/sections/Roots';
 
 export const Panel = () => {
@@ -55,7 +55,7 @@ const useDeselectFiberOnPageReload = () => {
 
 const useRoots = () => {
 	const chromeBridge = useContext(ChromeBridgeContext);
-	const [fiberRoot, setFiberRoot] = useState<Root[] | null>(null);
+	const [fiberRoot, setFiberRoot] = useState<NodeAndLibrary[] | null>(null);
 
 	useEffect(() => {
 		const removeChromeMessageListener = chromeBridge.onMessage(

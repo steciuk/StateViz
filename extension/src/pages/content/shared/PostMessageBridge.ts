@@ -1,5 +1,9 @@
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeId, ParsedNode, Root } from '@src/shared/types/ParsedNode';
+import {
+	NodeId,
+	ParsedNode,
+	NodeAndLibrary,
+} from '@src/shared/types/ParsedNode';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
 export enum PostMessageSource {
@@ -29,7 +33,7 @@ export type MountNodesOperations = Array<{
 	};
 	node: ParsedNode;
 }>;
-export type MountRootsOperations = Root[];
+export type MountRootsOperations = NodeAndLibrary[];
 export type UpdateNodesOperations = Array<
 	Partial<ParsedNode> & Pick<ParsedNode, 'id'>
 >;

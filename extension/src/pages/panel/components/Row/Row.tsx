@@ -9,11 +9,11 @@ import {
 	SelectedNodeContext,
 	SelectedNodeUpdateContext,
 } from '@pages/panel/contexts/SelectedNodeContext';
-import { Root } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import NodeRowText from '../../library-specific/components/NodeRowText';
 
 export const Row = (props: {
-	nodeAndLibrary: Root;
+	nodeAndLibrary: NodeAndLibrary;
 	indent: number;
 	handleReportUnfilteredChildren?: () => void;
 }) => {
@@ -83,7 +83,7 @@ export const Row = (props: {
 						{node.children.map((child) => (
 							<Row
 								key={child.id}
-								nodeAndLibrary={{ node: child, library } as Root}
+								nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
 								indent={indent + 1}
 								handleReportUnfilteredChildren={reportUnfilteredChildren}
 							/>
@@ -98,7 +98,7 @@ export const Row = (props: {
 				{node.children.map((child) => (
 					<Row
 						key={child.id}
-						nodeAndLibrary={{ node: child, library } as Root}
+						nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
 						indent={indent}
 						handleReportUnfilteredChildren={reportUnfilteredChildren}
 					/>

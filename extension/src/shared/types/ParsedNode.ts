@@ -5,7 +5,7 @@ import { Library } from '@src/shared/types/Library';
 export type NodeId = string;
 
 export type ParsedNode = ParsedReactNode | ParsedSvelteNode;
-export type Root =
+export type NodeAndLibrary =
 	| {
 			node: ParsedReactNode;
 			library: Library.REACT;

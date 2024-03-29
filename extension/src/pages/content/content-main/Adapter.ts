@@ -1,4 +1,4 @@
-import { NodeId, Root } from '@src/shared/types/ParsedNode';
+import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import {
 	MountNodesOperations,
 	MountRootsOperations,
