@@ -35,20 +35,24 @@ declare global {
 
 const SUPPORTED_SVELTE_MAJOR = 4;
 
+type ExistingNodeData = {
+	parentId: NodeId | null;
+	containingBlockId: NodeId | null;
+	name: string;
+	type: SvelteBlockType;
+};
+
 export class SvelteAdapter extends Adapter {
 	protected override readonly adapterPrefix = 'sv';
 
-	private readonly existingNodes = new Map<
-		NodeId,
-		{ parentId: NodeId | null; containingBlockId: NodeId | null }
-	>();
+	private readonly existingNodes = new Map<NodeId, ExistingNodeData>();
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
 	private readonly eaches = new Map<NodeId, { id: NodeId; count: number }>();
 
 	private readonly componentsCaptureStates = new Map<
 		NodeId,
 		{
-			captureState: () => Record<string, unknown>;
+			captureState: () => unknown;
 			propsKeys: string[];
 		}
 	>();
@@ -212,30 +216,39 @@ export class SvelteAdapter extends Adapter {
 			return;
 		}
 
-		const componentCaptureState = this.componentsCaptureStates.get(nodeId);
-		if (!componentCaptureState) {
-			console.error('State info not found');
+		const nodeInfo = this.existingNodes.get(nodeId);
+		if (!nodeInfo) {
+			console.error('node not found', nodeId);
 			return;
 		}
-
-		const { captureState, propsKeys } = componentCaptureState;
-		const capturedState = captureState();
 
 		const state: SvelteInspectedData['state'] = {};
 		const props: SvelteInspectedData['props'] = {};
 
-		Object.entries(capturedState).forEach(([key, value]) => {
-			if (propsKeys.includes(key)) {
-				props[key] = dehydrate(value);
-			} else {
-				state[key] = dehydrate(value);
+		const componentCaptureState = this.componentsCaptureStates.get(nodeId);
+		if (componentCaptureState) {
+			const { captureState, propsKeys } = componentCaptureState;
+			const capturedState = captureState();
+
+			if (capturedState && typeof capturedState === 'object') {
+				Object.entries(capturedState).forEach(([key, value]) => {
+					if (propsKeys.includes(key)) {
+						props[key] = dehydrate(value);
+					} else {
+						state[key] = dehydrate(value);
+					}
+				});
 			}
-		});
+		}
 
 		this.sendInspectedData([
 			{
 				id: nodeId,
-				data: { state, props },
+				name: nodeInfo.name,
+				type: nodeInfo.type,
+				library: Library.SVELTE,
+				props,
+				state,
 			},
 		]);
 	}
@@ -382,7 +395,7 @@ export class SvelteAdapter extends Adapter {
 	private handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 		const { target, node, anchor } = detail;
 
-		const parseNode = (node: Node): ParsedSvelteNode => {
+		const parseNode = (node: Node, root: boolean): ParsedSvelteNode => {
 			const id = this.getOrGenerateElementId(node);
 
 			const type =
@@ -396,13 +409,26 @@ export class SvelteAdapter extends Adapter {
 				id,
 				name: node.nodeName.toLowerCase(),
 				type,
-				children: [...node.childNodes].map((child) => parseNode(child)),
+				children: [...node.childNodes].map((child) => parseNode(child, false)),
 			};
+
+			// set only for children as they won't be set in mount
+			if (!root) {
+				this.existingNodes.set(id, {
+					// parentId and containingBlockId are not important for children
+					// there wont be any mounts under them
+					parentId: null,
+					containingBlockId: null,
+					//
+					name: block.name,
+					type: block.type,
+				});
+			}
 
 			return block;
 		};
 
-		const parsedNode = parseNode(node);
+		const parsedNode = parseNode(node, true);
 		this.mount(parsedNode, target, this.currentBlockId, anchor);
 	}
 
@@ -435,6 +461,8 @@ export class SvelteAdapter extends Adapter {
 				this.existingNodes.set(node.id, {
 					parentId: null,
 					containingBlockId: null,
+					name: node.name,
+					type: node.type,
 				});
 				return;
 			}
@@ -446,6 +474,8 @@ export class SvelteAdapter extends Adapter {
 		this.existingNodes.set(node.id, {
 			parentId: targetId,
 			containingBlockId: containingBlockId,
+			name: node.name,
+			type: node.type,
 		});
 
 		const anchorId = anchor ? this.getOrGenerateElementId(anchor) : null;
@@ -529,6 +559,7 @@ export class SvelteAdapter extends Adapter {
 
 		this.existingNodes.delete(id);
 		this.componentsCaptureStates.delete(id);
+		this.inspectedComponentsIds.delete(id);
 
 		let sendUpdates = true;
 		let parentId = nodeInfo.parentId;

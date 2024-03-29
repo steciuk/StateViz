@@ -8,11 +8,10 @@ import {
 import { Library } from '@src/shared/types/Library';
 import React, { Fragment } from 'react';
 
-const NodeInspectData = (props: {
-	library: Library;
-	inspectData: NodeInspectedData;
-}) => {
-	switch (props.library) {
+const NodeInspectData = (props: { inspectData: NodeInspectedData }) => {
+	const { library } = props.inspectData;
+
+	switch (library) {
 		case Library.REACT:
 			return (
 				<ReactNodeInspectData

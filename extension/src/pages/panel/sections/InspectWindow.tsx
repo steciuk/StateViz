@@ -15,20 +15,17 @@ export const InspectWindow = (props: { className?: string }) => {
 		selectedNodeAndLibrary?.node.id ?? null
 	);
 
-	if (!selectedNodeAndLibrary) {
+	if (!nodeInspectData) {
 		return null;
 	}
 
 	return (
 		<div className={props.className}>
 			<div className="p-2">
-				<NodeInspectInfo selectedNode={selectedNodeAndLibrary} />
+				<NodeInspectInfo selectedNode={nodeInspectData} />
 				{nodeInspectData && (
 					<div className="mt-2 flex flex-col gap-2">
-						<NodeInspectData
-							library={selectedNodeAndLibrary.library}
-							inspectData={nodeInspectData}
-						/>
+						<NodeInspectData inspectData={nodeInspectData} />
 					</div>
 				)}
 			</div>
@@ -51,7 +48,7 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 			setNodeInspectData(null);
 		} else if (inspectData) {
 			const nodeInspectData = inspectData.find((data) => data.id === nodeId);
-			setNodeInspectData(nodeInspectData?.data ?? null);
+			setNodeInspectData(nodeInspectData ?? null);
 		}
 	}, [inspectData, nodeId]);
 

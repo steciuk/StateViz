@@ -4,18 +4,23 @@ import {
 	HookType,
 	MemoizedState,
 } from '@pages/content/content-main/react/react-types';
+import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
 import {
 	InspectData,
 	NodeInspectedData,
 	ReactInspectedData,
 } from '@src/shared/types/DataType';
+import { Library } from '@src/shared/types/Library';
 
-export function getNodeData(fiber: Fiber): ReactInspectedData {
+export function getNodeData(fiber: Fiber): Omit<ReactInspectedData, 'id'> {
 	// TODO: maybe try to check if changed and don't send if not
 	const hooks = parseHooks(fiber);
 	const props = parseProps(fiber);
 
 	return {
+		type: fiber.tag,
+		name: getFiberName(fiber),
+		library: Library.REACT,
 		hooks,
 		props,
 	};

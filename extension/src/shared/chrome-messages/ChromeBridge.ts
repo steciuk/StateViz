@@ -30,10 +30,7 @@ export type InspectElementBridgeMessage = {
 	content: NodeId[];
 };
 
-export type InspectedDataMessageContent = {
-	id: NodeId;
-	data: NodeInspectedData;
-}[];
+export type InspectedDataMessageContent = NodeInspectedData[];
 
 export type InspectedDataBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;

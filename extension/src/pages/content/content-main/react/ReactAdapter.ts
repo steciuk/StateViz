@@ -15,7 +15,7 @@ import {
 	PostMessage,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { NodeInspectedData } from '@src/shared/types/DataType';
+import { ReactInspectedData } from '@src/shared/types/DataType';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { getNodeData } from './inspect-element/inspect-element';
 
@@ -39,7 +39,7 @@ export class ReactAdapter extends Adapter {
 	private idCounter = 0;
 
 	private inspectedElementsIds: NodeId[] = [];
-	private readonly inspectedData = new Map<NodeId, NodeInspectedData>();
+	private readonly inspectedData = new Map<NodeId, ReactInspectedData>();
 
 	// TODO: consider allowing more renderers
 	private readonly rendererId = 0;
@@ -143,23 +143,14 @@ export class ReactAdapter extends Adapter {
 		if (this.inspectedElementsIds.includes(id)) {
 			console.log(fiber);
 			const nodeData = getNodeData(fiber);
-			if (nodeData) {
-				this.inspectedData.set(id, nodeData);
-			}
+			this.inspectedData.set(id, { ...nodeData, id });
 		}
 	}
 
 	private flushInspectedData() {
-		const data: InspectedDataMessageContent = [];
-		this.inspectedElementsIds.forEach((id) => {
-			const inspectedData = this.inspectedData.get(id);
-			if (inspectedData) {
-				data.push({
-					id,
-					data: inspectedData,
-				});
-			}
-		});
+		const data: InspectedDataMessageContent = this.inspectedElementsIds
+			.map((id) => this.inspectedData.get(id))
+			.filter((data): data is ReactInspectedData => data !== undefined);
 
 		if (data.length === 0) return;
 
