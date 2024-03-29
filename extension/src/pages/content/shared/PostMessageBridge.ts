@@ -1,5 +1,9 @@
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeId, ParsedFiber } from '@src/shared/types/ParsedFiber';
+import {
+	NodeId,
+	ParsedNode,
+	NodeAndLibrary,
+} from '@src/shared/types/ParsedNode';
 import { OmitFromUnion } from '@src/shared/utility-types';
 
 export enum PostMessageSource {
@@ -8,31 +12,55 @@ export enum PostMessageSource {
 }
 
 export enum PostMessageType {
-	REACT_ATTACHED = 'REACT_ATTACHED',
+	LIBRARY_ATTACHED = 'LIBRARY_ATTACHED',
 	UNMOUNT_NODES = 'UNMOUNT_NODES',
 	MOUNT_NODES = 'MOUNT_NODES',
+	MOUNT_ROOTS = 'MOUNT_ROOTS',
+	UPDATE_NODES = 'UPDATE_NODES',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
 	INSPECTED_DATA = 'INSPECTED_DATA',
 }
 
-export type UnmountNodesOperation = NodeId[];
+export type UnmountNodesOperation = {
+	parentId: NodeId | null;
+	id: NodeId;
+};
 export type MountNodesOperations = Array<{
-	pathFromRoot: NodeId[];
-	afterNode: NodeId | null;
-	node: ParsedFiber;
+	parentId: NodeId;
+	anchor: {
+		type: 'before' | 'after';
+		id: NodeId | null;
+	};
+	node: ParsedNode;
 }>;
+export type MountRootsOperations = NodeAndLibrary[];
+export type UpdateNodesOperations = Array<
+	Partial<ParsedNode> & Pick<ParsedNode, 'id'>
+>;
 
 // MESSAGE TYPES
-export type ReactAttachedPostMessage = {
+export type LibraryAttachedPostMessage = {
 	source: PostMessageSource.MAIN;
-	type: PostMessageType.REACT_ATTACHED;
+	type: PostMessageType.LIBRARY_ATTACHED;
 	content?: undefined;
+};
+
+export type MountRootsPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.MOUNT_ROOTS;
+	content: MountRootsOperations;
 };
 
 export type MountNodesPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_NODES;
 	content: MountNodesOperations;
+};
+
+export type UpdateNodesPostMessage = {
+	source: PostMessageSource.MAIN;
+	type: PostMessageType.UPDATE_NODES;
+	content: UpdateNodesOperations;
 };
 
 export type UnmountNodesPostMessage = {
@@ -54,11 +82,13 @@ export type InspectElementPostMessage = {
 };
 
 export type PostMessage =
-	| ReactAttachedPostMessage
+	| LibraryAttachedPostMessage
+	| MountRootsPostMessage
 	| MountNodesPostMessage
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage
-	| InspectedDataPostMessage;
+	| InspectedDataPostMessage
+	| UpdateNodesPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}
@@ -118,3 +148,4 @@ export class PostMessageBridge {
 		);
 	}
 }
+

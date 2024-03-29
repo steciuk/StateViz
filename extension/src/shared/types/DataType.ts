@@ -1,5 +1,7 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 import { ReactElement } from 'react';
+
+/* eslint-disable no-mixed-spaces-and-tabs */
+import { HookType } from '@pages/content/content-main/react/react-types';
 
 // Based on react/packages/react-devtools-shared/src/utils.js
 export enum DataType {
@@ -118,8 +120,25 @@ export type TypedData =
 			data: unknown;
 	  };
 
-export type NodeInspectedData = {
-	state: InspectData[];
+export type NodeInspectedData = ReactInspectedData | SvelteInspectedData;
+
+export type ReactInspectedData = {
+	hooks: {
+		hookType: HookType | 'unknown';
+		data: InspectData;
+	}[];
+	props: {
+		[key: string]: InspectData;
+	};
+};
+
+export type SvelteInspectedData = {
+	props: {
+		[key: string]: InspectData;
+	};
+	state: {
+		[key: string]: InspectData;
+	};
 };
 
 export type InspectData =
@@ -158,3 +177,4 @@ export type InspectData =
 	| {
 			type: 'MAX_DEPTH';
 	  };
+

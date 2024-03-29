@@ -1,5 +1,10 @@
-import { injectHook } from '@pages/content/content-main/inject-hook';
 import { runLog } from '@src/shared/run-log';
+import { SvelteAdapter } from '@pages/content/content-main/svelte/SvelteAdapter';
+import {
+	PostMessageBridge,
+	PostMessageSource,
+} from '@pages/content/shared/PostMessageBridge';
+import { ReactAdapter } from '@pages/content/content-main/react/ReactAdapter';
 
 runLog('content-main.ts');
 
@@ -10,7 +15,13 @@ runLog('content-main.ts');
 // TODO: Uncomment the css line in manifest.ts when using this
 // import('./components/Demo');
 
-injectHook();
+const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
+
+const svelteAdapter = new SvelteAdapter(postMessageBridge);
+const reactAdapter = new ReactAdapter(postMessageBridge);
+
+svelteAdapter.initialize();
+reactAdapter.initialize();
 
 // TODO: why is this needed? (see: extension/src/pages/content/injection/hookFunctions/inject.ts)
 // on('renderer', ({ reactBuildType }) => {
@@ -23,3 +34,4 @@ injectHook();
 // 		'*'
 // 	);
 // });
+

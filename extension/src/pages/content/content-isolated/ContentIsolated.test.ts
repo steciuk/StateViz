@@ -19,7 +19,7 @@ import {
 	ChromeBridgeListener,
 	ChromeBridgeMessageType,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { ParsedFiber } from '@src/shared/types/ParsedFiber';
+import { ParsedReactNode } from '@src/shared/types/ParsedNode';
 
 describe('ContentIsolated', () => {
 	let contentIsolated: ContentIsolated;
@@ -44,7 +44,7 @@ describe('ContentIsolated', () => {
 
 	afterEach(() => {
 		ContentIsolated['instance'] = undefined;
-		contentIsolated['reactAttached'] = false;
+		contentIsolated['libraryAttached'] = false;
 		contentIsolated['currentFibers'].clear();
 		vi.clearAllMocks();
 	});
@@ -67,8 +67,8 @@ describe('ContentIsolated', () => {
 
 	describe('handleDevtoolsPanelConnection', () => {
 		it('should send FULL_SKELETON message if currentFibers is not empty', () => {
-			contentIsolated['currentFibers'].set(1, { name: '1' } as ParsedFiber);
-			contentIsolated['currentFibers'].set(2, { name: '2' } as ParsedFiber);
+			contentIsolated['currentFibers'].set(1, { name: '1' } as ParsedReactNode);
+			contentIsolated['currentFibers'].set(2, { name: '2' } as ParsedReactNode);
 			contentIsolated['handleDevtoolsPanelConnection']();
 
 			expect(chromeBridge.send).toBeCalledWith({
@@ -85,10 +85,10 @@ describe('ContentIsolated', () => {
 	});
 
 	describe('handleReactAttachedPostMessage', () => {
-		it('should set reactAttached to true', () => {
+		it('should set libraryAttached to true', () => {
 			contentIsolated['handleReactAttachedPostMessage']({} as any);
 
-			expect(contentIsolated['reactAttached']).toBe(true);
+			expect(contentIsolated['libraryAttached']).toBe(true);
 		});
 
 		it('should send CREATE_DEVTOOLS_PANEL message', () => {
@@ -209,8 +209,8 @@ describe('ContentIsolated', () => {
 
 	describe('handleUnmountNodesPostMessage', () => {
 		it('should remove root node from currentFibers and send FULL_SKELETON message', () => {
-			contentIsolated['currentFibers'].set(1, { id: 1 } as ParsedFiber);
-			contentIsolated['currentFibers'].set(2, { id: 2 } as ParsedFiber);
+			contentIsolated['currentFibers'].set(1, { id: 1 } as ParsedReactNode);
+			contentIsolated['currentFibers'].set(2, { id: 2 } as ParsedReactNode);
 
 			const message = {
 				content: [1],
@@ -234,7 +234,7 @@ describe('ContentIsolated', () => {
 					{ id: 2, name: '2' },
 					{ id: 3, name: '3' },
 				],
-			} as ParsedFiber);
+			} as ParsedReactNode);
 
 			const message = {
 				content: [1, 3],
@@ -288,7 +288,7 @@ describe('ContentIsolated', () => {
 	});
 
 	describe('handleIsReactAttachedChromeMessage', () => {
-		it('should send responseCallback with reactAttached value', () => {
+		it('should send responseCallback with libraryAttached value', () => {
 			const responseCallback = vi.fn();
 
 			contentIsolated['handleIsReactAttachedChromeMessage']({
@@ -348,3 +348,4 @@ vi.mock('@src/shared/chrome-messages/ChromeBridge', async () => {
 		ChromeBridgeListener,
 	};
 });
+
