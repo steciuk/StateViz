@@ -4,43 +4,40 @@ import {
 	HookType,
 	MemoizedState,
 } from '@pages/content/content-main/react/react-types';
-import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
-import {
-	InspectData,
-	NodeInspectedData,
-	ReactInspectedData,
-} from '@src/shared/types/DataType';
-import { Library } from '@src/shared/types/Library';
+import { InspectData, NodeInspectedData } from '@src/shared/types/DataType';
 
-export function getNodeData(fiber: Fiber): Omit<ReactInspectedData, 'id'> {
+export function getNodeData(fiber: Fiber): NodeInspectedData['nodeData'] {
 	// TODO: maybe try to check if changed and don't send if not
 	const hooks = parseHooks(fiber);
 	const props = parseProps(fiber);
 
-	return {
-		type: fiber.tag,
-		name: getFiberName(fiber),
-		library: Library.REACT,
-		hooks,
-		props,
-	};
+	return [
+		{
+			group: 'Props',
+			data: props,
+		},
+		{
+			group: 'Hooks',
+			data: hooks,
+		},
+	];
 }
 
-function parseProps(fiber: Fiber): ReactInspectedData['props'] {
-	const props: NodeInspectedData['props'] = {};
+function parseProps(fiber: Fiber) {
 	const fiberProps = fiber.memoizedProps;
-	if (fiberProps) {
-		for (const [key, value] of Object.entries(fiberProps)) {
-			props[key] = dehydrate(value, 0);
-		}
-	}
 
-	return props;
+	if (!fiberProps) return [];
+
+	return Object.entries(fiberProps).map(([key, value]) => ({
+		label: key,
+		value: dehydrate(value, 0),
+	}));
 }
 
-function parseHooks(fiber: Fiber): ReactInspectedData['hooks'] {
+function parseHooks(fiber: Fiber) {
 	const state: InspectData[] = [];
 	let current: MemoizedState | null = fiber.memoizedState;
+
 	while (current) {
 		state.push(dehydrate(current.memoizedState, 0));
 		current = current.next;
@@ -52,8 +49,8 @@ function parseHooks(fiber: Fiber): ReactInspectedData['hooks'] {
 			: new Array<HookType | 'unknown'>(state.length).fill('unknown');
 
 	return state.map((data, index) => ({
-		hookType: hooksNames[index],
-		data,
+		label: hooksNames[index],
+		value: data,
 	}));
 }
 

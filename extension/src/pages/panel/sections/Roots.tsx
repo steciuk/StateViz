@@ -1,9 +1,4 @@
-import { Library } from '@src/shared/types/Library';
-import {
-	ParsedReactNode,
-	ParsedSvelteNode,
-	NodeAndLibrary,
-} from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import React from 'react';
 import { Row } from '@pages/panel/components/Row/Row';
 
@@ -17,3 +12,4 @@ const Roots = (props: { roots: NodeAndLibrary[] }) => {
 };
 
 export default Roots;
+

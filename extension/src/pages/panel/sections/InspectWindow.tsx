@@ -6,8 +6,8 @@ import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
 import { NodeInspectedData } from '@src/shared/types/DataType';
 import { NodeId } from '@src/shared/types/ParsedNode';
-import NodeInspectInfo from '@pages/panel/library-specific/components/NodeInspectInfo';
-import NodeInspectData from '@pages/panel/library-specific/components/NodeInspectData';
+import NodeInspectInfo from '@pages/panel/components/NodeInspectInfo';
+import NodeInspectData from '@pages/panel/components/NodeInspectData';
 
 export const InspectWindow = (props: { className?: string }) => {
 	const selectedNodeAndLibrary = useContext(SelectedNodeContext);

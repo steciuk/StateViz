@@ -15,9 +15,10 @@ import {
 	PostMessage,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { ReactInspectedData } from '@src/shared/types/DataType';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { getNodeData } from './inspect-element/inspect-element';
+import { NodeInspectedData } from '@src/shared/types/DataType';
+import { WorkTag } from '@src/shared/types/react-types';
 
 declare global {
 	interface Window {
@@ -39,7 +40,7 @@ export class ReactAdapter extends Adapter {
 	private idCounter = 0;
 
 	private inspectedElementsIds: NodeId[] = [];
-	private readonly inspectedData = new Map<NodeId, ReactInspectedData>();
+	private readonly inspectedData = new Map<NodeId, NodeInspectedData>();
 
 	// TODO: consider allowing more renderers
 	private readonly rendererId = 0;
@@ -143,14 +144,24 @@ export class ReactAdapter extends Adapter {
 		if (this.inspectedElementsIds.includes(id)) {
 			console.log(fiber);
 			const nodeData = getNodeData(fiber);
-			this.inspectedData.set(id, { ...nodeData, id });
+
+			this.inspectedData.set(id, {
+				library: Library.REACT,
+				id,
+				name: getFiberName(fiber),
+				nodeInfo: [{ label: 'Type', value: WorkTag[fiber.tag] ?? 'Unknown' }],
+				nodeData,
+			});
 		}
 	}
 
 	private flushInspectedData() {
 		const data: InspectedDataMessageContent = this.inspectedElementsIds
 			.map((id) => this.inspectedData.get(id))
-			.filter((data): data is ReactInspectedData => data !== undefined);
+			.filter(
+				<T>(data: T): data is Extract<T, NodeInspectedData> =>
+					data !== undefined
+			);
 
 		if (data.length === 0) return;
 

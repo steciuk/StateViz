@@ -8,7 +8,7 @@ import {
 	PostMessage,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { SvelteInspectedData } from '@src/shared/types/DataType';
+import { InspectData } from '@src/shared/types/DataType';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
@@ -222,8 +222,8 @@ export class SvelteAdapter extends Adapter {
 			return;
 		}
 
-		const state: SvelteInspectedData['state'] = {};
-		const props: SvelteInspectedData['props'] = {};
+		const state: { label: string; value: InspectData }[] = [];
+		const props: { label: string; value: InspectData }[] = [];
 
 		const componentCaptureState = this.componentsCaptureStates.get(nodeId);
 		if (componentCaptureState) {
@@ -233,9 +233,9 @@ export class SvelteAdapter extends Adapter {
 			if (capturedState && typeof capturedState === 'object') {
 				Object.entries(capturedState).forEach(([key, value]) => {
 					if (propsKeys.includes(key)) {
-						props[key] = dehydrate(value);
+						props.push({ label: key, value: dehydrate(value) });
 					} else {
-						state[key] = dehydrate(value);
+						state.push({ label: key, value: dehydrate(value) });
 					}
 				});
 			}
@@ -245,10 +245,18 @@ export class SvelteAdapter extends Adapter {
 			{
 				id: nodeId,
 				name: nodeInfo.name,
-				type: nodeInfo.type,
 				library: Library.SVELTE,
-				props,
-				state,
+				nodeInfo: [{ label: 'Type', value: nodeInfo.type }],
+				nodeData: [
+					{
+						group: 'Props',
+						data: props,
+					},
+					{
+						group: 'State',
+						data: state,
+					},
+				],
 			},
 		]);
 	}
