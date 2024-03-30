@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import ReactApp from "./react/ReactApp.tsx";
+import { ReactApp } from "./react/ReactApp.tsx";
 import SvelteApp from "./svelte/SvelteApp.svelte";
 
 ReactDOM.createRoot(document.getElementById("react-root")!).render(
