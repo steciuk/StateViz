@@ -133,10 +133,12 @@ export type NodeInspectedData = {
 	id: NodeId;
 	name: string;
 	nodeInfo: Array<{ label: string; value: string }>;
-	nodeData: Array<{
-		group: string;
-		data: Array<{ label: string; value: InspectData }>;
-	}>;
+	nodeData: NodeDataGroup[];
+};
+
+export type NodeDataGroup = {
+	group: string;
+	data: Array<{ label: string; value: InspectData }>;
 };
 
 export type InspectData =

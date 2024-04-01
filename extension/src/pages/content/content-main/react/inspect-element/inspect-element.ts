@@ -1,42 +1,76 @@
 import { dehydrate } from '@pages/content/content-main/dehydrate';
 import {
 	Fiber,
+	HookFullMemoizedState,
+	HookLessMemoizedState,
 	HookType,
 	MemoizedState,
 } from '@pages/content/content-main/react/react-types';
-import { InspectData, NodeInspectedData } from '@src/shared/types/DataType';
+import {
+	InspectData,
+	NodeDataGroup,
+	NodeInspectedData,
+} from '@src/shared/types/DataType';
+import { WorkTag } from '@src/shared/types/react-types';
 
-export function getNodeData(fiber: Fiber): NodeInspectedData['nodeData'] {
+export function getNodeData(fiber: Fiber): NodeDataGroup[] {
 	// TODO: maybe try to check if changed and don't send if not
-	const hooks = parseHooks(fiber);
 	const props = parseProps(fiber);
+	const state = getNodeState(fiber);
 
-	return [
-		{
-			group: 'Props',
-			data: props,
-		},
-		{
-			group: 'Hooks',
-			data: hooks,
-		},
-	];
+	return [props, state].filter(
+		<T>(data: T): data is Extract<T, NodeDataGroup> => data !== null
+	);
 }
 
-function parseProps(fiber: Fiber) {
+function parseProps(fiber: Fiber): NodeDataGroup | null {
+	switch (fiber.tag) {
+		case WorkTag.Fragment:
+		case WorkTag.HostRoot:
+			return null;
+	}
+
 	const fiberProps = fiber.memoizedProps;
 
-	if (!fiberProps) return [];
+	if (!fiberProps) return null;
 
-	return Object.entries(fiberProps).map(([key, value]) => ({
-		label: key,
-		value: dehydrate(value, 0),
-	}));
+	return {
+		group: 'Props',
+		data: Object.entries(fiberProps).map(([key, value]) => ({
+			label: key,
+			value: dehydrate(value, 0),
+		})),
+	};
 }
 
-function parseHooks(fiber: Fiber) {
+function getNodeState(fiber: Fiber): NodeDataGroup | null {
+	switch (fiber.tag) {
+		case WorkTag.Fragment:
+		case WorkTag.HostRoot:
+			return null;
+	}
+
+	const state = fiber.memoizedState;
+
+	if (!state) return null;
+
+	if (
+		Object.hasOwn(state, 'baseState') &&
+		Object.hasOwn(state, 'memoizedState') &&
+		Object.hasOwn(state, 'next')
+	) {
+		return parseHooks(state as HookFullMemoizedState, fiber._debugHookTypes);
+	}
+
+	return parseState(state as HookLessMemoizedState);
+}
+
+function parseHooks(
+	memoizedState: HookFullMemoizedState,
+	hookTypes?: HookType[] | null
+): NodeDataGroup {
 	const state: InspectData[] = [];
-	let current: MemoizedState | null = fiber.memoizedState;
+	let current: HookFullMemoizedState | null = memoizedState;
 
 	while (current) {
 		state.push(dehydrate(current.memoizedState, 0));
@@ -44,13 +78,26 @@ function parseHooks(fiber: Fiber) {
 	}
 
 	const hooksNames =
-		fiber._debugHookTypes && fiber._debugHookTypes.length === state.length
-			? fiber._debugHookTypes
+		hookTypes && hookTypes.length === state.length
+			? hookTypes
 			: new Array<HookType | 'unknown'>(state.length).fill('unknown');
 
-	return state.map((data, index) => ({
-		label: hooksNames[index],
-		value: data,
-	}));
+	return {
+		group: 'Hooks',
+		data: state.map((data, index) => ({
+			label: hooksNames[index],
+			value: data,
+		})),
+	};
+}
+
+function parseState(memoizedState: HookLessMemoizedState): NodeDataGroup {
+	return {
+		group: 'State',
+		data: Object.entries(memoizedState).map(([key, value]) => ({
+			label: key,
+			value: dehydrate(value, 0),
+		})),
+	};
 }
 
