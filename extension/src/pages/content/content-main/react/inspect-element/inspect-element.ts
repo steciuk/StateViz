@@ -4,13 +4,8 @@ import {
 	HookFullMemoizedState,
 	HookLessMemoizedState,
 	HookType,
-	MemoizedState,
 } from '@pages/content/content-main/react/react-types';
-import {
-	InspectData,
-	NodeDataGroup,
-	NodeInspectedData,
-} from '@src/shared/types/DataType';
+import { InspectData, NodeDataGroup } from '@src/shared/types/DataType';
 import { WorkTag } from '@src/shared/types/react-types';
 
 export function getNodeData(fiber: Fiber): NodeDataGroup[] {

@@ -1,6 +1,7 @@
 import { FunctionComponent } from "./FunctionComponent";
 import { ClassComponent } from "./ClassComponent";
 import { MemoComponent } from "./MemoComponent";
+import { SuspenseComponent } from "./SuspenseComponent";
 
 export function ReactApp() {
   return (
@@ -12,6 +13,7 @@ export function ReactApp() {
       <>
         <p>Fragment</p>
       </>
+      <SuspenseComponent name="Suspense Component" />
     </div>
   );
 }
