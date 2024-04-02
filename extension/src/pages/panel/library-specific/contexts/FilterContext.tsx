@@ -118,8 +118,6 @@ export const FilterProvider = (props: { children: React.ReactNode }) => {
 			const { library, node } = nodeAndLibrary;
 			switch (library) {
 				case Library.REACT: {
-					const a = reactFilterSettings[node.type];
-					console.log(nodeAndLibrary, a);
 					return reactFilterSettings[node.type] ?? true;
 				}
 				case Library.SVELTE:

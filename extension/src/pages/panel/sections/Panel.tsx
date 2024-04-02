@@ -1,19 +1,12 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 
-import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { SelectedNodeUpdateContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { Header } from '@pages/panel/sections/Header/Header';
 import { InspectWindow } from '@pages/panel/sections/InspectWindow';
-import {
-	ChromeBridgeMessage,
-	ChromeBridgeMessageType,
-} from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import Roots from '@pages/panel/sections/Roots';
 
 export const Panel = () => {
 	const updateSelectedFiber = useContext(SelectedNodeUpdateContext);
-	const roots = useRoots();
 
 	const deselectFiber = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -27,7 +20,7 @@ export const Panel = () => {
 			<Header />
 			<main className="flex h-0 flex-grow">
 				<div className="flex-grow overflow-auto" onClick={deselectFiber}>
-					{roots && <Roots roots={roots} />}
+					<Roots />
 				</div>
 				<InspectWindow className="w-48 flex-shrink-0 border-l-2 border-secondary" />
 			</main>
@@ -51,27 +44,5 @@ const useDeselectFiberOnPageReload = () => {
 			);
 		};
 	}, [updateSelectedFiber]);
-};
-
-const useRoots = () => {
-	const chromeBridge = useContext(ChromeBridgeContext);
-	const [fiberRoot, setFiberRoot] = useState<NodeAndLibrary[] | null>(null);
-
-	useEffect(() => {
-		const removeChromeMessageListener = chromeBridge.onMessage(
-			(message: ChromeBridgeMessage) => {
-				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
-					console.log('Set fiber root');
-					setFiberRoot(message.content);
-				}
-			}
-		);
-
-		return () => {
-			removeChromeMessageListener();
-		};
-	}, [chromeBridge]);
-
-	return fiberRoot;
 };
 
