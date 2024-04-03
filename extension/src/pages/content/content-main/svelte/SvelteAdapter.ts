@@ -47,7 +47,11 @@ export class SvelteAdapter extends Adapter {
 
 	private readonly existingNodes = new Map<NodeId, ExistingNodeData>();
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
-	private readonly eaches = new Map<NodeId, { id: NodeId; count: number }>();
+	// parentId + svelteBlockId
+	private readonly eaches = new Map<
+		`${NodeId}-${string}`,
+		{ id: NodeId; count: number }
+	>();
 
 	private readonly componentsCaptureStates = new Map<
 		NodeId,
@@ -264,7 +268,7 @@ export class SvelteAdapter extends Adapter {
 	private handleSvelteRegisterBlock(
 		detail: SvelteEventMap['SvelteRegisterBlock']
 	) {
-		const { type, block } = detail;
+		const { type, block, id: svelteBlockId } = detail;
 
 		if (block.m) {
 			const original = block.m;
@@ -316,14 +320,16 @@ export class SvelteAdapter extends Adapter {
 							throw new Error('each outside of block');
 						}
 
-						let each = this.eaches.get(this.currentBlockId);
+						let each = this.eaches.get(
+							`${this.currentBlockId}-${svelteBlockId}`
+						);
 						if (!each) {
 							// if there was no each, mount it
 							each = { id: blockId, count: 0 };
 							this.mount(node, target, this.currentBlockId, anchor);
 						}
 
-						this.eaches.set(this.currentBlockId, {
+						this.eaches.set(`${this.currentBlockId}-${svelteBlockId}`, {
 							id: each.id,
 							count: each.count + 1,
 						});
@@ -379,13 +385,15 @@ export class SvelteAdapter extends Adapter {
 
 						// decrement the each counter
 						// and unmount it if there are no blocks mounted underneath
-						let counter = this.eaches.get(this.currentBlockId)?.count ?? 0;
+						let counter =
+							this.eaches.get(`${this.currentBlockId}-${svelteBlockId}`)
+								?.count ?? 0;
 						counter -= 1;
 						if (counter <= 0) {
-							this.eaches.delete(this.currentBlockId);
+							this.eaches.delete(`${this.currentBlockId}-${svelteBlockId}`);
 							this.unmount(blockId);
 						} else {
-							this.eaches.set(this.currentBlockId, {
+							this.eaches.set(`${this.currentBlockId}-${svelteBlockId}`, {
 								id: blockId,
 								count: counter,
 							});

@@ -192,7 +192,12 @@ export class ContentIsolated {
 				return;
 			}
 
-			if (anchor.id === null) {
+			const anchorNodeIndex =
+				anchor.id === null
+					? -1
+					: parent.children.findIndex((child) => child.id === anchor.id);
+
+			if (anchorNodeIndex === -1) {
 				// TODO: think of some type fix
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (anchor.type === 'after') parent.children.unshift(node as any);
@@ -200,14 +205,6 @@ export class ContentIsolated {
 				else parent.children.push(node as any);
 
 				areUpdates = true;
-				return;
-			}
-
-			const anchorNodeIndex = parent.children.findIndex(
-				(child) => child.id === anchor.id
-			);
-			if (anchorNodeIndex === -1) {
-				console.error('anchorNode not found');
 				return;
 			}
 

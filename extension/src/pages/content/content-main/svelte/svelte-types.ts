@@ -67,7 +67,7 @@ type SvelteComponentDetail = {
 };
 
 export type SvelteBlockDetail = {
-	id: number;
+	id: string;
 	source: string;
 	type: SvelteBlockType;
 
