@@ -421,9 +421,14 @@ export class SvelteAdapter extends Adapter {
 					  ? SvelteBlockType.text
 					  : SvelteBlockType.anchor;
 
+			let name = node.nodeName.toLowerCase();
+			if (type === SvelteBlockType.text && node.nodeValue) {
+				name = `"${node.nodeValue}"`;
+			}
+
 			const block: ParsedSvelteNode = {
 				id,
-				name: node.nodeName.toLowerCase(),
+				name,
 				type,
 				children: [...node.childNodes].map((child) => parseNode(child, false)),
 			};

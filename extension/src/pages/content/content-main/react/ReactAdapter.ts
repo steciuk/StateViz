@@ -222,7 +222,7 @@ export class ReactAdapter extends Adapter {
 			alternate.memoizedState.isDehydrated !== true;
 		const isMounted =
 			current.memoizedState != null &&
-			current.memoizedState.element != null &&
+			current.memoizedState.element !== null &&
 			current.memoizedState.isDehydrated !== true;
 
 		if (!wasMounted && isMounted) {

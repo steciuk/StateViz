@@ -19,6 +19,8 @@ export type HookFullMemoizedState = {
 	baseState: unknown;
 	memoizedState: unknown;
 	next: HookFullMemoizedState | null;
+	element?: unknown;
+	isDehydrated?: boolean;
 };
 
 export type HookLessMemoizedState = Record<string, unknown>;
