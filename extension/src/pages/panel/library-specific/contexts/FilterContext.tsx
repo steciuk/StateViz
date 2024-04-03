@@ -4,6 +4,8 @@ import { WorkTag } from '@src/shared/types/react-types';
 import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 import { Library } from '@src/shared/types/Library';
+import { StorageType, createStorage } from '@src/shared/storages/base';
+import useStorage from '@src/shared/hooks/useStorage';
 
 const defaultReactFilterSettings: { [key in WorkTag]: boolean } = {
 	[WorkTag.FunctionComponent]: true,
@@ -52,6 +54,22 @@ const defaultSvelteFilterSettings: { [key in SvelteBlockType]: boolean } = {
 	[SvelteBlockType.then]: false,
 } as const;
 
+const svelteFilterStorage = createStorage(
+	'state-viz-svelte-filter',
+	defaultSvelteFilterSettings,
+	{
+		storageType: StorageType.Local,
+	}
+);
+
+const reactFilterStorage = createStorage(
+	'state-viz-react-filter',
+	defaultReactFilterSettings,
+	{
+		storageType: StorageType.Local,
+	}
+);
+
 type SettingIdentifier<T extends Library> = T extends Library.REACT
 	? WorkTag
 	: T extends Library.SVELTE
@@ -78,16 +96,8 @@ export const FilterUpdateContext = createContext<
 >(() => {});
 
 export const FilterProvider = (props: { children: React.ReactNode }) => {
-	// const [filterSettings, setFilterSettings] = useState<typeof defaultFilterSettings>(
-	// 	defaultFilterSettings
-	// );
-
-	const [reactFilterSettings, setReactFilterSettings] = useState(
-		defaultReactFilterSettings
-	);
-	const [svelteFilterSettings, setSvelteFilterSettings] = useState(
-		defaultSvelteFilterSettings
-	);
+	const reactFilterSettings = useStorage(reactFilterStorage);
+	const svelteFilterSettings = useStorage(svelteFilterStorage);
 
 	const updateSettings = useCallback(
 		<T extends Library>(
@@ -97,13 +107,13 @@ export const FilterProvider = (props: { children: React.ReactNode }) => {
 		) => {
 			switch (library) {
 				case Library.REACT:
-					setReactFilterSettings((prev) => ({
+					reactFilterStorage.set((prev) => ({
 						...prev,
 						[key]: value,
 					}));
 					break;
 				case Library.SVELTE:
-					setSvelteFilterSettings((prev) => ({
+					svelteFilterStorage.set((prev) => ({
 						...prev,
 						[key]: value,
 					}));

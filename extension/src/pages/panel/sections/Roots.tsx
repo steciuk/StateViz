@@ -1,8 +1,6 @@
 import { NodeAndLibrary, ParsedNode } from '@src/shared/types/ParsedNode';
 import React, {
 	Fragment,
-	use,
-	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
@@ -66,8 +64,13 @@ const useFilteredNodes = () => {
 	const roots = useRoots();
 	const filterFunc = useContext(FilterContext);
 
-	const filterOutNodes = useCallback(
-		<T extends ParsedNode>(nodes: T[], library: Library): T[] => {
+	const filteredNodes = useMemo(() => {
+		if (!roots) return null;
+
+		const filterOutNodes = <T extends ParsedNode>(
+			nodes: T[],
+			library: Library
+		): T[] => {
 			const result: T[] = [];
 
 			nodes.forEach((node) => {
@@ -84,18 +87,13 @@ const useFilteredNodes = () => {
 			});
 
 			return result;
-		},
-		[filterFunc]
-	);
-
-	const filteredNodes = useMemo(() => {
-		if (!roots) return null;
+		};
 
 		return roots.map((root) => ({
 			library: root.library,
 			nodes: filterOutNodes([root.node], root.library),
 		}));
-	}, [roots, filterOutNodes]);
+	}, [roots, filterFunc]);
 
 	return filteredNodes;
 };

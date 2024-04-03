@@ -327,7 +327,7 @@ export class SvelteAdapter extends Adapter {
 							id: each.id,
 							count: each.count + 1,
 						});
-						// if there was and each, overwrite id for successors
+						// if there was an each, overwrite id for successors
 						// so they are mounted under old each
 						blockId = each.id;
 					} else {

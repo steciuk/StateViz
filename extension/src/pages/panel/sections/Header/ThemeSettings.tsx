@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { Toggle } from '@pages/panel/components/Toggle';
+import useStorage from '@src/shared/hooks/useStorage';
+import themeStorage from '@src/shared/storages/ThemeStorage';
 
 type Theme = 'light' | 'dark';
 
 export const ThemeSettings = () => {
-	const [theme, setTheme] = useState<Theme>('light');
+	const theme = useStorage(themeStorage);
 
 	const handleThemeChange = (value: Theme) => {
-		setTheme(value);
-		if (value === 'light') {
+		themeStorage.set(value);
+	};
+
+	useEffect(() => {
+		if (theme === 'light') {
 			document.body.classList.remove('dark');
-		} else if (value === 'dark') {
+		} else if (theme === 'dark') {
 			document.body.classList.add('dark');
 		}
-	};
+	}, [theme]);
 
 	return (
 		<div>
@@ -34,3 +39,4 @@ export const ThemeSettings = () => {
 		</div>
 	);
 };
+

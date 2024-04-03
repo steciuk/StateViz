@@ -10,11 +10,11 @@ type ThemeStorage = BaseStorage<Theme> & {
 	toggle: () => void;
 };
 
-const storage = createStorage<Theme>('theme-storage-key', 'light', {
+const storage = createStorage<Theme>('state-viz-theme', 'light', {
 	storageType: StorageType.Local,
 });
 
-const exampleThemeStorage: ThemeStorage = {
+const themeStorage: ThemeStorage = {
 	...storage,
 	// TODO: extends your own methods
 	toggle: () => {
@@ -24,4 +24,5 @@ const exampleThemeStorage: ThemeStorage = {
 	},
 };
 
-export default exampleThemeStorage;
+export default themeStorage;
+
