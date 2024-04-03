@@ -2,6 +2,7 @@
   import Component from "./Component.svelte";
   import Eaches from "./Eaches.svelte";
   import IfElse from "./IfElse.svelte";
+  import Key from "./Key.svelte";
   import Slot from "./Slot.svelte";
 </script>
 
@@ -13,4 +14,5 @@
     <Component name="Component in Slot" />
   </Slot>
   <IfElse name="IfElse" />
+  <Key name="Key" />
 </div>
