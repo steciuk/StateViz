@@ -7,8 +7,6 @@ import {
 	ReactRenderer,
 	RendererID,
 } from '@pages/content/content-main/react/react-types';
-import { ListenersStorage } from './utils/ListenersStorage';
-import { getFiberName } from './utils/getFiberName';
 import { Library } from '@src/shared/types/Library';
 import {
 	MountNodesOperations,
@@ -16,9 +14,11 @@ import {
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import { getNodeData } from './inspect-element/inspect-element';
 import { NodeInspectedData } from '@src/shared/types/DataType';
 import { WorkTag } from '@src/shared/types/react-types';
+import { ListenersStorage } from '@pages/content/content-main/react/utils/ListenersStorage';
+import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
+import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
 
 declare global {
 	interface Window {

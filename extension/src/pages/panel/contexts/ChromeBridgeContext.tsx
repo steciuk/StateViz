@@ -10,7 +10,9 @@ const chromeBridge = new ChromeBridgeToTabConnector(
 	chrome.devtools.inspectedWindow.tabId
 );
 
-export const ChromeBridgeContext = createContext(chromeBridge);
+export const ChromeBridgeContext = createContext(
+	null as unknown as ChromeBridgeToTabConnector
+);
 
 export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 	// TODO: Should we keep chromeBridge as a state variable?
@@ -41,3 +43,4 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 		</ChromeBridgeContext.Provider>
 	);
 };
+

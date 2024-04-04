@@ -5,6 +5,7 @@ import { FilterProvider } from '@pages/panel/library-specific/contexts/FilterCon
 import { SelectedNodeProvider } from '@pages/panel/contexts/SelectedNodeContext';
 import { Panel } from '@pages/panel/sections/Panel';
 import { InspectDataProvider } from '@pages/panel/contexts/NodeInspectDataContext';
+import { ExpandProvider } from '@pages/panel/contexts/ColapseContext';
 
 const App = () => {
 	return (
@@ -13,7 +14,9 @@ const App = () => {
 				<FilterProvider>
 					<SelectedNodeProvider>
 						<InspectDataProvider>
-							<Panel />
+							<ExpandProvider>
+								<Panel />
+							</ExpandProvider>
 						</InspectDataProvider>
 					</SelectedNodeProvider>
 				</FilterProvider>
