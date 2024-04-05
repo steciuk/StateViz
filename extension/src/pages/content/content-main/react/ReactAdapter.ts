@@ -19,6 +19,7 @@ import { WorkTag } from '@src/shared/types/react-types';
 import { ListenersStorage } from '@pages/content/content-main/react/utils/ListenersStorage';
 import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
+import { getNearestStateNode } from '@pages/content/content-main/react/utils/getNearestStateNode';
 
 declare global {
 	interface Window {
@@ -26,16 +27,16 @@ declare global {
 	}
 }
 
-export class ReactAdapter extends Adapter {
+export class ReactAdapter extends Adapter<{
+	parentId: NodeId | null;
+	fiber: Fiber;
+	container: Node | null;
+}> {
 	protected override readonly adapterPrefix = 're';
 
 	private readonly renderers = new Map<RendererID, ReactRenderer>();
 	private readonly listeners = new ListenersStorage();
 
-	private existingFibersData = new Map<
-		NodeId,
-		{ parentId: NodeId | null; fiber: Fiber }
-	>();
 	private readonly fiberToId = new Map<Fiber, NodeId>();
 	private idCounter = 0;
 
@@ -120,7 +121,7 @@ export class ReactAdapter extends Adapter {
 		if (message.type === PostMessageType.INSPECT_ELEMENT) {
 			// filter out not existing or other library elements
 			const ownInspectedElementsIds = message.content.filter((id) =>
-				this.existingFibersData.has(id)
+				this.existingNodes.has(id)
 			);
 
 			this.inspectedElementsIds = ownInspectedElementsIds;
@@ -130,7 +131,7 @@ export class ReactAdapter extends Adapter {
 			console.log('INSPECT_ELEMENT', ownInspectedElementsIds);
 
 			const fibersToInspect = ownInspectedElementsIds
-				.map((id) => this.existingFibersData.get(id)?.fiber)
+				.map((id) => this.existingNodes.get(id)?.fiber)
 				.filter((fiber): fiber is Fiber => fiber !== undefined);
 
 			fibersToInspect.forEach((fiber) => this.refreshInspectedData(fiber));
@@ -246,9 +247,10 @@ export class ReactAdapter extends Adapter {
 		const rootId = this.getOrGenerateElementId(root);
 
 		this.refreshInspectedData(root);
-		this.existingFibersData.set(rootId, {
+		this.existingNodes.set(rootId, {
 			parentId: null,
 			fiber: root,
+			container: getNearestStateNode(root),
 		});
 
 		const node: ParsedReactNode = {
@@ -271,9 +273,10 @@ export class ReactAdapter extends Adapter {
 		const children: ParsedReactNode[] = [];
 		while (currentChild) {
 			const childId = this.getOrGenerateElementId(currentChild);
-			this.existingFibersData.set(childId, {
+			this.existingNodes.set(childId, {
 				parentId: this.getOrGenerateElementId(parent),
 				fiber: currentChild,
+				container: getNearestStateNode(currentChild),
 			});
 
 			this.refreshInspectedData(currentChild);
@@ -301,7 +304,7 @@ export class ReactAdapter extends Adapter {
 		const id = this.getOrGenerateElementId(fiber);
 
 		let shouldSendUnmount = true;
-		const nodeData = this.existingFibersData.get(id);
+		const nodeData = this.existingNodes.get(id);
 		if (!nodeData) return; // node was already unmounted
 
 		let parentId: NodeId | null | undefined = nodeData.parentId;
@@ -312,7 +315,7 @@ export class ReactAdapter extends Adapter {
 				shouldSendUnmount = false;
 				break;
 			}
-			parentId = this.existingFibersData.get(parentId)?.parentId;
+			parentId = this.existingNodes.get(parentId)?.parentId;
 		}
 
 		if (shouldSendUnmount) {
@@ -322,7 +325,7 @@ export class ReactAdapter extends Adapter {
 			});
 		}
 
-		this.existingFibersData.delete(id);
+		this.existingNodes.delete(id);
 		this.inspectedData.delete(id);
 	}
 
@@ -340,9 +343,10 @@ export class ReactAdapter extends Adapter {
 				const childId = this.getOrGenerateElementId(child);
 
 				this.refreshInspectedData(child);
-				this.existingFibersData.set(childId, {
+				this.existingNodes.set(childId, {
 					parentId: parentId,
 					fiber: child,
+					container: getNearestStateNode(child),
 				});
 
 				const prevChild = child.alternate;

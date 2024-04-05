@@ -1,5 +1,6 @@
 import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import {
+	HoverElementPostMessage,
 	MountNodesOperations,
 	MountRootsOperations,
 	PostMessage,
@@ -10,7 +11,7 @@ import {
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 
-export abstract class Adapter {
+export abstract class Adapter<T extends { container: Node | null }> {
 	private static ID_COUNTER = 0;
 	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
 	private static readonly REGISTERED_ADAPTERS = new Set<string>();
@@ -22,6 +23,8 @@ export abstract class Adapter {
 	protected abstract readonly adapterPrefix: string;
 	protected abstract inject(): void;
 	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
+
+	protected existingNodes: Map<NodeId, T> = new Map();
 
 	initialize() {
 		if (this.isInitialized) {
@@ -36,6 +39,10 @@ export abstract class Adapter {
 
 		this.postMessageBridge.onMessage((message) => {
 			this.handlePostMessageBridgeMessage(message);
+
+			if (message.type === PostMessageType.HOVER_ELEMENT) {
+				this.handleHoverPostMessage(message);
+			}
 		});
 
 		this.isInitialized = true;
@@ -92,6 +99,29 @@ export abstract class Adapter {
 		const id = `${this.adapterPrefix}${Adapter.ID_COUNTER++}`;
 		Adapter.ELEMENT_TO_ID.set(element, id);
 		return id;
+	}
+
+	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage) {
+		const container = this.existingNodes.get(chromeMessage.content)?.container;
+		if (!container) return;
+
+		console.error('TODO: implement hover overlay');
+
+		// if (this.overlay) {
+		// 	this.overlay.remove();
+		// }
+
+		// const containerRect = container?.getBoundingClientRect();
+		// if (!containerRect) return;
+
+		// this.overlay = document.createElement('div');
+		// this.overlay.style.position = 'absolute';
+		// this.overlay.style.top = `${containerRect.top}px`;
+		// this.overlay.style.left = `${containerRect.left}px`;
+		// this.overlay.style.width = `${containerRect.width}px`;
+		// this.overlay.style.height = `${containerRect.height}px`;
+		// this.overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+		// this.overlay.style.zIndex = '9999999999';
 	}
 }
 

@@ -42,12 +42,12 @@ type ExistingNodeData = {
 	containingBlockId: NodeId | null;
 	name: string;
 	type: SvelteBlockType;
+	container: Node | null;
 };
 
-export class SvelteAdapter extends Adapter {
+export class SvelteAdapter extends Adapter<ExistingNodeData> {
 	protected override readonly adapterPrefix = 'sv';
 
-	private readonly existingNodes = new Map<NodeId, ExistingNodeData>();
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
 	// parentId + svelteBlockId
 	private readonly eaches = new Map<
@@ -432,6 +432,7 @@ export class SvelteAdapter extends Adapter {
 					//
 					name: block.name,
 					type: block.type,
+					container: node,
 				});
 			}
 
@@ -474,6 +475,7 @@ export class SvelteAdapter extends Adapter {
 					containingBlockId: null,
 					name: node.name,
 					type: node.type,
+					container: target, // FIXME: this is not correct
 				});
 				return;
 			}
@@ -487,6 +489,7 @@ export class SvelteAdapter extends Adapter {
 			containingBlockId: containingBlockId,
 			name: node.name,
 			type: node.type,
+			container: target, // FIXME: this is not correct
 		});
 
 		const anchorId = anchor ? this.getOrGenerateElementId(anchor) : null;

@@ -314,7 +314,6 @@ export class ContentIsolated {
 	private handleHoverElementBridgeMessage(
 		message: HoverElementBridgeMessage
 	): void {
-		return console.error('not implemented');
 		this.postMessageBridge.send({
 			type: PostMessageType.HOVER_ELEMENT,
 			content: message.content,
