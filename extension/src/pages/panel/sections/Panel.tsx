@@ -1,9 +1,10 @@
-import React, { MouseEvent, useContext, useEffect, useState } from 'react';
+import React, { MouseEvent, useContext, useEffect } from 'react';
 
 import { SelectedNodeUpdateContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { Header } from '@pages/panel/sections/Header/Header';
 import { InspectWindow } from '@pages/panel/sections/InspectWindow';
 import Roots from '@pages/panel/sections/Roots';
+import { SplitView } from '@pages/panel/components/SplitView';
 
 export const Panel = () => {
 	const updateSelectedFiber = useContext(SelectedNodeUpdateContext);
@@ -18,11 +19,15 @@ export const Panel = () => {
 	return (
 		<div className="flex h-screen flex-col bg-background text-text">
 			<Header />
-			<main className="flex h-0 flex-grow">
-				<div className="flex-grow overflow-auto" onClick={deselectFiber}>
-					<Roots />
-				</div>
-				<InspectWindow className="w-48 flex-shrink-0 border-l-2 border-secondary" />
+			<main className="flex h-0 w-full flex-grow">
+				<SplitView
+					left={
+						<div className="h-full" onClick={deselectFiber}>
+							<Roots />
+						</div>
+					}
+					right={<InspectWindow className="h-full min-w-max" />}
+				/>
 			</main>
 		</div>
 	);
