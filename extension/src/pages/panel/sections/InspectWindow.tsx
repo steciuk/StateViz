@@ -8,6 +8,7 @@ import { NodeInspectedData } from '@src/shared/types/DataType';
 import { NodeId } from '@src/shared/types/ParsedNode';
 import NodeInspectInfo from '@pages/panel/components/NodeInspectInfo';
 import NodeInspectData from '@pages/panel/components/NodeInspectData';
+import { usePrevious } from '@src/shared/hooks/usePrevious';
 
 export const InspectWindow = (props: { className?: string }) => {
 	const selectedNodeAndLibrary = useContext(SelectedNodeContext);
@@ -41,7 +42,7 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 	const [nodeInspectData, setNodeInspectData] =
 		useState<NodeInspectedData | null>(null);
 
-	const lastInspectedFiberId = React.useRef<NodeId | null>(null);
+	const lastInspectedFiberId = usePrevious(nodeId);
 
 	useEffect(() => {
 		if (nodeId === null) {
@@ -53,15 +54,14 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 	}, [inspectData, nodeId]);
 
 	useEffect(() => {
-		if (lastInspectedFiberId.current === nodeId) return;
-		lastInspectedFiberId.current = nodeId;
+		if (lastInspectedFiberId === nodeId) return;
 
 		console.log('Requested', nodeId);
 		chromeBridge.send({
 			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
 			content: nodeId === null ? [] : [nodeId],
 		});
-	}, [nodeId, chromeBridge]);
+	}, [nodeId, chromeBridge, lastInspectedFiberId]);
 
 	return nodeInspectData;
 };

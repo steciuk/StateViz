@@ -15,10 +15,12 @@ import {
 	SelectedNodeContext,
 	SelectedNodeUpdateContext,
 } from '@pages/panel/contexts/SelectedNodeContext';
-import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary, NodeId } from '@src/shared/types/ParsedNode';
 import NodeRowText from '../../library-specific/components/NodeRowText';
 import { ExpandAllContext } from '@pages/panel/contexts/ColapseContext';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
+import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
+import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
 
 export const Row = (props: {
 	nodeAndLibrary: NodeAndLibrary;
@@ -39,6 +41,8 @@ export const Row = (props: {
 		updateSelectedNode(nodeAndLibrary);
 	};
 
+	const handleHover = useSendHover();
+
 	const indentSize = 12 * indent;
 
 	return (
@@ -48,6 +52,7 @@ export const Row = (props: {
 					'bg-secondary': selectedNode?.node.id === node.id,
 				})}
 				onClick={handleRowClick}
+				onMouseEnter={() => handleHover(node.id)}
 			>
 				<div className={`ml-[${indentSize}px]`}>
 					<ExpandArrow
@@ -101,5 +106,19 @@ function useExpandAllSignal(
 			expand(expandAll.value);
 		}
 	}, [expandAll, prevExpandAll, expand, isExpanded]);
+}
+
+function useSendHover(): (nodeId: NodeId) => void {
+	const chromeBridge = useContext(ChromeBridgeContext);
+
+	return useCallback(
+		(nodeId: NodeId) => {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.HOVER_ELEMENT,
+				content: nodeId,
+			});
+		},
+		[chromeBridge]
+	);
 }
 

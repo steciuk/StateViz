@@ -21,19 +21,25 @@ const Roots = () => {
 	if (!filteredNodes) return null;
 
 	//TODO: check if we can use index asd key here
-	return filteredNodes.map((root, i) => (
-		<div key={i}>
-			<p>{root.library}</p>
-			{root.nodes.map((node) => (
-				<Fragment key={node.id}>
-					<Row
-						nodeAndLibrary={{ node, library: root.library } as NodeAndLibrary}
-						indent={0}
-					/>
-				</Fragment>
+	return (
+		<div className="space-y-2">
+			{filteredNodes.map((root, i) => (
+				<div key={i}>
+					<h2 className="text-center text-lg">{root.library}</h2>
+					{root.nodes.map((node) => (
+						<Fragment key={node.id}>
+							<Row
+								nodeAndLibrary={
+									{ node, library: root.library } as NodeAndLibrary
+								}
+								indent={0}
+							/>
+						</Fragment>
+					))}
+				</div>
 			))}
 		</div>
-	));
+	);
 };
 
 export default Roots;

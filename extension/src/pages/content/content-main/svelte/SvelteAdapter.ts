@@ -111,8 +111,6 @@ export class SvelteAdapter extends Adapter {
 	}
 
 	private injectListeners() {
-		console.error('injectForSvelte');
-
 		const listenerRemovers: (() => void)[] = [];
 
 		listenerRemovers.push(
@@ -131,7 +129,7 @@ export class SvelteAdapter extends Adapter {
 
 		listenerRemovers.push(
 			this.addSvelteListener('SvelteDOMInsert', ({ detail }) => {
-				// console.log('SvelteDOMInsert', detail);
+				console.log('SvelteDOMInsert', detail);
 				this.handleSvelteDOMInsert(detail);
 			})
 		);

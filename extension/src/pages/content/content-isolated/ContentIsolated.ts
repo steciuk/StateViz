@@ -21,6 +21,7 @@ import {
 	ChromeBridgeListener,
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
+	HoverElementBridgeMessage,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
 import {
@@ -109,6 +110,10 @@ export class ContentIsolated {
 			switch (message.type) {
 				case ChromeBridgeMessageType.INSPECT_ELEMENT:
 					this.handleInspectElementBridgeMessage(message);
+					break;
+
+				case ChromeBridgeMessageType.HOVER_ELEMENT:
+					this.handleHoverElementBridgeMessage(message);
 					break;
 
 				default:
@@ -302,6 +307,16 @@ export class ContentIsolated {
 	): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.INSPECT_ELEMENT,
+			content: message.content,
+		});
+	}
+
+	private handleHoverElementBridgeMessage(
+		message: HoverElementBridgeMessage
+	): void {
+		return console.error('not implemented');
+		this.postMessageBridge.send({
+			type: PostMessageType.HOVER_ELEMENT,
 			content: message.content,
 		});
 	}
