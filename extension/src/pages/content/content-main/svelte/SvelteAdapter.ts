@@ -4,6 +4,8 @@ import {
 	SvelteDevToolsHook,
 	SvelteEventMap,
 } from '@pages/content/content-main/svelte/svelte-types';
+import { getNodeTypeName } from '@pages/content/content-main/svelte/utils/getNodeTypeName';
+import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
 import {
 	PostMessage,
 	PostMessageType,
@@ -413,18 +415,7 @@ export class SvelteAdapter extends Adapter {
 
 		const parseNode = (node: Node, root: boolean): ParsedSvelteNode => {
 			const id = this.getOrGenerateElementId(node);
-
-			const type =
-				node.nodeType === Node.ELEMENT_NODE
-					? SvelteBlockType.element
-					: node.nodeValue && node.nodeValue !== ' '
-					  ? SvelteBlockType.text
-					  : SvelteBlockType.anchor;
-
-			let name = node.nodeName.toLowerCase();
-			if (type === SvelteBlockType.text && node.nodeValue) {
-				name = `"${node.nodeValue}"`;
-			}
+			const [type, name] = getNodeTypeName(node);
 
 			const block: ParsedSvelteNode = {
 				id,
@@ -467,6 +458,7 @@ export class SvelteAdapter extends Adapter {
 	) {
 		let targetId = this.getOrGenerateElementId(target);
 		const targetNode = this.existingNodes.get(targetId);
+		node.name = getParsedNodeDisplayName(node);
 
 		if (
 			// we have not inserted the target

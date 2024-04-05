@@ -28,13 +28,17 @@ function parseProps(fiber: Fiber): NodeDataGroup | null {
 	const fiberProps = fiber.memoizedProps;
 
 	if (!fiberProps) return null;
+	const parsedProps =
+		typeof fiberProps === 'object'
+			? Object.entries(fiberProps).map(([key, value]) => ({
+					label: key,
+					value: dehydrate(value, 0),
+			  }))
+			: [{ label: 'value', value: dehydrate(fiberProps, 0) }];
 
 	return {
 		group: 'Props',
-		data: Object.entries(fiberProps).map(([key, value]) => ({
-			label: key,
-			value: dehydrate(value, 0),
-		})),
+		data: parsedProps,
 	};
 }
 
