@@ -2,6 +2,7 @@ import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
 import classNames from 'classnames';
 import React, {
 	ReactNode,
+	useCallback,
 	useContext,
 	useEffect,
 	useRef,
@@ -9,11 +10,12 @@ import React, {
 } from 'react';
 
 const MIN_WIDTH = 200;
+const INIT_WIDTH = 400;
 
 export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 	const selectedNodeAndLibrary = useContext(SelectedNodeContext);
 
-	const [leftWidth, setLeftWidth] = useState<number>(400);
+	const [leftWidth, setLeftWidth] = useState<number>(INIT_WIDTH);
 	const leftRef = useRef<HTMLDivElement>(null);
 
 	const [separatorXPosition, setSeparatorXPosition] = useState<
@@ -27,21 +29,25 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 		setDragging(true);
 	};
 
-	const onMouseMove = (e: MouseEvent) => {
-		e.preventDefault();
-		if (dragging && separatorXPosition !== undefined) {
-			const newLeftWidth = Math.max(
-				leftWidth + e.clientX - separatorXPosition,
-				MIN_WIDTH
-			);
-			setSeparatorXPosition(e.clientX);
-			setLeftWidth(newLeftWidth);
-		}
-	};
+	const onMouseMove = useCallback(
+		(e: MouseEvent) => {
+			if (dragging && separatorXPosition !== undefined) {
+				e.preventDefault();
 
-	const onMouseUp = () => {
+				const newLeftWidth = Math.max(
+					leftWidth + e.clientX - separatorXPosition,
+					MIN_WIDTH
+				);
+				setSeparatorXPosition(e.clientX);
+				setLeftWidth(newLeftWidth);
+			}
+		},
+		[dragging, separatorXPosition, leftWidth]
+	);
+
+	const onMouseUp = useCallback(() => {
 		setDragging(false);
-	};
+	}, []);
 
 	useEffect(() => {
 		document.addEventListener('mousemove', onMouseMove);
@@ -51,13 +57,13 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 			document.removeEventListener('mousemove', onMouseMove);
 			document.removeEventListener('mouseup', onMouseUp);
 		};
-	});
+	}, [onMouseMove, onMouseUp]);
 
 	useEffect(() => {
 		if (leftRef.current) {
 			leftRef.current.style.width = `${leftWidth}px`;
 		}
-	}, [leftRef, leftWidth]);
+	}, [leftWidth]);
 
 	return (
 		<div className="flex h-full w-full items-start">
