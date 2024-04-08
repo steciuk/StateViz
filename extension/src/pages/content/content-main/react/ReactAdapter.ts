@@ -30,7 +30,7 @@ declare global {
 export class ReactAdapter extends Adapter<{
 	parentId: NodeId | null;
 	fiber: Fiber;
-	container: Node | null;
+	node: Node | null;
 }> {
 	protected override readonly adapterPrefix = 're';
 
@@ -250,7 +250,7 @@ export class ReactAdapter extends Adapter<{
 		this.existingNodes.set(rootId, {
 			parentId: null,
 			fiber: root,
-			container: getNearestStateNode(root),
+			node: getNearestStateNode(root),
 		});
 
 		const node: ParsedReactNode = {
@@ -276,7 +276,7 @@ export class ReactAdapter extends Adapter<{
 			this.existingNodes.set(childId, {
 				parentId: this.getOrGenerateElementId(parent),
 				fiber: currentChild,
-				container: getNearestStateNode(currentChild),
+				node: getNearestStateNode(currentChild),
 			});
 
 			this.refreshInspectedData(currentChild);
@@ -346,7 +346,7 @@ export class ReactAdapter extends Adapter<{
 				this.existingNodes.set(childId, {
 					parentId: parentId,
 					fiber: child,
-					container: getNearestStateNode(child),
+					node: getNearestStateNode(child),
 				});
 
 				const prevChild = child.alternate;

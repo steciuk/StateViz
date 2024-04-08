@@ -42,7 +42,7 @@ type ExistingNodeData = {
 	containingBlockId: NodeId | null;
 	name: string;
 	type: SvelteBlockType;
-	container: Node | null;
+	node: Node | null;
 };
 
 export class SvelteAdapter extends Adapter<ExistingNodeData> {
@@ -275,9 +275,9 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 
 			block.m = (target, anchor) => {
 				let blockId = this.getOrGenerateElementId(block);
-				const node: ParsedSvelteNode = {
+				const parsedNode: ParsedSvelteNode = {
 					type,
-					name: type,
+					name: getParsedNodeDisplayName({ type, name: type }),
 					children: [],
 					id: blockId,
 				};
@@ -290,18 +290,20 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 							// TODO: implement
 							throw new Error('then/catch not implemented');
 
-						case SvelteBlockType.slot:
-							node.type = SvelteBlockType.slot;
-							break;
-
 						case SvelteBlockType.component: {
 							const component = this.pendingComponents.get(blockId);
 							if (component) {
-								node.name = component.name;
+								parsedNode.name = getParsedNodeDisplayName({
+									type,
+									name: component.name,
+								});
 								this.pendingComponents.delete(blockId);
 							} else {
 								// root component is mounted before it's registered
-								node.name = 'Unknown';
+								parsedNode.name = getParsedNodeDisplayName({
+									type,
+									name: 'Unknown',
+								});
 								this.pendingComponents.set(blockId, { name: 'Unknown' });
 							}
 
@@ -326,7 +328,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 						if (!each) {
 							// if there was no each, mount it
 							each = { id: blockId, count: 0 };
-							this.mount(node, target, this.currentBlockId, anchor);
+							this.mount(parsedNode, target, this.currentBlockId, null, anchor);
 						}
 
 						this.eaches.set(`${this.currentBlockId}-${svelteBlockId}`, {
@@ -338,7 +340,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 						blockId = each.id;
 					} else {
 						// always mount other blocks
-						this.mount(node, target, this.currentBlockId, anchor);
+						this.mount(parsedNode, target, this.currentBlockId, null, anchor);
 					}
 
 					// set current block id for successors
@@ -432,7 +434,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 					//
 					name: block.name,
 					type: block.type,
-					container: node,
+					node: node,
 				});
 			}
 
@@ -440,7 +442,8 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 		};
 
 		const parsedNode = parseNode(node, true);
-		this.mount(parsedNode, target, this.currentBlockId, anchor);
+		const element = node;
+		this.mount(parsedNode, target, this.currentBlockId, element, anchor);
 	}
 
 	private handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
@@ -450,14 +453,14 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 	}
 
 	private mount(
-		node: ParsedSvelteNode,
+		parsedNode: ParsedSvelteNode,
 		target: Node,
 		containingBlockId: NodeId | null,
+		node: Node | null,
 		anchor?: Node
 	) {
 		let targetId = this.getOrGenerateElementId(target);
 		const targetNode = this.existingNodes.get(targetId);
-		node.name = getParsedNodeDisplayName(node);
 
 		if (
 			// we have not inserted the target
@@ -468,14 +471,14 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 		) {
 			if (containingBlockId === null) {
 				// we are not processing any block, node has to be the root
-				this.sendMountRoots([{ node: node, library: Library.SVELTE }]);
+				this.sendMountRoots([{ node: parsedNode, library: Library.SVELTE }]);
 
-				this.existingNodes.set(node.id, {
+				this.existingNodes.set(parsedNode.id, {
 					parentId: null,
 					containingBlockId: null,
-					name: node.name,
-					type: node.type,
-					container: target, // FIXME: this is not correct
+					name: parsedNode.name,
+					type: parsedNode.type,
+					node,
 				});
 				return;
 			}
@@ -484,12 +487,12 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 			targetId = containingBlockId;
 		}
 
-		this.existingNodes.set(node.id, {
+		this.existingNodes.set(parsedNode.id, {
 			parentId: targetId,
 			containingBlockId: containingBlockId,
-			name: node.name,
-			type: node.type,
-			container: target, // FIXME: this is not correct
+			name: parsedNode.name,
+			type: parsedNode.type,
+			node: node,
 		});
 
 		const anchorId = anchor ? this.getOrGenerateElementId(anchor) : null;
@@ -498,7 +501,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 			{
 				parentId: targetId,
 				anchor: { type: 'before', id: anchorId },
-				node,
+				node: parsedNode,
 			},
 		]);
 	}

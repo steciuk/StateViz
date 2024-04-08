@@ -1,3 +1,4 @@
+import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 
 export function getNodeTypeName(
@@ -10,13 +11,20 @@ export function getNodeTypeName(
 			  ? SvelteBlockType.text
 			  : SvelteBlockType.anchor;
 
+	const name = getName(node, type);
+	const displayName = getParsedNodeDisplayName({ type, name });
+
+	return [type, displayName];
+}
+
+function getName(node: Node, type: SvelteBlockType) {
 	switch (type) {
 		case SvelteBlockType.anchor:
-			return [type, '#anchor'];
+			return '#anchor';
 		case SvelteBlockType.text:
-			return [type, node.nodeValue ?? node.nodeName.toLowerCase()];
+			return node.nodeValue ?? node.nodeName.toLowerCase();
 		default:
-			return [type, node.nodeName.toLowerCase()];
+			return node.nodeName.toLowerCase();
 	}
 }
 

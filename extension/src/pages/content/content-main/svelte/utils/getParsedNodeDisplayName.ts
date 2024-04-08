@@ -1,7 +1,9 @@
 import { ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
 
-export function getParsedNodeDisplayName(node: ParsedSvelteNode): string {
+export function getParsedNodeDisplayName(
+	node: Pick<ParsedSvelteNode, 'type' | 'name'>
+): string {
 	switch (node.type) {
 		case SvelteBlockType.anchor:
 			return '#anchor';

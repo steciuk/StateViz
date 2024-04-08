@@ -10,11 +10,13 @@ import {
 	UpdateNodesOperations,
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
+import { getClosestElement } from '@pages/content/content-main/utils/getClosestElement';
 
-export abstract class Adapter<T extends { container: Node | null }> {
+export abstract class Adapter<T extends { node: Node | null }> {
 	private static ID_COUNTER = 0;
 	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
 	private static readonly REGISTERED_ADAPTERS = new Set<string>();
+	private static overlay: HTMLElement | null = null;
 
 	private isInitialized = false;
 
@@ -102,26 +104,39 @@ export abstract class Adapter<T extends { container: Node | null }> {
 	}
 
 	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage) {
-		const container = this.existingNodes.get(chromeMessage.content)?.container;
-		if (!container) return;
+		const parsedNode = this.existingNodes.get(chromeMessage.content);
+		if (!parsedNode) {
+			return;
+		}
 
-		console.error('TODO: implement hover overlay');
+		Adapter.overlay?.remove();
 
-		// if (this.overlay) {
-		// 	this.overlay.remove();
-		// }
+		const node = parsedNode.node;
+		if (!node) {
+			return;
+		}
 
-		// const containerRect = container?.getBoundingClientRect();
-		// if (!containerRect) return;
+		const element = getClosestElement(node);
+		if (!element) {
+			return;
+		}
 
-		// this.overlay = document.createElement('div');
-		// this.overlay.style.position = 'absolute';
-		// this.overlay.style.top = `${containerRect.top}px`;
-		// this.overlay.style.left = `${containerRect.left}px`;
-		// this.overlay.style.width = `${containerRect.width}px`;
-		// this.overlay.style.height = `${containerRect.height}px`;
-		// this.overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-		// this.overlay.style.zIndex = '9999999999';
+		const containerRect = element.getBoundingClientRect();
+		const style = window.getComputedStyle(element);
+		const position = style.position === 'fixed' ? 'fixed' : 'absolute';
+		const offset = style.position !== 'fixed' ? window.scrollY : 0;
+
+		const overlay = document.createElement('div');
+		overlay.style.position = position;
+		overlay.style.top = `${containerRect.top + offset}px`;
+		overlay.style.left = `${containerRect.left}px`;
+		overlay.style.width = `${containerRect.width}px`;
+		overlay.style.height = `${containerRect.height}px`;
+		overlay.style.backgroundColor = 'rgba(0, 0, 255, 0.2)';
+		overlay.style.zIndex = '9999999999';
+
+		document.body.appendChild(overlay);
+		Adapter.overlay = overlay;
 	}
 }
 
