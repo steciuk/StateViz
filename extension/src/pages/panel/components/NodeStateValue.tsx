@@ -24,8 +24,9 @@ export const NodeStateValue = (props: { inspectData: InspectData }) => {
 		case DataType.REACT_ELEMENT:
 		case DataType.NUMBER:
 		case DataType.BIGINT:
-		case DataType.BOOLEAN:
 			return <span>{inspectData.data}</span>;
+		case DataType.BOOLEAN:
+			return <span>{inspectData.data ? 'true' : 'false'}</span>;
 		case DataType.OBJECT:
 		case DataType.CLASS_INSTANCE:
 			return <NodeStateObjectValue inspectData={inspectData} />;
@@ -111,3 +112,4 @@ const NodeStateObjectValue = (props: {
 		</span>
 	);
 };
+

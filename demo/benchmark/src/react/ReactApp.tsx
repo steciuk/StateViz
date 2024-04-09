@@ -2,6 +2,7 @@ import { FunctionComponent } from "./FunctionComponent";
 import { ClassComponent } from "./ClassComponent";
 import { MemoComponent } from "./MemoComponent";
 import { SuspenseComponent } from "./SuspenseComponent";
+import { HooksComponent } from "./HooksComponent";
 
 export function ReactApp() {
   return (
@@ -14,6 +15,7 @@ export function ReactApp() {
         <p>Fragment</p>
       </>
       <SuspenseComponent name="Suspense Component" />
+      <HooksComponent />
     </div>
   );
 }

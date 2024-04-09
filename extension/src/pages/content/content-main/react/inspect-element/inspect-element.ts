@@ -76,6 +76,9 @@ function parseHooks(
 		current = current.next;
 	}
 
+	// useDebugValue doesn't have an associated memoized state
+	hookTypes = hookTypes?.filter((hookType) => hookType !== 'useDebugValue');
+
 	const hooksNames =
 		hookTypes && hookTypes.length === state.length
 			? hookTypes
