@@ -16,7 +16,8 @@ export abstract class Adapter<T extends { node: Node | null }> {
 	private static ID_COUNTER = 0;
 	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
 	private static readonly REGISTERED_ADAPTERS = new Set<string>();
-	private static overlay: HTMLElement | null = null;
+	private static overlay?: HTMLElement;
+	private static removeOverlayOnResizeUpdate?: () => void;
 
 	private isInitialized = false;
 
@@ -110,6 +111,7 @@ export abstract class Adapter<T extends { node: Node | null }> {
 		}
 
 		Adapter.overlay?.remove();
+		Adapter.removeOverlayOnResizeUpdate?.();
 
 		const node = parsedNode.node;
 		if (!node) {
@@ -121,15 +123,32 @@ export abstract class Adapter<T extends { node: Node | null }> {
 			return;
 		}
 
+		this.setOverlay(element);
+		const onResizeOverlay = () => {
+			Adapter.overlay?.remove();
+			this.setOverlay(element);
+		};
+
+		console.log('added');
+		window.addEventListener('resize', onResizeOverlay);
+		Adapter.removeOverlayOnResizeUpdate = () => {
+			console.log('removed');
+			window.removeEventListener('resize', onResizeOverlay);
+			Adapter.removeOverlayOnResizeUpdate = undefined;
+		};
+	}
+
+	private setOverlay(element: Element): void {
 		const containerRect = element.getBoundingClientRect();
 		const style = window.getComputedStyle(element);
 		const position = style.position === 'fixed' ? 'fixed' : 'absolute';
-		const offset = style.position !== 'fixed' ? window.scrollY : 0;
+		const offsetY = style.position !== 'fixed' ? window.scrollY : 0;
+		const offsetX = style.position !== 'fixed' ? window.scrollX : 0;
 
 		const overlay = document.createElement('div');
 		overlay.style.position = position;
-		overlay.style.top = `${containerRect.top + offset}px`;
-		overlay.style.left = `${containerRect.left}px`;
+		overlay.style.top = `${containerRect.top + offsetY}px`;
+		overlay.style.left = `${containerRect.left + offsetX}px`;
 		overlay.style.width = `${containerRect.width}px`;
 		overlay.style.height = `${containerRect.height}px`;
 		overlay.style.backgroundColor = 'rgba(0, 0, 255, 0.2)';
