@@ -32,7 +32,7 @@ const Roots = () => {
 								nodeAndLibrary={
 									{ node, library: root.library } as NodeAndLibrary
 								}
-								indent={0}
+								level={0}
 							/>
 						</Fragment>
 					))}

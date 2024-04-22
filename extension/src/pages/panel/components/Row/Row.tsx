@@ -1,7 +1,7 @@
 import './Row.scss';
 
 import classNames from 'classnames';
-import React, {
+import {
 	MouseEvent,
 	memo,
 	useCallback,
@@ -21,12 +21,15 @@ import { ExpandAllContext } from '@pages/panel/contexts/ColapseContext';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
+import useStorage from '@src/shared/hooks/useStorage';
+import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
 
 export const Row = (props: {
 	nodeAndLibrary: NodeAndLibrary;
-	indent: number;
+	level: number;
 }) => {
-	const { nodeAndLibrary, indent } = props;
+	const indentSize = useStorage(indentSizeStorage);
+	const { nodeAndLibrary, level } = props;
 	const { node, library } = nodeAndLibrary;
 
 	const updateSelectedNode = useContext(SelectedNodeUpdateContext);
@@ -43,7 +46,7 @@ export const Row = (props: {
 
 	const handleHover = useSendHover();
 
-	const indentSize = 12 * indent;
+	const indent = indentSize * level;
 
 	return (
 		<>
@@ -54,7 +57,7 @@ export const Row = (props: {
 				onClick={handleRowClick}
 				onMouseEnter={() => handleHover(node.id)}
 			>
-				<div className={`ml-[${indentSize}px]`}>
+				<div className={`ml-[${indent}px]`}>
 					<ExpandArrow
 						isExpanded={isExpanded && node.children.length > 0}
 						onClick={(expanded) => setIsExpanded(expanded)}
@@ -75,14 +78,14 @@ export const Row = (props: {
 				<div
 					className={classNames(
 						'vertical-bar pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-secondary',
-						`left-[${indentSize + 3}px]`
+						`left-[${indent + 3}px]`
 					)}
 				/>
 				{node.children.map((child) => (
 					<MemoRow
 						key={child.id}
 						nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
-						indent={indent + 1}
+						level={level + 1}
 					/>
 				))}
 			</div>

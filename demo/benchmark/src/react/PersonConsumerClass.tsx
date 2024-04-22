@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { AgeContext } from "./contexts/AgeContext";
 import { NameContext } from "./contexts/NameContext";
 
