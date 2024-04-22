@@ -1,110 +1,127 @@
 import './Row.scss';
 
 import classNames from 'classnames';
-import React, { MouseEvent, useContext, useEffect, useState } from 'react';
+import {
+	MouseEvent,
+	memo,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from 'react';
 
 import { ExpandArrow } from '@pages/panel/components/ExpandArrow';
-import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import {
 	SelectedNodeContext,
 	SelectedNodeUpdateContext,
 } from '@pages/panel/contexts/SelectedNodeContext';
-import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import { NodeAndLibrary, NodeId } from '@src/shared/types/ParsedNode';
 import NodeRowText from '../../library-specific/components/NodeRowText';
+import { ExpandAllContext } from '@pages/panel/contexts/ColapseContext';
+import { usePrevious } from '@src/shared/hooks/usePrevious';
+import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
+import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
+import useStorage from '@src/shared/hooks/useStorage';
+import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
 
 export const Row = (props: {
 	nodeAndLibrary: NodeAndLibrary;
-	indent: number;
-	handleReportUnfilteredChildren?: () => void;
+	level: number;
 }) => {
-	const { nodeAndLibrary, indent, handleReportUnfilteredChildren } = props;
+	const indentSize = useStorage(indentSizeStorage);
+	const { nodeAndLibrary, level } = props;
 	const { node, library } = nodeAndLibrary;
 
-	const filterFunc = useContext(FilterContext);
 	const updateSelectedNode = useContext(SelectedNodeUpdateContext);
 	const selectedNode = useContext(SelectedNodeContext);
 
 	const [isExpanded, setIsExpanded] = useState(true);
-	const [hasUnfilteredChildren, setHasUnfilteredChildren] = useState(false);
-
-	const reportUnfilteredChildren = () => {
-		if (!hasUnfilteredChildren) {
-			handleReportUnfilteredChildren?.();
-			setHasUnfilteredChildren(true);
-		}
-	};
+	const expand = useCallback((expand: boolean) => setIsExpanded(expand), []);
+	useExpandAllSignal(isExpanded, expand);
 
 	const handleRowClick = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		updateSelectedNode(nodeAndLibrary);
 	};
 
-	const shouldRender: boolean = filterFunc(nodeAndLibrary);
-	if (shouldRender) {
-		handleReportUnfilteredChildren?.();
-	}
+	const handleHover = useSendHover();
 
-	// TODO: think if there is a better way to do this
-	useEffect(() => {
-		setHasUnfilteredChildren(false);
-	}, [shouldRender]);
+	const indent = indentSize * level;
 
-	const indentSize = 12 * indent;
-
-	if (shouldRender) {
-		return (
-			<>
-				<div
-					className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
-						'bg-secondary': selectedNode?.node.id === node.id,
-					})}
-					onClick={handleRowClick}
-				>
-					<div className={`ml-[${indentSize}px]`}>
-						<ExpandArrow
-							isExpanded={hasUnfilteredChildren && isExpanded}
-							onClick={(expanded) => setIsExpanded(expanded)}
-							disabled={!hasUnfilteredChildren}
-							className="mr-1"
-						/>
-						<span className="cursor-default">
-							<NodeRowText nodeAndLibrary={nodeAndLibrary} />
-						</span>
-					</div>
+	return (
+		<>
+			<div
+				className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
+					'bg-secondary': selectedNode?.node.id === node.id,
+				})}
+				onClick={handleRowClick}
+				onMouseEnter={() => handleHover(node.id)}
+			>
+				<div className={`ml-[${indent}px]`}>
+					<ExpandArrow
+						isExpanded={isExpanded && node.children.length > 0}
+						onClick={(expanded) => setIsExpanded(expanded)}
+						disabled={node.children.length === 0}
+						className="mr-1"
+					/>
+					<span className="cursor-default">
+						<NodeRowText nodeAndLibrary={nodeAndLibrary} />
+					</span>
 				</div>
-				{isExpanded && (
-					<div className={classNames('children-wrapper', 'relative')}>
-						<div
-							className={classNames(
-								'vertical-bar pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-secondary',
-								`left-[${indentSize + 3}px]`
-							)}
-						/>
-						{node.children.map((child) => (
-							<Row
-								key={child.id}
-								nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
-								indent={indent + 1}
-								handleReportUnfilteredChildren={reportUnfilteredChildren}
-							/>
-						))}
-					</div>
-				)}
-			</>
-		);
-	} else {
-		return (
-			<>
+			</div>
+
+			<div
+				className={classNames('children-wrapper', 'relative', {
+					hidden: !isExpanded,
+				})}
+			>
+				<div
+					className={classNames(
+						'vertical-bar pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-secondary',
+						`left-[${indent + 3}px]`
+					)}
+				/>
 				{node.children.map((child) => (
-					<Row
+					<MemoRow
 						key={child.id}
 						nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
-						indent={indent}
-						handleReportUnfilteredChildren={reportUnfilteredChildren}
+						level={level + 1}
 					/>
 				))}
-			</>
-		);
-	}
+			</div>
+		</>
+	);
 };
+
+const MemoRow = memo(Row);
+
+function useExpandAllSignal(
+	isExpanded: boolean,
+	expand: (expand: boolean) => void
+): void {
+	const expandAll = useContext(ExpandAllContext);
+	const prevExpandAll = usePrevious(expandAll);
+
+	useEffect(() => {
+		if (prevExpandAll === undefined) return;
+		if (expandAll === prevExpandAll) return;
+		if (expandAll.value !== isExpanded) {
+			expand(expandAll.value);
+		}
+	}, [expandAll, prevExpandAll, expand, isExpanded]);
+}
+
+function useSendHover(): (nodeId: NodeId) => void {
+	const chromeBridge = useContext(ChromeBridgeContext);
+
+	return useCallback(
+		(nodeId: NodeId) => {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.HOVER_ELEMENT,
+				content: nodeId,
+			});
+		},
+		[chromeBridge]
+	);
+}
 

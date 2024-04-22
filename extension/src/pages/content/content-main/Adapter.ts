@@ -1,5 +1,6 @@
 import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
 import {
+	HoverElementPostMessage,
 	MountNodesOperations,
 	MountRootsOperations,
 	PostMessage,
@@ -9,11 +10,14 @@ import {
 	UpdateNodesOperations,
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
+import { getClosestElement } from '@pages/content/content-main/utils/getClosestElement';
 
-export abstract class Adapter {
+export abstract class Adapter<T extends { node: Node | null }> {
 	private static ID_COUNTER = 0;
 	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
 	private static readonly REGISTERED_ADAPTERS = new Set<string>();
+	private static overlay?: HTMLElement;
+	private static removeOverlayOnResizeUpdate?: () => void;
 
 	private isInitialized = false;
 
@@ -22,6 +26,8 @@ export abstract class Adapter {
 	protected abstract readonly adapterPrefix: string;
 	protected abstract inject(): void;
 	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
+
+	protected existingNodes: Map<NodeId, T> = new Map();
 
 	initialize() {
 		if (this.isInitialized) {
@@ -36,6 +42,10 @@ export abstract class Adapter {
 
 		this.postMessageBridge.onMessage((message) => {
 			this.handlePostMessageBridgeMessage(message);
+
+			if (message.type === PostMessageType.HOVER_ELEMENT) {
+				this.handleHoverPostMessage(message);
+			}
 		});
 
 		this.isInitialized = true;
@@ -92,6 +102,58 @@ export abstract class Adapter {
 		const id = `${this.adapterPrefix}${Adapter.ID_COUNTER++}`;
 		Adapter.ELEMENT_TO_ID.set(element, id);
 		return id;
+	}
+
+	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage) {
+		const parsedNode = this.existingNodes.get(chromeMessage.content);
+		if (!parsedNode) {
+			return;
+		}
+
+		Adapter.overlay?.remove();
+		Adapter.removeOverlayOnResizeUpdate?.();
+
+		const node = parsedNode.node;
+		if (!node) {
+			return;
+		}
+
+		const element = getClosestElement(node);
+		if (!element) {
+			return;
+		}
+
+		this.setOverlay(element);
+		const onResizeOverlay = () => {
+			Adapter.overlay?.remove();
+			this.setOverlay(element);
+		};
+
+		window.addEventListener('resize', onResizeOverlay);
+		Adapter.removeOverlayOnResizeUpdate = () => {
+			window.removeEventListener('resize', onResizeOverlay);
+			Adapter.removeOverlayOnResizeUpdate = undefined;
+		};
+	}
+
+	private setOverlay(element: Element): void {
+		const containerRect = element.getBoundingClientRect();
+		const style = window.getComputedStyle(element);
+		const position = style.position === 'fixed' ? 'fixed' : 'absolute';
+		const offsetY = style.position !== 'fixed' ? window.scrollY : 0;
+		const offsetX = style.position !== 'fixed' ? window.scrollX : 0;
+
+		const overlay = document.createElement('div');
+		overlay.style.position = position;
+		overlay.style.top = `${containerRect.top + offsetY}px`;
+		overlay.style.left = `${containerRect.left + offsetX}px`;
+		overlay.style.width = `${containerRect.width}px`;
+		overlay.style.height = `${containerRect.height}px`;
+		overlay.style.backgroundColor = 'rgba(0, 0, 255, 0.2)';
+		overlay.style.zIndex = '9999999999';
+
+		document.body.appendChild(overlay);
+		Adapter.overlay = overlay;
 	}
 }
 

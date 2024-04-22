@@ -12,6 +12,8 @@
 	}
 
 	:root {
+    color-scheme: light;
+
 		--text: #2b2103;
 		--text-disabled: #636363;
 		--background: #fffefa;
@@ -22,6 +24,8 @@
 	}
 
 	.dark {
+    color-scheme: dark;
+    
 		--text: #fcf2d4;
 		--text-disabled: #636363;
 		--background: #050400;

@@ -14,8 +14,8 @@ export default function useStorage<
 		storage.getSnapshot
 	);
 
-	// Template doesn't use strict. FIXME: remove this
-	const storageAny = storage as any;
+	// FIXME: Template doesn't use strict.
+	const storageAny = storage as BaseStorage<unknown>;
 
 	if (!storageMap.has(storageAny)) {
 		storageMap.set(storageAny, wrapPromise(storage.get()));
@@ -53,3 +53,4 @@ function wrapPromise<R>(promise: Promise<R>) {
 		},
 	};
 }
+

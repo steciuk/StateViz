@@ -6,8 +6,9 @@ import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
 import { NodeInspectedData } from '@src/shared/types/DataType';
 import { NodeId } from '@src/shared/types/ParsedNode';
-import NodeInspectInfo from '@pages/panel/library-specific/components/NodeInspectInfo';
-import NodeInspectData from '@pages/panel/library-specific/components/NodeInspectData';
+import NodeInspectInfo from '@pages/panel/components/NodeInspectInfo';
+import NodeInspectData from '@pages/panel/components/NodeInspectData';
+import { usePrevious } from '@src/shared/hooks/usePrevious';
 
 export const InspectWindow = (props: { className?: string }) => {
 	const selectedNodeAndLibrary = useContext(SelectedNodeContext);
@@ -15,20 +16,17 @@ export const InspectWindow = (props: { className?: string }) => {
 		selectedNodeAndLibrary?.node.id ?? null
 	);
 
-	if (!selectedNodeAndLibrary) {
+	if (!nodeInspectData) {
 		return null;
 	}
 
 	return (
 		<div className={props.className}>
 			<div className="p-2">
-				<NodeInspectInfo selectedNode={selectedNodeAndLibrary} />
+				<NodeInspectInfo selectedNode={nodeInspectData} />
 				{nodeInspectData && (
 					<div className="mt-2 flex flex-col gap-2">
-						<NodeInspectData
-							library={selectedNodeAndLibrary.library}
-							inspectData={nodeInspectData}
-						/>
+						<NodeInspectData inspectData={nodeInspectData} />
 					</div>
 				)}
 			</div>
@@ -44,27 +42,26 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 	const [nodeInspectData, setNodeInspectData] =
 		useState<NodeInspectedData | null>(null);
 
-	const lastInspectedFiberId = React.useRef<NodeId | null>(null);
+	const lastInspectedFiberId = usePrevious(nodeId);
 
 	useEffect(() => {
 		if (nodeId === null) {
 			setNodeInspectData(null);
 		} else if (inspectData) {
 			const nodeInspectData = inspectData.find((data) => data.id === nodeId);
-			setNodeInspectData(nodeInspectData?.data ?? null);
+			setNodeInspectData(nodeInspectData ?? null);
 		}
 	}, [inspectData, nodeId]);
 
 	useEffect(() => {
-		if (lastInspectedFiberId.current === nodeId) return;
-		lastInspectedFiberId.current = nodeId;
+		if (lastInspectedFiberId === nodeId) return;
 
 		console.log('Requested', nodeId);
 		chromeBridge.send({
 			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
 			content: nodeId === null ? [] : [nodeId],
 		});
-	}, [nodeId, chromeBridge]);
+	}, [nodeId, chromeBridge, lastInspectedFiberId]);
 
 	return nodeInspectData;
 };

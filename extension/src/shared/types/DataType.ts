@@ -2,6 +2,14 @@ import { ReactElement } from 'react';
 
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { HookType } from '@pages/content/content-main/react/react-types';
+import {
+	NodeId,
+	ParsedReactNode,
+	ParsedSvelteNode,
+} from '@src/shared/types/ParsedNode';
+import { E } from 'vitest/dist/reporters-5f784f42';
+import { Library } from '@src/shared/types/Library';
+import { group } from 'console';
 
 // Based on react/packages/react-devtools-shared/src/utils.js
 export enum DataType {
@@ -120,25 +128,17 @@ export type TypedData =
 			data: unknown;
 	  };
 
-export type NodeInspectedData = ReactInspectedData | SvelteInspectedData;
-
-export type ReactInspectedData = {
-	hooks: {
-		hookType: HookType | 'unknown';
-		data: InspectData;
-	}[];
-	props: {
-		[key: string]: InspectData;
-	};
+export type NodeInspectedData = {
+	library: Library;
+	id: NodeId;
+	name: string;
+	nodeInfo: Array<{ label: string; value: string }>;
+	nodeData: NodeDataGroup[];
 };
 
-export type SvelteInspectedData = {
-	props: {
-		[key: string]: InspectData;
-	};
-	state: {
-		[key: string]: InspectData;
-	};
+export type NodeDataGroup = {
+	group: string;
+	data: Array<{ label: string; value: InspectData }>;
 };
 
 export type InspectData =

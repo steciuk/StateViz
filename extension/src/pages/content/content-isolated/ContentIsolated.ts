@@ -21,6 +21,7 @@ import {
 	ChromeBridgeListener,
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
+	HoverElementBridgeMessage,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
 import {
@@ -111,6 +112,10 @@ export class ContentIsolated {
 					this.handleInspectElementBridgeMessage(message);
 					break;
 
+				case ChromeBridgeMessageType.HOVER_ELEMENT:
+					this.handleHoverElementBridgeMessage(message);
+					break;
+
 				default:
 					console.error('unknown chromeBridge message type', message);
 					break;
@@ -192,7 +197,12 @@ export class ContentIsolated {
 				return;
 			}
 
-			if (anchor.id === null) {
+			const anchorNodeIndex =
+				anchor.id === null
+					? -1
+					: parent.children.findIndex((child) => child.id === anchor.id);
+
+			if (anchorNodeIndex === -1) {
 				// TODO: think of some type fix
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (anchor.type === 'after') parent.children.unshift(node as any);
@@ -200,14 +210,6 @@ export class ContentIsolated {
 				else parent.children.push(node as any);
 
 				areUpdates = true;
-				return;
-			}
-
-			const anchorNodeIndex = parent.children.findIndex(
-				(child) => child.id === anchor.id
-			);
-			if (anchorNodeIndex === -1) {
-				console.error('anchorNode not found');
 				return;
 			}
 
@@ -305,6 +307,15 @@ export class ContentIsolated {
 	): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.INSPECT_ELEMENT,
+			content: message.content,
+		});
+	}
+
+	private handleHoverElementBridgeMessage(
+		message: HoverElementBridgeMessage
+	): void {
+		this.postMessageBridge.send({
+			type: PostMessageType.HOVER_ELEMENT,
 			content: message.content,
 		});
 	}

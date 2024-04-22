@@ -6,10 +6,10 @@ import logo from '@assets/img/logo.svg';
 import withErrorBoundary from '@src/shared/hoc/withErrorBoundary';
 import withSuspense from '@src/shared/hoc/withSuspense';
 import useStorage from '@src/shared/hooks/useStorage';
-import exampleThemeStorage from '@src/shared/storages/exampleThemeStorage';
+import themeStorage from '@src/shared/storages/ThemeStorage';
 
 const Popup = () => {
-	const theme = useStorage(exampleThemeStorage);
+	const theme = useStorage(themeStorage);
 
 	return (
 		<div
@@ -43,7 +43,7 @@ const Popup = () => {
 						backgroundColor: theme === 'light' ? '#fff' : '#000',
 						color: theme === 'light' ? '#000' : '#fff',
 					}}
-					onClick={exampleThemeStorage.toggle}
+					onClick={themeStorage.toggle}
 				>
 					Toggle theme
 				</button>
@@ -56,3 +56,4 @@ export default withErrorBoundary(
 	withSuspense(Popup, <div> Loading ... </div>),
 	<div> Error Occur </div>
 );
+

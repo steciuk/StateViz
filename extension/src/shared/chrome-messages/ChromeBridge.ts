@@ -13,12 +13,14 @@ export enum ChromeBridgeMessageType {
 	FULL_SKELETON = 'FULL_SKELETON',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
 	INSPECTED_DATA = 'INSPECTED_DATA',
+	HOVER_ELEMENT = 'HOVER_ELEMENT',
 }
 
 export type ChromeBridgeMessage =
 	| FullSkeletonBridgeMessage
 	| InspectElementBridgeMessage
-	| InspectedDataBridgeMessage;
+	| InspectedDataBridgeMessage
+	| HoverElementBridgeMessage;
 
 export type FullSkeletonBridgeMessage = {
 	type: ChromeBridgeMessageType.FULL_SKELETON;
@@ -30,14 +32,16 @@ export type InspectElementBridgeMessage = {
 	content: NodeId[];
 };
 
-export type InspectedDataMessageContent = {
-	id: NodeId;
-	data: NodeInspectedData;
-}[];
+export type InspectedDataMessageContent = NodeInspectedData[];
 
 export type InspectedDataBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;
 	content: InspectedDataMessageContent;
+};
+
+export type HoverElementBridgeMessage = {
+	type: ChromeBridgeMessageType.HOVER_ELEMENT;
+	content: NodeId;
 };
 
 abstract class ChromeBridge {

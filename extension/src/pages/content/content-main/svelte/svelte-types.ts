@@ -62,12 +62,12 @@ type SvelteComponentDetail = {
 		// $$events_def?: {};
 		// $$prop_def?: {};
 		// $$slot_def?: {};
-		$capture_state(): Record<string, unknown>;
+		$capture_state(): unknown;
 	};
 };
 
 export type SvelteBlockDetail = {
-	id: number;
+	id: string;
 	source: string;
 	type: SvelteBlockType;
 

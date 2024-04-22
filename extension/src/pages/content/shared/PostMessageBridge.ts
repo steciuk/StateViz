@@ -19,6 +19,7 @@ export enum PostMessageType {
 	UPDATE_NODES = 'UPDATE_NODES',
 	INSPECT_ELEMENT = 'INSPECT_ELEMENT',
 	INSPECTED_DATA = 'INSPECTED_DATA',
+	HOVER_ELEMENT = 'HOVER_ELEMENT',
 }
 
 export type UnmountNodesOperation = {
@@ -81,6 +82,12 @@ export type InspectElementPostMessage = {
 	content: NodeId[];
 };
 
+export type HoverElementPostMessage = {
+	source: PostMessageSource.ISOLATED;
+	type: PostMessageType.HOVER_ELEMENT;
+	content: NodeId;
+};
+
 export type PostMessage =
 	| LibraryAttachedPostMessage
 	| MountRootsPostMessage
@@ -88,7 +95,8 @@ export type PostMessage =
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage
 	| InspectedDataPostMessage
-	| UpdateNodesPostMessage;
+	| UpdateNodesPostMessage
+	| HoverElementPostMessage;
 
 export class PostMessageBridge {
 	private constructor(private source: PostMessageSource) {}
