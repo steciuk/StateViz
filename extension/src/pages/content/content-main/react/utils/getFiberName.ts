@@ -19,6 +19,10 @@ export function getFiberName(fiber: Fiber): string {
 			return 'HostText';
 		case WorkTag.Fragment:
 			return '<>';
+		case WorkTag.ContextProvider:
+			return 'Context.Provider';
+		case WorkTag.ContextConsumer:
+			return 'Context.Consumer';
 		default:
 			return typeName;
 	}

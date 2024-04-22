@@ -110,7 +110,7 @@ export type Fiber = {
 	memoizedState: MemoizedState | null;
 
 	// ? Dependencies (contexts, events) for this fiber, if it has any
-	// ? dependencies: Dependencies | null,
+	dependencies: Dependencies | null;
 
 	// ? Bitfield that describes properties about the fiber and its subtree. E.g.
 	// ? the ConcurrentMode flag indicates whether the subtree should be async-by-
@@ -178,6 +178,17 @@ export type Fiber = {
 };
 
 export type CurrentDispatcherRef = { current: null | any };
+
+export type Dependencies = {
+	// ? lanes: Lanes,
+	firstContext: null | ContextDependency;
+};
+
+export type ContextDependency<T = unknown> = {
+	// ? context: ReactContext<T>,
+	memoizedValue?: T;
+	next: ContextDependency | null;
+};
 
 // TODO: currently not using RendererInterface at all
 export type ReactRenderer = {

@@ -3,6 +3,10 @@ import { ClassComponent } from "./ClassComponent";
 import { MemoComponent } from "./MemoComponent";
 import { SuspenseComponent } from "./SuspenseComponent";
 import { HooksComponent } from "./HooksComponent";
+import { NameProvider } from "./contexts/NameContext";
+import { PersonConsumerFunc } from "./PersonConsumerFunc";
+import { AgeProvider } from "./contexts/AgeContext";
+import { PersonConsumerClass } from "./PersonConsumerClass";
 
 export function ReactApp() {
   return (
@@ -16,6 +20,12 @@ export function ReactApp() {
       </>
       <SuspenseComponent name="Suspense Component" />
       <HooksComponent />
+      <NameProvider>
+        <AgeProvider>
+          <PersonConsumerFunc />
+          <PersonConsumerClass />
+        </AgeProvider>
+      </NameProvider>
     </div>
   );
 }

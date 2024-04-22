@@ -1,5 +1,6 @@
 import { dehydrate } from '@pages/content/content-main/dehydrate';
 import {
+	ContextDependency,
 	Fiber,
 	HookFullMemoizedState,
 	HookLessMemoizedState,
@@ -11,10 +12,13 @@ import { WorkTag } from '@src/shared/types/react-types';
 export function getNodeData(fiber: Fiber): NodeDataGroup[] {
 	// TODO: maybe try to check if changed and don't send if not
 	const props = parseProps(fiber);
+	const context = parseContext(fiber);
 	const state = getNodeState(fiber);
 
-	return [props, state].filter(
-		<T>(data: T): data is Extract<T, NodeDataGroup> => data !== null
+	return [props, context, state].filter(
+		<T extends NodeDataGroup | null>(
+			data: T
+		): data is Extract<T, NodeDataGroup> => data !== null
 	);
 }
 
@@ -39,6 +43,42 @@ function parseProps(fiber: Fiber): NodeDataGroup | null {
 	return {
 		group: 'Props',
 		data: parsedProps,
+	};
+}
+
+function parseContext(fiber: Fiber): NodeDataGroup | null {
+	let context = fiber.dependencies?.firstContext;
+	if (!context) return null;
+
+	let contextsData: InspectData[] = [];
+
+	while (context) {
+		if (Object.hasOwn(context, 'memoizedValue')) {
+			contextsData.push(dehydrate(context.memoizedValue, 0));
+		}
+		context = context.next;
+	}
+
+	// In dev mode, and function components
+	// context are duplicated for each useContext call
+	// We need to filter them out
+	// If _debugHookTypes is not present,
+	// either the component is not a function component
+	// or it is not in dev mode.
+	// either way, we don't need to filter
+	const numberOfContexts = fiber._debugHookTypes?.filter(
+		(hookType) => hookType === 'useContext'
+	).length;
+	if (numberOfContexts !== undefined) {
+		contextsData = contextsData.slice(0, numberOfContexts);
+	}
+
+	return {
+		group: 'Contexts',
+		data: contextsData.map((data, _index) => ({
+			label: `Context`,
+			value: data,
+		})),
 	};
 }
 
@@ -69,15 +109,18 @@ function parseHooks(
 	hookTypes?: HookType[] | null
 ): NodeDataGroup {
 	const state: InspectData[] = [];
-	let current: HookFullMemoizedState | null = memoizedState;
+	let currentState: HookFullMemoizedState | null = memoizedState;
 
-	while (current) {
-		state.push(dehydrate(current.memoizedState, 0));
-		current = current.next;
+	while (currentState) {
+		state.push(dehydrate(currentState.memoizedState, 0));
+		currentState = currentState.next;
 	}
 
 	// useDebugValue doesn't have an associated memoized state
-	hookTypes = hookTypes?.filter((hookType) => hookType !== 'useDebugValue');
+	// useContext is handled separately
+	hookTypes = hookTypes?.filter(
+		(hookType) => hookType !== 'useDebugValue' && hookType !== 'useContext'
+	);
 
 	const hooksNames =
 		hookTypes && hookTypes.length === state.length

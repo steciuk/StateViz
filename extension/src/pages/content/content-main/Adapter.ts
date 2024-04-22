@@ -129,10 +129,8 @@ export abstract class Adapter<T extends { node: Node | null }> {
 			this.setOverlay(element);
 		};
 
-		console.log('added');
 		window.addEventListener('resize', onResizeOverlay);
 		Adapter.removeOverlayOnResizeUpdate = () => {
-			console.log('removed');
 			window.removeEventListener('resize', onResizeOverlay);
 			Adapter.removeOverlayOnResizeUpdate = undefined;
 		};
