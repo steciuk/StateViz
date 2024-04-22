@@ -60,12 +60,12 @@ function parseContext(fiber: Fiber): NodeDataGroup | null {
 	}
 
 	// In dev mode, and function components
-	// context are duplicated for each useContext call
-	// We need to filter them out
+	// context are duplicated for each useContext call.
+	// We need to filter them out.
 	// If _debugHookTypes is not present,
 	// either the component is not a function component
 	// or it is not in dev mode.
-	// either way, we don't need to filter
+	// Either way, we don't need to filter
 	const numberOfContexts = fiber._debugHookTypes?.filter(
 		(hookType) => hookType === 'useContext'
 	).length;
