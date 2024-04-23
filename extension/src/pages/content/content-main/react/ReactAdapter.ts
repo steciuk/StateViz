@@ -11,6 +11,7 @@ import { Library } from '@src/shared/types/Library';
 import {
 	MountNodesOperations,
 	PostMessage,
+	PostMessageBridge,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
@@ -27,13 +28,14 @@ declare global {
 	}
 }
 
-export class ReactAdapter extends Adapter<{
-	parentId: NodeId | null;
-	fiber: Fiber;
-	node: Node | null;
-}> {
-	protected override readonly adapterPrefix = 're';
-
+export class ReactAdapter extends Adapter<
+	{
+		parentId: NodeId | null;
+		fiber: Fiber;
+		node: Node | null;
+	},
+	Library.REACT
+> {
 	private readonly renderers = new Map<RendererID, ReactRenderer>();
 	private readonly listeners = new ListenersStorage();
 
@@ -45,6 +47,10 @@ export class ReactAdapter extends Adapter<{
 
 	// TODO: consider allowing more renderers
 	private readonly rendererId = 0;
+
+	constructor(protected readonly postMessageBridge: PostMessageBridge) {
+		super(postMessageBridge, Library.REACT);
+	}
 
 	protected override inject(): void {
 		const reactHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -147,7 +153,7 @@ export class ReactAdapter extends Adapter<{
 			const nodeData = getNodeData(fiber);
 
 			this.inspectedData.set(id, {
-				library: Library.REACT,
+				library: this.library,
 				id,
 				name: getFiberName(fiber),
 				nodeInfo: [{ label: 'Type', value: WorkTag[fiber.tag] ?? 'Unknown' }],
@@ -260,12 +266,7 @@ export class ReactAdapter extends Adapter<{
 			id: rootId,
 		};
 
-		this.sendMountRoots([
-			{
-				library: Library.REACT,
-				node: node,
-			},
-		]);
+		this.sendMountRoots([node]);
 	}
 
 	private getParseChildren(parent: Fiber): ParsedReactNode[] {
@@ -332,9 +333,9 @@ export class ReactAdapter extends Adapter<{
 	private getNodesUpdates(
 		nextFiber: Fiber,
 		prevFiber: Fiber
-	): MountNodesOperations {
+	): MountNodesOperations<Library.REACT> {
 		// TODO: handle node reordering
-		const operations: MountNodesOperations = [];
+		const operations: MountNodesOperations<Library.REACT> = [];
 		let higherSibling: Fiber | null = null;
 		let child = nextFiber.child;
 		if (child !== prevFiber.child) {

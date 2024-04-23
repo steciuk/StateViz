@@ -1,4 +1,8 @@
-import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import {
+	NodeId,
+	NodeAndLibrary,
+	ParsedNode,
+} from '@src/shared/types/ParsedNode';
 import {
 	HoverElementPostMessage,
 	MountNodesOperations,
@@ -11,23 +15,32 @@ import {
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { getClosestElement } from '@pages/content/content-main/utils/getClosestElement';
+import { Library } from '@src/shared/types/Library';
 
-export abstract class Adapter<T extends { node: Node | null }> {
+export abstract class Adapter<
+	T extends { node: Node | null },
+	L extends Library,
+> {
 	private static ID_COUNTER = 0;
 	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
 	private static readonly REGISTERED_ADAPTERS = new Set<string>();
 	private static overlay?: HTMLElement;
 	private static removeOverlayOnResizeUpdate?: () => void;
 
+	protected readonly adapterPrefix: string;
 	private isInitialized = false;
 
-	constructor(protected readonly postMessageBridge: PostMessageBridge) {}
-
-	protected abstract readonly adapterPrefix: string;
 	protected abstract inject(): void;
 	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
 
-	protected existingNodes: Map<NodeId, T> = new Map();
+	protected readonly existingNodes: Map<NodeId, T> = new Map();
+
+	protected constructor(
+		protected readonly postMessageBridge: PostMessageBridge,
+		protected readonly library: L
+	) {
+		this.adapterPrefix = library.slice(0, 2).toLowerCase();
+	}
 
 	initialize() {
 		if (this.isInitialized) {
@@ -58,21 +71,26 @@ export abstract class Adapter<T extends { node: Node | null }> {
 		});
 	}
 
-	protected sendMountRoots(roots: MountRootsOperations) {
+	protected sendMountRoots(roots: ParsedNode<L>[]) {
+		const operations: MountRootsOperations<L> = roots.map((root) => ({
+			node: root,
+			library: this.library,
+		}));
+
 		this.postMessageBridge.send({
 			type: PostMessageType.MOUNT_ROOTS,
-			content: roots,
+			content: operations,
 		});
 	}
 
-	protected sendMountNodes(operations: MountNodesOperations) {
+	protected sendMountNodes(operations: MountNodesOperations<L>) {
 		this.postMessageBridge.send({
 			type: PostMessageType.MOUNT_NODES,
 			content: operations,
 		});
 	}
 
-	protected sendUpdateNodes(operations: UpdateNodesOperations) {
+	protected sendUpdateNodes(operations: UpdateNodesOperations<L>) {
 		this.postMessageBridge.send({
 			type: PostMessageType.UPDATE_NODES,
 			content: operations,

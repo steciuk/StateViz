@@ -4,16 +4,19 @@ import { Library } from '@src/shared/types/Library';
 
 export type NodeId = string;
 
-export type ParsedNode = ParsedReactNode | ParsedSvelteNode;
-export type NodeAndLibrary =
-	| {
-			node: ParsedReactNode;
-			library: Library.REACT;
-	  }
-	| {
-			node: ParsedSvelteNode;
-			library: Library.SVELTE;
-	  };
+export type ParsedNode<T extends Library = Library> = T extends Library.REACT
+	? ParsedReactNode
+	: T extends Library.SVELTE
+	  ? ParsedSvelteNode
+	  : never;
+
+// discriminated union unless library specified
+export type NodeAndLibrary<T extends Library = Library> = {
+	[K in T]: {
+		node: ParsedNode<K>;
+		library: K;
+	};
+}[T];
 
 export type ParsedReactNode = {
 	type: WorkTag;

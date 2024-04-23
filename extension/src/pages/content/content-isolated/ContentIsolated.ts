@@ -283,8 +283,7 @@ export class ContentIsolated {
 
 			parent.children = parent.children.filter(
 				(node) => node.id !== nodeToUnmountId
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			) as any; // TODO: think of some type fix
+			) as typeof parent.children;
 		}
 
 		this.sendMessageThroughChromeBridgeIfConnected({
