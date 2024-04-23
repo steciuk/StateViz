@@ -23,13 +23,13 @@ const manifest = {
 	},
 	action: {
 		default_popup: 'src/pages/popup/index.html',
-		default_icon: 'icon-34.png',
+		default_icon: 'disabled-32.png',
 	},
 	// chrome_url_overrides: {
 	//   newtab: "src/pages/newtab/index.html",
 	// },
 	icons: {
-		128: 'icon-128.png',
+		128: 'enabled-128.png',
 	},
 	content_scripts: [
 		{
@@ -54,8 +54,9 @@ const manifest = {
 			resources: [
 				'assets/js/*.js',
 				'assets/css/*.css',
-				'icon-128.png',
-				'icon-34.png',
+				'enabled-128.png',
+				'enabled-32.png',
+        'disabled-128.png',
 			],
 			matches: ['*://*/*'],
 		},

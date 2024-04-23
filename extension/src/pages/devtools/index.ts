@@ -11,8 +11,8 @@ runLog('devtools.ts');
 function createPanel() {
 	try {
 		chrome.devtools.panels.create(
-			'Dev Tools',
-			'icon-34.png',
+			'State-Viz',
+			'enabled-32.png',
 			'src/pages/panel/index.html'
 		);
 	} catch (e) {
@@ -48,3 +48,4 @@ if (!panelCreated) {
 		},
 	});
 }
+
