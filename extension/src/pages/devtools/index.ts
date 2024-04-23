@@ -23,9 +23,10 @@ function createPanel() {
 let panelCreated = false;
 const currentTabId = chrome.devtools.inspectedWindow.tabId;
 
-// Devtools window opened before react attached
+// Devtools window opened before library attached
 const removeListener = onChromeMessage((message) => {
-	if (message.type === ChromeMessageType.CREATE_DEVTOOLS_PANEL) {
+	if (message.type === ChromeMessageType.LIBRARY_ATTACHED) {
+		console.warn('Library attached in DEVTOOLS', message.content);
 		if (panelCreated) return;
 		if (message.sender.tab.id !== currentTabId) return;
 
@@ -35,13 +36,14 @@ const removeListener = onChromeMessage((message) => {
 	}
 });
 
-// Devtools window opened after react attached
+// Devtools window opened after library attached
 if (!panelCreated) {
 	sendChromeMessageToTab(currentTabId, {
-		type: ChromeMessageType.IS_REACT_ATTACHED,
+		type: ChromeMessageType.IS_LIBRARY_ATTACHED,
 		source: ChromeMessageSource.DEVTOOLS,
-		responseCallback: (isReactAttached) => {
-			if (isReactAttached) {
+		responseCallback: (isLibraryAttached) => {
+			if (isLibraryAttached) {
+				if (panelCreated) return;
 				panelCreated = true;
 				createPanel();
 			}

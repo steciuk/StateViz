@@ -1,10 +1,11 @@
 import { ParsedReactNode } from '@src/shared/types/ParsedNode';
 
 import { OmitFromUnion, WithRequired } from '../utility-types';
+import { Library } from '@src/shared/types/Library';
 
 export enum ChromeMessageType {
-	CREATE_DEVTOOLS_PANEL = 'CREATE_DEVTOOLS_PANEL',
-	IS_REACT_ATTACHED = 'IS_REACT_ATTACHED',
+	LIBRARY_ATTACHED = 'LIBRARY_ATTACHED',
+	IS_LIBRARY_ATTACHED = 'IS_LIBRARY_ATTACHED',
 	COMMIT_ROOT = 'COMMIT_ROOT',
 }
 
@@ -18,7 +19,7 @@ export enum ChromeMessageSource {
 
 export type ChromeMessage =
 	| CreateDevtoolsPanelChromeMessage
-	| IsReactAttachedChromeMessage
+	| IsLibraryAttachedChromeMessage
 	| CommitRootChromeMessage;
 
 // BASE TYPES
@@ -34,7 +35,8 @@ type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
 // SPECIFIC TYPES
 // content-isolated -> devtools script
 export type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
-	type: ChromeMessageType.CREATE_DEVTOOLS_PANEL;
+	type: ChromeMessageType.LIBRARY_ATTACHED;
+	content: Library;
 };
 
 // content-isolated -> devtools script
@@ -44,11 +46,11 @@ export type CommitRootChromeMessage = ContentScriptChromeMessage & {
 };
 
 // devtools script -> content-isolated on specific tab
-export type IsReactAttachedChromeMessage = Omit<
+export type IsLibraryAttachedChromeMessage = Omit<
 	ChromeMessageBase,
 	'responseCallback'
 > & {
-	type: ChromeMessageType.IS_REACT_ATTACHED;
+	type: ChromeMessageType.IS_LIBRARY_ATTACHED;
 	source: ChromeMessageSource.DEVTOOLS;
 	responseCallback: (isReactAttached: boolean) => void;
 };

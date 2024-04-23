@@ -44,7 +44,7 @@ export type UpdateNodesOperations<L extends Library> = Array<
 export type LibraryAttachedPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.LIBRARY_ATTACHED;
-	content?: undefined;
+	content: Library;
 };
 
 export type MountRootsPostMessage<L extends Library = Library> = {

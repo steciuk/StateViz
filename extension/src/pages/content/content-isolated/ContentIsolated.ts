@@ -12,7 +12,7 @@ import {
 import {
 	ChromeMessageSource,
 	ChromeMessageType,
-	IsReactAttachedChromeMessage,
+	IsLibraryAttachedChromeMessage,
 	onChromeMessage,
 	sendChromeMessage,
 } from '@src/shared/chrome-messages/chrome-message';
@@ -125,8 +125,8 @@ export class ContentIsolated {
 		// chrome API messages
 		onChromeMessage((message) => {
 			switch (message.type) {
-				case ChromeMessageType.IS_REACT_ATTACHED:
-					this.handleIsReactAttachedChromeMessage(message);
+				case ChromeMessageType.IS_LIBRARY_ATTACHED:
+					this.handleIsLibraryAttachedChromeMessage(message);
 					break;
 
 				default:
@@ -138,15 +138,16 @@ export class ContentIsolated {
 
 	// POST MESSAGE BRIDGE MESSAGES
 	private handleLibraryAttachedPostMessage(
-		_message: LibraryAttachedPostMessage
+		message: LibraryAttachedPostMessage
 	) {
 		this.libraryAttached = true;
 
 		// Send message to devtools panel that library is attached,
 		// devtools panel potentially opened before
 		sendChromeMessage({
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 			source: ChromeMessageSource.CONTENT_SCRIPT,
+			content: message.content,
 		});
 	}
 
@@ -320,10 +321,10 @@ export class ContentIsolated {
 	}
 
 	// CHROME MESSAGES
-	private handleIsReactAttachedChromeMessage(
-		message: IsReactAttachedChromeMessage
+	private handleIsLibraryAttachedChromeMessage(
+		message: IsLibraryAttachedChromeMessage
 	): void {
-		console.log('question from devtools panel: is react attached?');
+		console.log('question from devtools panel: is library attached?');
 		message.responseCallback(this.libraryAttached);
 	}
 

@@ -1,8 +1,4 @@
-import {
-	NodeId,
-	NodeAndLibrary,
-	ParsedNode,
-} from '@src/shared/types/ParsedNode';
+import { NodeId, ParsedNode } from '@src/shared/types/ParsedNode';
 import {
 	HoverElementPostMessage,
 	MountNodesOperations,
@@ -68,6 +64,7 @@ export abstract class Adapter<
 	protected sendLibraryAttached() {
 		this.postMessageBridge.send({
 			type: PostMessageType.LIBRARY_ATTACHED,
+			content: this.library,
 		});
 	}
 

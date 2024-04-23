@@ -77,8 +77,17 @@ type SettingIdentifier<T extends Library> = T extends Library.REACT
 	  : never;
 
 type FilterDifferentiatorHelper<T extends NodeAndLibrary> =
-	T extends NodeAndLibrary
-		? { library: T['library'] } & { node: Pick<T['node'], 'type'> }
+	T extends NodeAndLibrary<infer L extends Library>
+		? { library: T['library'] } & {
+				node: Pick<
+					T['node'],
+					L extends Library.REACT
+						? 'type'
+						: L extends Library.SVELTE
+						  ? 'type'
+						  : never
+				>;
+		  }
 		: never;
 
 type FilterDifferentiator = FilterDifferentiatorHelper<NodeAndLibrary>;

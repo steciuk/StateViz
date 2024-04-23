@@ -96,7 +96,7 @@ describe('ContentIsolated', () => {
 
 			expect(sendChromeMessage).toBeCalledTimes(1);
 			expect(sendChromeMessage).toBeCalledWith({
-				type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+				type: ChromeMessageType.LIBRARY_ATTACHED,
 				source: ChromeMessageSource.CONTENT_SCRIPT,
 			});
 		});
