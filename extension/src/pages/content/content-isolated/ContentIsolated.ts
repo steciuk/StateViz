@@ -43,6 +43,7 @@ export class ContentIsolated {
 		this.postMessageBridge = PostMessageBridge.getInstance(
 			PostMessageSource.ISOLATED
 		);
+		console.warn('ContentIsolated constructor');
 		this.chromeBridge = new ChromeBridgeListener(
 			ChromeBridgeConnection.PANEL_TO_CONTENT,
 			() => {
@@ -64,7 +65,6 @@ export class ContentIsolated {
 
 	private handleDevtoolsPanelConnection(): void {
 		console.log('connection from devtools panel established');
-		if (this.currentNodes.size === 0) return;
 		this.chromeBridge.send({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: this.roots,

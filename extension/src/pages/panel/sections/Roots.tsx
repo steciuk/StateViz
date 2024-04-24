@@ -8,11 +8,13 @@ import {
 } from '@src/shared/chrome-messages/ChromeBridge';
 import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import { Library } from '@src/shared/types/Library';
+import { NoLibrariesConnected } from '@pages/panel/components/NoLibrariesConnected';
 
 const Roots = () => {
 	const filteredNodes = useFilteredNodes();
 
-	if (!filteredNodes) return null;
+	if (!filteredNodes || filteredNodes.length === 0)
+		return <NoLibrariesConnected />;
 
 	//TODO: check if we can use index asd key here
 	return (
