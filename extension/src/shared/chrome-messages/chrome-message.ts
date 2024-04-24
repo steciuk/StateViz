@@ -12,15 +12,11 @@ export enum ChromeMessageType {
 export enum ChromeMessageSource {
 	CONTENT_SCRIPT = 'CONTENT',
 	DEVTOOLS = 'DEVTOOLS',
-	PANEL = 'PANEL',
-	BACKGROUND_SCRIPT = 'BACKGROUND',
-	POPUP = 'POPUP',
 }
 
 export type ChromeMessage =
-	| CreateDevtoolsPanelChromeMessage
-	| IsLibraryAttachedChromeMessage
-	| CommitRootChromeMessage;
+	| LibraryAttachedChromeMessage
+	| IsLibraryAttachedChromeMessage;
 
 // BASE TYPES
 type ChromeMessageBase = {
@@ -33,16 +29,10 @@ type ContentScriptChromeMessage = Omit<ChromeMessageBase, 'sender'> & {
 };
 
 // SPECIFIC TYPES
-// content-isolated -> devtools script
-export type CreateDevtoolsPanelChromeMessage = ContentScriptChromeMessage & {
+// content-isolated -> devtools script / background script
+export type LibraryAttachedChromeMessage = ContentScriptChromeMessage & {
 	type: ChromeMessageType.LIBRARY_ATTACHED;
 	content: Library;
-};
-
-// content-isolated -> devtools script
-export type CommitRootChromeMessage = ContentScriptChromeMessage & {
-	type: ChromeMessageType.COMMIT_ROOT;
-	content: ParsedReactNode;
 };
 
 // devtools script -> content-isolated on specific tab

@@ -12,7 +12,7 @@ function createPanel() {
 	try {
 		chrome.devtools.panels.create(
 			'State-Viz',
-			'enabled-32.png',
+			'/icons/enabled-32.png',
 			'src/pages/panel/index.html'
 		);
 	} catch (e) {

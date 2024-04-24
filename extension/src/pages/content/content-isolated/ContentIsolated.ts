@@ -142,7 +142,7 @@ export class ContentIsolated {
 	) {
 		this.libraryAttached = true;
 
-		// Send message to devtools panel that library is attached,
+		// Send message to devtools / background panel that library is attached,
 		// devtools panel potentially opened before
 		sendChromeMessage({
 			type: ChromeMessageType.LIBRARY_ATTACHED,

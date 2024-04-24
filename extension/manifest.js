@@ -10,7 +10,7 @@ const manifest = {
 	version: packageJson.version,
 	description: packageJson.description,
 	permissions: [
-    'storage', 
+    'storage',
     // 'sidePanel'
   ],
 	// side_panel: {
@@ -23,13 +23,17 @@ const manifest = {
 	},
 	action: {
 		default_popup: 'src/pages/popup/index.html',
-		default_icon: 'disabled-32.png',
+		default_icon: {
+      32: 'icons/disabled-32.png',
+      128: 'icons/disabled-128.png',
+    }
 	},
 	// chrome_url_overrides: {
 	//   newtab: "src/pages/newtab/index.html",
 	// },
 	icons: {
-		128: 'enabled-128.png',
+		128: 'icons/enabled-128.png',
+    32: 'icons/enabled-32.png',
 	},
 	content_scripts: [
 		{
@@ -54,11 +58,9 @@ const manifest = {
 			resources: [
 				'assets/js/*.js',
 				'assets/css/*.css',
-				'enabled-128.png',
-				'enabled-32.png',
-        'disabled-128.png',
+				'icons/*.png',
 			],
-			matches: ['*://*/*'],
+			matches: ['*://*/*', "<all_urls>"],
 		},
 	],
 };

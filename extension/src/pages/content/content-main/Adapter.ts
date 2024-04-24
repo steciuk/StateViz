@@ -166,6 +166,7 @@ export abstract class Adapter<
 		overlay.style.height = `${containerRect.height}px`;
 		overlay.style.backgroundColor = 'rgba(0, 0, 255, 0.2)';
 		overlay.style.zIndex = '9999999999';
+		overlay.style.pointerEvents = 'none';
 
 		document.body.appendChild(overlay);
 		Adapter.overlay = overlay;
