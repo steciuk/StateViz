@@ -1,4 +1,4 @@
-import '@pages/panel/index.css';
+import '@src/shared/style/twind.css';
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -23,3 +23,4 @@ function init() {
 }
 
 init();
+

@@ -8,6 +8,7 @@ import { getNodeTypeName } from '@pages/content/content-main/svelte/utils/getNod
 import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
 import {
 	PostMessage,
+	PostMessageBridge,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
 import { InspectData } from '@src/shared/types/DataType';
@@ -45,9 +46,7 @@ type ExistingNodeData = {
 	node: Node | null;
 };
 
-export class SvelteAdapter extends Adapter<ExistingNodeData> {
-	protected override readonly adapterPrefix = 'sv';
-
+export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 	private readonly pendingComponents = new Map<NodeId, { name: string }>();
 	// parentId + svelteBlockId
 	private readonly eaches = new Map<
@@ -65,6 +64,10 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 	private inspectedComponentsIds = new Set<NodeId>();
 
 	private currentBlockId: NodeId | null = null;
+
+	constructor(postMessageBridge: PostMessageBridge) {
+		super(postMessageBridge, Library.SVELTE);
+	}
 
 	protected override inject() {
 		// pre-inject in order not to miss any events
@@ -471,7 +474,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData> {
 		) {
 			if (containingBlockId === null) {
 				// we are not processing any block, node has to be the root
-				this.sendMountRoots([{ node: parsedNode, library: Library.SVELTE }]);
+				this.sendMountRoots([parsedNode]);
 
 				this.existingNodes.set(parsedNode.id, {
 					parentId: null,

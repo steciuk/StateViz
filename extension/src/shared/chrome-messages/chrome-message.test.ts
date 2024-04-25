@@ -96,14 +96,14 @@ describe('sendChromeMessage', () => {
 
 		sendChromeMessage({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith(
 			{
 				source: ChromeMessageSource.CONTENT_SCRIPT,
-				type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+				type: ChromeMessageType.LIBRARY_ATTACHED,
 			},
 			sender,
 			expect.any(Function)
@@ -131,14 +131,14 @@ describe('sendChromeMessageToTab', () => {
 
 		sendChromeMessageToTab(tabId, {
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith(
 			{
 				source: ChromeMessageSource.CONTENT_SCRIPT,
-				type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+				type: ChromeMessageType.LIBRARY_ATTACHED,
 			},
 			{ tab: { id: tabId } },
 			expect.any(Function)
@@ -161,13 +161,13 @@ describe('sendChromeMessage - onChromeMessage', () => {
 
 		sendChromeMessage({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 			sender,
 			responseCallback,
 		});
@@ -195,15 +195,16 @@ describe('sendChromeMessageToTab - onChromeMessage', () => {
 
 		sendChromeMessageToTab(tabId, {
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.CREATE_DEVTOOLS_PANEL,
+			type: ChromeMessageType.LIBRARY_ATTACHED,
 			sender: { tab: { id: tabId } },
 			responseCallback: responseCallback,
 		});
 	});
 });
+

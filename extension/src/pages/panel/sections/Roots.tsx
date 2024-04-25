@@ -1,11 +1,5 @@
 import { NodeAndLibrary, ParsedNode } from '@src/shared/types/ParsedNode';
-import React, {
-	Fragment,
-	useContext,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 import { Row } from '@pages/panel/components/Row/Row';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
@@ -14,11 +8,13 @@ import {
 } from '@src/shared/chrome-messages/ChromeBridge';
 import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import { Library } from '@src/shared/types/Library';
+import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
 
 const Roots = () => {
 	const filteredNodes = useFilteredNodes();
 
-	if (!filteredNodes) return null;
+	if (!filteredNodes || filteredNodes.length === 0)
+		return <NoLibrariesConnected />;
 
 	//TODO: check if we can use index asd key here
 	return (
@@ -73,11 +69,12 @@ const useFilteredNodes = () => {
 	const filteredNodes = useMemo(() => {
 		if (!roots) return null;
 
-		const filterOutNodes = <T extends ParsedNode>(
-			nodes: T[],
-			library: Library
-		): T[] => {
-			const result: T[] = [];
+		// TODO: think of some solution for removing those type assertions
+		const filterOutNodes = <T extends Library>(
+			nodes: ParsedNode<T>[],
+			library: T
+		): ParsedNode<T>[] => {
+			const result: ParsedNode<T>[] = [];
 
 			nodes.forEach((node) => {
 				const shouldDisplay = filterFunc({ node, library } as NodeAndLibrary);
@@ -85,10 +82,12 @@ const useFilteredNodes = () => {
 				if (shouldDisplay) {
 					result.push({
 						...node,
-						children: filterOutNodes(node.children as T[], library),
+						children: filterOutNodes(node.children as ParsedNode<T>[], library),
 					});
 				} else {
-					result.push(...filterOutNodes(node.children as T[], library));
+					result.push(
+						...filterOutNodes(node.children as ParsedNode<T>[], library)
+					);
 				}
 			});
 

@@ -1,4 +1,5 @@
 import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
+import { Library } from '@src/shared/types/Library';
 import {
 	NodeId,
 	ParsedNode,
@@ -26,42 +27,42 @@ export type UnmountNodesOperation = {
 	parentId: NodeId | null;
 	id: NodeId;
 };
-export type MountNodesOperations = Array<{
+export type MountNodesOperations<L extends Library> = Array<{
 	parentId: NodeId;
 	anchor: {
 		type: 'before' | 'after';
 		id: NodeId | null;
 	};
-	node: ParsedNode;
+	node: ParsedNode<L>;
 }>;
-export type MountRootsOperations = NodeAndLibrary[];
-export type UpdateNodesOperations = Array<
-	Partial<ParsedNode> & Pick<ParsedNode, 'id'>
+export type MountRootsOperations<L extends Library> = NodeAndLibrary<L>[];
+export type UpdateNodesOperations<L extends Library> = Array<
+	Pick<ParsedNode<L>, 'id'> & Partial<Omit<ParsedNode<L>, 'id'>>
 >;
 
 // MESSAGE TYPES
 export type LibraryAttachedPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.LIBRARY_ATTACHED;
-	content?: undefined;
+	content: Library;
 };
 
-export type MountRootsPostMessage = {
+export type MountRootsPostMessage<L extends Library = Library> = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_ROOTS;
-	content: MountRootsOperations;
+	content: MountRootsOperations<L>;
 };
 
-export type MountNodesPostMessage = {
+export type MountNodesPostMessage<L extends Library = Library> = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_NODES;
-	content: MountNodesOperations;
+	content: MountNodesOperations<L>;
 };
 
-export type UpdateNodesPostMessage = {
+export type UpdateNodesPostMessage<L extends Library = Library> = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.UPDATE_NODES;
-	content: UpdateNodesOperations;
+	content: UpdateNodesOperations<L>;
 };
 
 export type UnmountNodesPostMessage = {
@@ -88,14 +89,14 @@ export type HoverElementPostMessage = {
 	content: NodeId;
 };
 
-export type PostMessage =
+export type PostMessage<L extends Library = Library> =
 	| LibraryAttachedPostMessage
-	| MountRootsPostMessage
-	| MountNodesPostMessage
+	| MountRootsPostMessage<L>
+	| MountNodesPostMessage<L>
 	| UnmountNodesPostMessage
 	| InspectElementPostMessage
 	| InspectedDataPostMessage
-	| UpdateNodesPostMessage
+	| UpdateNodesPostMessage<L>
 	| HoverElementPostMessage;
 
 export class PostMessageBridge {
@@ -116,7 +117,7 @@ export class PostMessageBridge {
 		return PostMessageBridge.instance;
 	}
 
-	send(message: OmitFromUnion<PostMessage, 'source'>) {
+	send<L extends Library>(message: OmitFromUnion<PostMessage<L>, 'source'>) {
 		window.postMessage(
 			{
 				source: this.source,
