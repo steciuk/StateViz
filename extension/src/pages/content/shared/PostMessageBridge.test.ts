@@ -14,7 +14,7 @@ describe('PostMessageBridge', () => {
 		const source = PostMessageSource.ISOLATED;
 		const message: OmitFromUnion<PostMessage, 'source'> = {
 			type: PostMessageType.INSPECT_ELEMENT,
-			content: [1, 2, 3],
+			content: ['re1', 're2', 're3'],
 		};
 		const postMessageMock = vi.spyOn(window, 'postMessage');
 		const bridge = PostMessageBridge.getInstance(PostMessageSource.ISOLATED);
@@ -150,3 +150,4 @@ describe('PostMessageBridge', () => {
 		);
 	});
 });
+
