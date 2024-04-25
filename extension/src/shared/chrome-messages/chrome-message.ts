@@ -1,5 +1,3 @@
-import { ParsedReactNode } from '@src/shared/types/ParsedNode';
-
 import { OmitFromUnion, WithRequired } from '../utility-types';
 import { Library } from '@src/shared/types/Library';
 
@@ -12,6 +10,7 @@ export enum ChromeMessageType {
 export enum ChromeMessageSource {
 	CONTENT_SCRIPT = 'CONTENT',
 	DEVTOOLS = 'DEVTOOLS',
+	POPUP = 'POPUP',
 }
 
 export type ChromeMessage =
@@ -35,14 +34,14 @@ export type LibraryAttachedChromeMessage = ContentScriptChromeMessage & {
 	content: Library;
 };
 
-// devtools script -> content-isolated on specific tab
+// devtools script / popup -> content-isolated on specific tab
 export type IsLibraryAttachedChromeMessage = Omit<
 	ChromeMessageBase,
 	'responseCallback'
 > & {
 	type: ChromeMessageType.IS_LIBRARY_ATTACHED;
-	source: ChromeMessageSource.DEVTOOLS;
-	responseCallback: (isReactAttached: boolean) => void;
+	source: ChromeMessageSource.DEVTOOLS | ChromeMessageSource.POPUP;
+	responseCallback: (librariesAttached: Library[]) => void;
 };
 
 // FUNCTIONS

@@ -155,8 +155,8 @@ export abstract class Adapter<
 		const containerRect = element.getBoundingClientRect();
 		const style = window.getComputedStyle(element);
 		const position = style.position === 'fixed' ? 'fixed' : 'absolute';
-		const offsetY = style.position !== 'fixed' ? window.scrollY : 0;
-		const offsetX = style.position !== 'fixed' ? window.scrollX : 0;
+		const offsetY = style.position === 'fixed' ? 0 : window.scrollY;
+		const offsetX = style.position === 'fixed' ? 0 : window.scrollX;
 
 		const overlay = document.createElement('div');
 		overlay.style.position = position;

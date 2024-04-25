@@ -24,6 +24,7 @@ import {
 	HoverElementBridgeMessage,
 	InspectElementBridgeMessage,
 } from '@src/shared/chrome-messages/ChromeBridge';
+import { Library } from '@src/shared/types/Library';
 import {
 	NodeId,
 	ParsedNode,
@@ -32,9 +33,9 @@ import {
 
 export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
-	private postMessageBridge: PostMessageBridge;
-	private chromeBridge: ChromeBridgeListener;
-	private libraryAttached: boolean = false;
+	private readonly postMessageBridge: PostMessageBridge;
+	private readonly chromeBridge: ChromeBridgeListener;
+	private readonly librariesAttached: Set<Library> = new Set();
 
 	private currentNodes: Map<NodeId, ParsedNode> = new Map();
 	private roots: NodeAndLibrary[] = [];
@@ -140,7 +141,7 @@ export class ContentIsolated {
 	private handleLibraryAttachedPostMessage(
 		message: LibraryAttachedPostMessage
 	) {
-		this.libraryAttached = true;
+		this.librariesAttached.add(message.content);
 
 		// Send message to devtools / background panel that library is attached,
 		// devtools panel potentially opened before
@@ -325,7 +326,7 @@ export class ContentIsolated {
 		message: IsLibraryAttachedChromeMessage
 	): void {
 		console.log('question from devtools panel: is library attached?');
-		message.responseCallback(this.libraryAttached);
+		message.responseCallback([...this.librariesAttached.values()]);
 	}
 
 	private sendMessageThroughChromeBridgeIfConnected(

@@ -5,7 +5,6 @@ export const NoLibrariesConnected = () => {
 	return (
 		<div className="grid h-full w-full place-items-center">
 			<div className="flex max-w-sm flex-col items-center gap-2 text-center">
-				<h2 className="p-4 text-lg">No libraries connected</h2>
 				<p>No adapter detected its library on the current page.</p>
 
 				<div>
