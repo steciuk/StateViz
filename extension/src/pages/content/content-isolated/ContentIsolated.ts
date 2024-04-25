@@ -44,7 +44,6 @@ export class ContentIsolated {
 		this.postMessageBridge = PostMessageBridge.getInstance(
 			PostMessageSource.ISOLATED
 		);
-		console.warn('ContentIsolated constructor');
 		this.chromeBridge = new ChromeBridgeListener(
 			ChromeBridgeConnection.PANEL_TO_CONTENT,
 			() => {
@@ -171,7 +170,10 @@ export class ContentIsolated {
 			const inRootIndex = this.roots.findIndex(
 				(root) => root.node.id === mountOperation.node.id
 			);
-			if (inRootIndex !== -1) console.error('mounting existing root');
+			if (inRootIndex !== -1) {
+				console.error('Trying to mount root that is already mounted');
+				return;
+			}
 
 			this.roots.push(mountOperation);
 		});
@@ -185,9 +187,6 @@ export class ContentIsolated {
 	private handleMountNodesPostMessage(message: MountNodesPostMessage) {
 		console.log('MOUNT_NODES', message.content);
 
-		this.addNodesRecursively(
-			message.content.map((mountOperation) => mountOperation.node)
-		);
 		let areUpdates = false;
 
 		message.content.forEach((mountOperation) => {
@@ -199,6 +198,8 @@ export class ContentIsolated {
 				return;
 			}
 
+			this.addNodesRecursively([node]);
+
 			const anchorNodeIndex =
 				anchor.id === null
 					? -1
@@ -207,7 +208,7 @@ export class ContentIsolated {
 			if (anchorNodeIndex === -1) {
 				// TODO: think of some type fix
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				if (anchor.type === 'after') parent.children.unshift(node as any);
+				if (anchor.type === 'before') parent.children.unshift(node as any);
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				else parent.children.push(node as any);
 

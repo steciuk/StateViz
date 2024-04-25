@@ -8,6 +8,7 @@ import {
 	sendChromeMessage,
 	sendChromeMessageToTab,
 } from '@src/shared/chrome-messages/chrome-message';
+import { Library } from '@src/shared/types/Library';
 
 describe('onChromeMessage', () => {
 	afterEach(() => {
@@ -97,6 +98,7 @@ describe('sendChromeMessage', () => {
 		sendChromeMessage({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 		});
 
 		expect(callback).toBeCalledTimes(1);
@@ -104,6 +106,7 @@ describe('sendChromeMessage', () => {
 			{
 				source: ChromeMessageSource.CONTENT_SCRIPT,
 				type: ChromeMessageType.LIBRARY_ATTACHED,
+				content: Library.REACT,
 			},
 			sender,
 			expect.any(Function)
@@ -132,6 +135,7 @@ describe('sendChromeMessageToTab', () => {
 		sendChromeMessageToTab(tabId, {
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 		});
 
 		expect(callback).toBeCalledTimes(1);
@@ -139,6 +143,7 @@ describe('sendChromeMessageToTab', () => {
 			{
 				source: ChromeMessageSource.CONTENT_SCRIPT,
 				type: ChromeMessageType.LIBRARY_ATTACHED,
+				content: Library.REACT,
 			},
 			{ tab: { id: tabId } },
 			expect.any(Function)
@@ -162,12 +167,14 @@ describe('sendChromeMessage - onChromeMessage', () => {
 		sendChromeMessage({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 			sender,
 			responseCallback,
 		});
@@ -196,12 +203,14 @@ describe('sendChromeMessageToTab - onChromeMessage', () => {
 		sendChromeMessageToTab(tabId, {
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 		});
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith({
 			source: ChromeMessageSource.CONTENT_SCRIPT,
 			type: ChromeMessageType.LIBRARY_ATTACHED,
+			content: Library.REACT,
 			sender: { tab: { id: tabId } },
 			responseCallback: responseCallback,
 		});
