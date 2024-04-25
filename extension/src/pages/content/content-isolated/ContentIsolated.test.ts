@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ContentIsolated } from '@pages/content/content-isolated/ContentIsolated';
 import {
-	MountNodesPostMessage,
+	MountNodesOperations,
 	PostMessageBridge,
 	PostMessageSource,
 	PostMessageType,
@@ -19,20 +19,27 @@ import {
 	ChromeBridgeListener,
 	ChromeBridgeMessageType,
 } from '@src/shared/chrome-messages/ChromeBridge';
-import { ParsedReactNode } from '@src/shared/types/ParsedNode';
+import {
+	NodeAndLibrary,
+	ParsedNode,
+	ParsedReactNode,
+	ParsedSvelteNode,
+} from '@src/shared/types/ParsedNode';
+import { Library } from '@src/shared/types/Library';
+import { Mock } from 'node:test';
 
-describe('ContentIsolated', () => {
+describe(ContentIsolated.name, () => {
 	let contentIsolated: ContentIsolated;
 
 	let postMessageBridge: PostMessageBridge;
-	let chromeBridgeConstructor = vi.fn();
+	const chromeBridgeConstructor: Mock<any> = ChromeBridgeListener;
 	let chromeBridge: ChromeBridgeListener;
 
 	beforeEach(() => {
+		PostMessageBridge['instance'] = undefined;
 		postMessageBridge = PostMessageBridge.getInstance(
 			PostMessageSource.ISOLATED
 		);
-		chromeBridgeConstructor = ChromeBridgeListener as any;
 		chromeBridge = new ChromeBridgeListener(
 			ChromeBridgeConnection.PANEL_TO_CONTENT,
 			() => {}
@@ -44,12 +51,10 @@ describe('ContentIsolated', () => {
 
 	afterEach(() => {
 		ContentIsolated['instance'] = undefined;
-		contentIsolated['libraryAttached'] = false;
-		contentIsolated['currentFibers'].clear();
 		vi.clearAllMocks();
 	});
 
-	describe('initialize', () => {
+	describe(ContentIsolated.initialize.name, () => {
 		it('should call ChromeBridgeListener constructor', () => {
 			expect(chromeBridgeConstructor).toBeCalledTimes(1);
 			expect(chromeBridgeConstructor).toBeCalledWith(
@@ -59,45 +64,24 @@ describe('ContentIsolated', () => {
 		});
 
 		it('should throw an error if ContentIsolated is already initialized', () => {
-			expect(() => {
-				ContentIsolated.initialize();
-			}).toThrowError('ContentIsolated already initialized');
+			expect(() => ContentIsolated.initialize()).toThrowError(
+				'ContentIsolated already initialized'
+			);
 		});
 	});
 
 	describe('handleDevtoolsPanelConnection', () => {
-		it('should send FULL_SKELETON message if currentFibers is not empty', () => {
-			contentIsolated['currentFibers'].set(1, { name: '1' } as ParsedReactNode);
-			contentIsolated['currentFibers'].set(2, { name: '2' } as ParsedReactNode);
+		it('should send FULL_SKELETON message', () => {
+			const roots: NodeAndLibrary[] = [
+				{ library: Library.REACT, node: { name: '1' } as ParsedReactNode },
+				{ library: Library.SVELTE, node: { name: '2' } as ParsedSvelteNode },
+			];
+			contentIsolated['roots'] = roots;
 			contentIsolated['handleDevtoolsPanelConnection']();
 
 			expect(chromeBridge.send).toBeCalledWith({
 				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [{ name: '1' }, { name: '2' }],
-			});
-		});
-
-		it('should not send FULL_SKELETON message if currentFibers is empty', () => {
-			contentIsolated['handleDevtoolsPanelConnection']();
-
-			expect(chromeBridge.send).not.toBeCalled();
-		});
-	});
-
-	describe('handleReactAttachedPostMessage', () => {
-		it('should set libraryAttached to true', () => {
-			contentIsolated['handleReactAttachedPostMessage']({} as any);
-
-			expect(contentIsolated['libraryAttached']).toBe(true);
-		});
-
-		it('should send CREATE_DEVTOOLS_PANEL message', () => {
-			contentIsolated['handleReactAttachedPostMessage']({} as any);
-
-			expect(sendChromeMessage).toBeCalledTimes(1);
-			expect(sendChromeMessage).toBeCalledWith({
-				type: ChromeMessageType.LIBRARY_ATTACHED,
-				source: ChromeMessageSource.CONTENT_SCRIPT,
+				content: roots,
 			});
 		});
 	});
@@ -116,139 +100,450 @@ describe('ContentIsolated', () => {
 		});
 	});
 
-	describe('handleMountNodesPostMessage', () => {
-		it('should add nodes to currentFibers and send FULL_SKELETON message', () => {
-			const message = {
-				content: [
-					{
-						pathFromRoot: [],
-						node: { id: 1 },
-						afterNode: null,
-					},
-				],
-			};
+	describe('handleLibraryAttachedPostMessage', () => {
+		const libraryAttachedPostMessage = {
+			content: Library.REACT,
+			source: PostMessageSource.MAIN,
+			type: PostMessageType.LIBRARY_ATTACHED,
+		} as const;
 
-			contentIsolated['handleMountNodesPostMessage'](message as any);
-
-			expect(contentIsolated['currentFibers'].size).toBe(1);
-			expect(contentIsolated['currentFibers'].get(1)).toBe(
-				message.content[0].node
-			);
-			expect(chromeBridge.send).toBeCalledWith({
-				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [message.content[0].node],
-			});
-		});
-
-		it('should insert nodes at the beginning of the children array and send FULL_SKELETON message', () => {
-			contentIsolated['currentFibers'].set(0, {
-				id: 0,
-				children: [],
-			} as any);
-
-			const message = {
-				content: [
-					{
-						pathFromRoot: [0],
-						node: { id: 1 },
-						afterNode: null,
-					},
-				],
-			};
-
-			contentIsolated['handleMountNodesPostMessage'](message as any);
-
-			expect(contentIsolated['currentFibers'].get(0)?.children).toEqual([
-				message.content[0].node,
-			]);
-			expect(chromeBridge.send).toBeCalledWith({
-				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [{ id: 0, children: [message.content[0].node] }],
-			});
-		});
-
-		it('should insert nodes after the specified afterNode and send FULL_SKELETON message', () => {
-			contentIsolated['currentFibers'].set(0, {
-				id: 0,
-				children: [
-					{ id: 1, name: '1' },
-					{ id: 2, name: '2' },
-				],
-			} as any);
-
-			const message = {
-				content: [
-					{
-						pathFromRoot: [0],
-						node: { id: 3 },
-						afterNode: 1,
-					},
-				],
-			};
-
-			contentIsolated['handleMountNodesPostMessage'](
-				message as unknown as MountNodesPostMessage
+		it('should register the library', () => {
+			contentIsolated['handleLibraryAttachedPostMessage'](
+				libraryAttachedPostMessage
 			);
 
-			expect(contentIsolated['currentFibers'].get(0)?.children).toEqual([
-				{ id: 1, name: '1' },
-				{ id: 3 },
-				{ id: 2, name: '2' },
-			]);
-			expect(chromeBridge.send).toBeCalledWith({
-				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [
-					{
-						id: 0,
-						children: [{ id: 1, name: '1' }, { id: 3 }, { id: 2, name: '2' }],
-					},
-				],
+			expect(contentIsolated['librariesAttached']).toContain(Library.REACT);
+		});
+
+		it('should send LIBRARY_ATTACHED message', () => {
+			contentIsolated['handleLibraryAttachedPostMessage'](
+				libraryAttachedPostMessage
+			);
+
+			expect(sendChromeMessage).toBeCalledTimes(1);
+			expect(sendChromeMessage).toBeCalledWith({
+				type: ChromeMessageType.LIBRARY_ATTACHED,
+				source: ChromeMessageSource.CONTENT_SCRIPT,
+				content: Library.REACT,
 			});
 		});
 	});
 
-	describe('handleUnmountNodesPostMessage', () => {
-		it('should remove root node from currentFibers and send FULL_SKELETON message', () => {
-			contentIsolated['currentFibers'].set(1, { id: 1 } as ParsedReactNode);
-			contentIsolated['currentFibers'].set(2, { id: 2 } as ParsedReactNode);
+	describe('addNodesRecursively', () => {
+		it('should add nodes to currentNodes', () => {
+			const nodes = [
+				{
+					id: 're1',
+					name: '1',
+					children: [
+						{ id: 're2', name: '2', children: [] },
+						{ id: 're3', name: '3', children: [] },
+					],
+				},
+				{ id: 're4', name: '4', children: [] },
+			] as unknown as ParsedNode[];
 
+			contentIsolated['addNodesRecursively'](nodes);
+
+			expect(contentIsolated['currentNodes'].size).toBe(4);
+			expect(contentIsolated['currentNodes']).toEqual(
+				new Map([
+					['re1', nodes[0]],
+					['re2', nodes[0].children[0]],
+					['re3', nodes[0].children[1]],
+					['re4', nodes[1]],
+				])
+			);
+		});
+	});
+
+	describe('handleMountRootsPostMessage', () => {
+		it('should add roots to currentNodes and send FULL_SKELETON message', () => {
 			const message = {
-				content: [1],
+				content: [
+					{
+						library: Library.REACT,
+						node: { id: 're1', name: '1', children: [] },
+					},
+					{
+						library: Library.SVELTE,
+						node: { id: 'sv1', name: '2', children: [] },
+					},
+				],
 			};
 
-			contentIsolated['handleUnmountNodesPostMessage'](message as any);
+			contentIsolated['handleMountRootsPostMessage'](message as any);
 
-			expect(contentIsolated['currentFibers'].size).toBe(1);
-			expect(contentIsolated['currentFibers'].get(1)).toBeUndefined();
-			expect(contentIsolated['currentFibers'].get(2)).toBeDefined();
+			expect(contentIsolated['currentNodes'].size).toBe(2);
+			expect(contentIsolated['currentNodes'].get('re1')).toBe(
+				message.content[0].node
+			);
+			expect(contentIsolated['currentNodes'].get('sv1')).toBe(
+				message.content[1].node
+			);
 			expect(chromeBridge.send).toBeCalledWith({
 				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [{ id: 2 }],
+				content: message.content,
 			});
 		});
 
-		it('should remove child node from parent node and send FULL_SKELETON message', () => {
-			contentIsolated['currentFibers'].set(1, {
-				id: 1,
-				children: [
-					{ id: 2, name: '2' },
-					{ id: 3, name: '3' },
+		it('should not add roots if they are already mounted', () => {
+			const message = {
+				content: [
+					{
+						library: Library.REACT,
+						node: { id: 're1', name: '1', children: [] },
+					},
 				],
-			} as ParsedReactNode);
+			};
+
+			contentIsolated['currentNodes'].set(
+				're1',
+				message.content[0].node as any
+			);
+
+			contentIsolated['handleMountRootsPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].size).toBe(1);
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: message.content,
+			});
+		});
+	});
+
+	describe('handleMountNodesPostMessage', () => {
+		it('should not add nodes to currentNodes if parent was not found', () => {
+			const message = {
+				content: [
+					{
+						parentId: 're1',
+						node: { id: 're2', children: [] } as unknown as ParsedNode,
+						anchor: { type: 'before', id: null },
+					},
+				] as MountNodesOperations<Library>,
+			};
+
+			contentIsolated['handleMountNodesPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].size).toBe(0);
+			expect(chromeBridge.send).not.toBeCalled();
+		});
+
+		it('should properly add nodes at the beginning of children array', () => {
+			const rootsMessage = {
+				content: [
+					{
+						library: Library.SVELTE,
+						node: {
+							id: 'sv1',
+							children: [
+								{
+									id: 'sv2',
+									children: [],
+								},
+							],
+						} as unknown as ParsedSvelteNode,
+					},
+				],
+			};
 
 			const message = {
-				content: [1, 3],
+				content: [
+					{
+						parentId: 'sv1',
+						node: { id: 'sv3', children: [] } as unknown as ParsedSvelteNode,
+						anchor: { type: 'before', id: null },
+					},
+				] as MountNodesOperations<Library.SVELTE>,
+			};
+
+			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
+			contentIsolated['handleMountNodesPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
+				message.content[0].node
+			);
+			expect(contentIsolated['roots'][0].node.children).toEqual([
+				message.content[0].node,
+				{ id: 'sv2', children: [] },
+			]);
+
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: rootsMessage.content,
+			});
+		});
+
+		it('should properly add nodes at the end of children array', () => {
+			const rootsMessage = {
+				content: [
+					{
+						library: Library.SVELTE,
+						node: {
+							id: 'sv1',
+							children: [
+								{
+									id: 'sv2',
+									children: [],
+								},
+							],
+						} as unknown as ParsedSvelteNode,
+					},
+				],
+			};
+
+			const message = {
+				content: [
+					{
+						parentId: 'sv1',
+						node: { id: 'sv3', children: [] } as unknown as ParsedSvelteNode,
+						anchor: { type: 'after', id: null },
+					},
+				] as MountNodesOperations<Library.SVELTE>,
+			};
+
+			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
+			contentIsolated['handleMountNodesPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
+				message.content[0].node
+			);
+			expect(contentIsolated['roots'][0].node.children).toEqual([
+				{ id: 'sv2', children: [] },
+				message.content[0].node,
+			]);
+
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: rootsMessage.content,
+			});
+		});
+
+		it('should properly add nodes after the anchor node', () => {
+			const rootsMessage = {
+				content: [
+					{
+						library: Library.SVELTE,
+						node: {
+							id: 'sv1',
+							children: [
+								{
+									id: 'sv2',
+									children: [],
+								},
+								{
+									id: 'sv4',
+									children: [],
+								},
+							],
+						} as unknown as ParsedSvelteNode,
+					},
+				],
+			};
+
+			const message = {
+				content: [
+					{
+						parentId: 'sv1',
+						node: { id: 'sv3', children: [] } as unknown as ParsedSvelteNode,
+						anchor: { type: 'after', id: 'sv2' },
+					},
+				] as MountNodesOperations<Library.SVELTE>,
+			};
+
+			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
+			contentIsolated['handleMountNodesPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
+				message.content[0].node
+			);
+			expect(contentIsolated['roots'][0].node.children).toEqual([
+				{ id: 'sv2', children: [] },
+				message.content[0].node,
+				{ id: 'sv4', children: [] },
+			]);
+
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: rootsMessage.content,
+			});
+		});
+
+		it('should properly add nodes before the anchor node', () => {
+			const rootsMessage = {
+				content: [
+					{
+						library: Library.SVELTE,
+						node: {
+							id: 'sv1',
+							children: [
+								{
+									id: 'sv2',
+									children: [],
+								},
+								{
+									id: 'sv4',
+									children: [],
+								},
+							],
+						} as unknown as ParsedSvelteNode,
+					},
+				],
+			};
+
+			const message = {
+				content: [
+					{
+						parentId: 'sv1',
+						node: { id: 'sv3', children: [] } as unknown as ParsedSvelteNode,
+						anchor: { type: 'before', id: 'sv4' },
+					},
+				] as MountNodesOperations<Library.SVELTE>,
+			};
+
+			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
+			contentIsolated['handleMountNodesPostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
+				message.content[0].node
+			);
+			expect(contentIsolated['roots'][0].node.children).toEqual([
+				{ id: 'sv2', children: [] },
+				message.content[0].node,
+				{ id: 'sv4', children: [] },
+			]);
+
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: rootsMessage.content,
+			});
+		});
+	});
+
+	describe('handleNodeUpdatePostMessage', () => {
+		it('should update node and send FULL_SKELETON message', () => {
+			const rootsMessage = {
+				content: [
+					{
+						library: Library.SVELTE,
+						node: {
+							id: 'sv1',
+							children: [
+								{
+									id: 'sv2',
+									children: [],
+								},
+							],
+						} as unknown as ParsedSvelteNode,
+					},
+				],
+			};
+
+			const message = {
+				content: [
+					{
+						id: 'sv2',
+						name: 'new name',
+					},
+				],
+			};
+
+			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
+			contentIsolated['handleNodeUpdatePostMessage'](message as any);
+
+			expect(contentIsolated['currentNodes'].get('sv2')?.name).toBe('new name');
+
+			expect(chromeBridge.send).toBeCalledWith({
+				type: ChromeBridgeMessageType.FULL_SKELETON,
+				content: rootsMessage.content,
+			});
+		});
+	});
+
+	describe('removeNodesRecursively', () => {
+		it('should remove node and its children from currentNodes', () => {
+			contentIsolated['addNodesRecursively']([
+				{
+					id: 're1',
+					children: [
+						{ id: 're2', children: [] },
+						{ id: 're3', children: [] },
+					],
+				},
+			] as unknown as ParsedNode[]);
+			expect(contentIsolated['currentNodes'].size).toBe(3);
+
+			contentIsolated['removeNodesRecursively']('re1');
+			expect(contentIsolated['currentNodes'].size).toBe(0);
+		});
+	});
+
+	describe('handleUnmountNodesPostMessage', () => {
+		it('should remove root node from currentNodes', () => {
+			contentIsolated['roots'] = [
+				{
+					library: Library.REACT,
+					node: { id: 're1', children: [] } as unknown as ParsedReactNode,
+				},
+				{
+					library: Library.SVELTE,
+					node: { id: 'sv1', children: [] } as unknown as ParsedSvelteNode,
+				},
+			];
+			contentIsolated['currentNodes'].set(
+				're1',
+				contentIsolated['roots'][0].node
+			);
+			contentIsolated['currentNodes'].set(
+				'sv1',
+				contentIsolated['roots'][1].node
+			);
+
+			const message = {
+				content: {
+					parentId: null,
+					id: 're1',
+				},
 			};
 
 			contentIsolated['handleUnmountNodesPostMessage'](message as any);
+			expect(contentIsolated['currentNodes'].size).toBe(1);
+			expect(contentIsolated['currentNodes'].get('re1')).toBeUndefined();
+			expect(contentIsolated['currentNodes'].get('sv1')).toBeDefined();
+		});
 
-			expect(contentIsolated['currentFibers'].get(1)?.children).toEqual([
-				{ id: 2, name: '2' },
+		it('should remove child node from parent node', () => {
+			contentIsolated['roots'] = [
+				{
+					library: Library.REACT,
+					node: {
+						id: 're1',
+						children: [{ id: 're2', children: [] }],
+					} as unknown as ParsedReactNode,
+				},
+			];
+			contentIsolated['addNodesRecursively']([
+				contentIsolated['roots'][0].node,
 			]);
-			expect(chromeBridge.send).toBeCalledWith({
-				type: ChromeBridgeMessageType.FULL_SKELETON,
-				content: [{ id: 1, children: [{ id: 2, name: '2' }] }],
-			});
+
+			const message = {
+				content: {
+					parentId: 're1',
+					id: 're2',
+				},
+			};
+
+			contentIsolated['handleUnmountNodesPostMessage'](message as any);
+			expect(contentIsolated['currentNodes'].size).toBe(1);
+			expect(contentIsolated['currentNodes'].get('re2')).toBeUndefined();
+			expect(contentIsolated['currentNodes'].get('re1')?.children).toEqual([]);
+			expect(contentIsolated['roots']).toEqual([
+				{
+					library: Library.REACT,
+					node: { id: 're1', children: [] } as unknown as ParsedReactNode,
+				},
+			]);
 		});
 	});
 
@@ -287,16 +582,36 @@ describe('ContentIsolated', () => {
 		});
 	});
 
-	describe('handleIsReactAttachedChromeMessage', () => {
-		it('should send responseCallback with libraryAttached value', () => {
-			const responseCallback = vi.fn();
+	describe('handleHoverElementBridgeMessage', () => {
+		it('should send HOVER_ELEMENT PostMessageBridge message', () => {
+			const message = {
+				content: 're1',
+			};
 
-			contentIsolated['handleIsReactAttachedChromeMessage']({
+			contentIsolated['handleHoverElementBridgeMessage'](message as any);
+
+			expect(postMessageBridge.send).toBeCalledTimes(1);
+			expect(postMessageBridge.send).toBeCalledWith({
+				type: PostMessageType.HOVER_ELEMENT,
+				content: message.content,
+			});
+		});
+	});
+
+	describe('handleIsLibraryAttachedChromeMessage', () => {
+		it('should respond with librariesAttached', () => {
+			contentIsolated['librariesAttached'].add(Library.REACT);
+			contentIsolated['librariesAttached'].add(Library.SVELTE);
+
+			const responseCallback = vi.fn();
+			const message = {
 				responseCallback,
-			} as any);
+			};
+
+			contentIsolated['handleIsLibraryAttachedChromeMessage'](message as any);
 
 			expect(responseCallback).toBeCalledTimes(1);
-			expect(responseCallback).toBeCalledWith(false);
+			expect(responseCallback).toBeCalledWith([Library.REACT, Library.SVELTE]);
 		});
 	});
 });
