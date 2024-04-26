@@ -32,13 +32,16 @@ export type LibraryAttachedChromeMessage = {
 };
 
 // FUNCTIONS
-export function sendChromeMessage(message: ChromeMessage) {
+export function sendChromeMessage(message: ChromeMessage): void {
 	message?.responseCallback
 		? chrome.runtime.sendMessage(message, message.responseCallback)
 		: chrome.runtime.sendMessage(message);
 }
 
-export function sendChromeMessageToTab(tabId: number, message: ChromeMessage) {
+export function sendChromeMessageToTab(
+	tabId: number,
+	message: ChromeMessage
+): void {
 	message?.responseCallback
 		? chrome.tabs.sendMessage(tabId, message, message.responseCallback)
 		: chrome.tabs.sendMessage(tabId, message);
@@ -49,7 +52,7 @@ export function onChromeMessage(
 		message: ChromeMessage,
 		sender: chrome.runtime.MessageSender
 	) => void
-) {
+): () => void {
 	const eventHandler: Parameters<
 		typeof chrome.runtime.onMessage.addListener
 	>[0] = (message, sender, responseCallback) => {

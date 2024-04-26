@@ -1,9 +1,5 @@
 import { NodeInspectedData } from '@src/shared/types/DataType';
-import {
-	NodeId,
-	ParsedNode,
-	NodeAndLibrary,
-} from '@src/shared/types/ParsedNode';
+import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
 
 export enum ChromeBridgeConnection {
 	PANEL_TO_CONTENT = 'PANEL_TO_CONTENT_SCRIPT',
@@ -113,7 +109,7 @@ abstract class ChromeBridge {
 }
 
 export class ChromeBridgeConnector extends ChromeBridge {
-	protected establishConnection() {
+	protected override establishConnection() {
 		return chrome.runtime.connect({ name: this.connection });
 	}
 }
@@ -126,7 +122,7 @@ export class ChromeBridgeToTabConnector extends ChromeBridge {
 		super(connection);
 	}
 
-	protected establishConnection() {
+	protected override establishConnection() {
 		return chrome.tabs.connect(this.tabId, { name: this.connection });
 	}
 }
@@ -136,7 +132,11 @@ export class ChromeBridgeListener extends ChromeBridge {
 		super(connection);
 
 		chrome.runtime.onConnect.addListener((port) => {
-			if (port.name !== this.connection) return;
+			if (port.name !== this.connection) {
+				port.disconnect();
+				console.error('Invalid connection');
+				return;
+			}
 			this.port = port;
 			this.port.onDisconnect.addListener(() => {
 				this.port = undefined;
@@ -146,7 +146,7 @@ export class ChromeBridgeListener extends ChromeBridge {
 		});
 	}
 
-	protected establishConnection() {
+	protected override establishConnection() {
 		return null;
 	}
 }

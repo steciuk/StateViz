@@ -1,15 +1,8 @@
 import { ReactElement } from 'react';
 
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { HookType } from '@pages/content/content-main/react/react-types';
-import {
-	NodeId,
-	ParsedReactNode,
-	ParsedSvelteNode,
-} from '@src/shared/types/ParsedNode';
-import { E } from 'vitest/dist/reporters-5f784f42';
+import { NodeId } from '@src/shared/types/ParsedNode';
 import { Library } from '@src/shared/types/Library';
-import { group } from 'console';
 
 // Based on react/packages/react-devtools-shared/src/utils.js
 export enum DataType {
