@@ -3,4 +3,6 @@ export type OmitFromUnion<T, K extends keyof T> = T extends any
 	? Omit<T, K>
 	: never;
 
-export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type WithRequired<T, K extends keyof T> = Omit<T, K> &
+	Required<Pick<T, K>>;
+

@@ -48,11 +48,13 @@ describe('onChromeMessage', () => {
 
 		chrome.runtime.onMessage.callListeners(message, sender, responseCallback);
 
-		expect(callback).toBeCalledWith({
-			...message,
-			sender: sender,
-			responseCallback: responseCallback,
-		});
+		expect(callback).toBeCalledWith(
+			{
+				...message,
+				responseCallback,
+			},
+			sender
+		);
 		expect(chrome.runtime.onMessage.hasListeners()).toBe(true);
 		expect(callback).toBeCalledTimes(1);
 		expect(responseCallback).not.toBeCalled();
@@ -171,13 +173,15 @@ describe('sendChromeMessage - onChromeMessage', () => {
 		});
 
 		expect(callback).toBeCalledTimes(1);
-		expect(callback).toBeCalledWith({
-			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.LIBRARY_ATTACHED,
-			content: Library.REACT,
-			sender,
-			responseCallback,
-		});
+		expect(callback).toBeCalledWith(
+			{
+				source: ChromeMessageSource.CONTENT_SCRIPT,
+				type: ChromeMessageType.LIBRARY_ATTACHED,
+				content: Library.REACT,
+				responseCallback,
+			},
+			sender
+		);
 	});
 });
 
@@ -207,13 +211,15 @@ describe('sendChromeMessageToTab - onChromeMessage', () => {
 		});
 
 		expect(callback).toBeCalledTimes(1);
-		expect(callback).toBeCalledWith({
-			source: ChromeMessageSource.CONTENT_SCRIPT,
-			type: ChromeMessageType.LIBRARY_ATTACHED,
-			content: Library.REACT,
-			sender: { tab: { id: tabId } },
-			responseCallback: responseCallback,
-		});
+		expect(callback).toBeCalledWith(
+			{
+				source: ChromeMessageSource.CONTENT_SCRIPT,
+				type: ChromeMessageType.LIBRARY_ATTACHED,
+				content: Library.REACT,
+				responseCallback: responseCallback,
+			},
+			{ tab: { id: tabId } }
+		);
 	});
 });
 

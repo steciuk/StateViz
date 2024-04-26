@@ -25,11 +25,11 @@ let panelCreated = false;
 const currentTabId = chrome.devtools.inspectedWindow.tabId;
 
 // Devtools window opened before library attached
-const removeListener = onChromeMessage((message) => {
+const removeListener = onChromeMessage((message, sender) => {
 	if (message.type === ChromeMessageType.LIBRARY_ATTACHED) {
 		console.warn('Library attached in DEVTOOLS', message.content);
 		if (panelCreated) return;
-		if (message.sender.tab.id !== currentTabId) return;
+		if (sender.tab?.id !== currentTabId) return;
 
 		panelCreated = true;
 		createPanel();
