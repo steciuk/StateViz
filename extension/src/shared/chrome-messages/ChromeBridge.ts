@@ -1,4 +1,4 @@
-import { NodeInspectedData } from '@src/shared/types/DataType';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
 
 export enum ChromeBridgeConnection {
@@ -28,11 +28,9 @@ export type InspectElementBridgeMessage = {
 	content: NodeId[];
 };
 
-export type InspectedDataMessageContent = NodeInspectedData[];
-
 export type InspectedDataBridgeMessage = {
 	type: ChromeBridgeMessageType.INSPECTED_DATA;
-	content: InspectedDataMessageContent;
+	content: NodeInspectedData[];
 };
 
 export type HoverElementBridgeMessage = {

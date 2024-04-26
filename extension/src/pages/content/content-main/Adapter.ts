@@ -9,9 +9,9 @@ import {
 	UnmountNodesOperation,
 	UpdateNodesOperations,
 } from '@pages/content/shared/PostMessageBridge';
-import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { getClosestElement } from '@pages/content/content-main/utils/getClosestElement';
 import { Library } from '@src/shared/types/Library';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 
 export abstract class Adapter<
 	T extends { node: Node | null },
@@ -101,7 +101,7 @@ export abstract class Adapter<
 		});
 	}
 
-	protected sendInspectedData(content: InspectedDataMessageContent) {
+	protected sendInspectedData(content: NodeInspectedData[]) {
 		this.postMessageBridge.send({
 			type: PostMessageType.INSPECTED_DATA,
 			content,

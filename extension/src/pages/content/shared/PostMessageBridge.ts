@@ -1,5 +1,5 @@
-import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
 import { Library } from '@src/shared/types/Library';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import {
 	NodeId,
 	ParsedNode,
@@ -74,7 +74,7 @@ export type UnmountNodesPostMessage = {
 export type InspectedDataPostMessage = {
 	source: PostMessageSource.MAIN;
 	type: PostMessageType.INSPECTED_DATA;
-	content: InspectedDataMessageContent;
+	content: NodeInspectedData[];
 };
 
 export type InspectElementPostMessage = {

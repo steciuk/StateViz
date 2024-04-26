@@ -4,7 +4,7 @@ import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
 import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeInspectedData } from '@src/shared/types/DataType';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { NodeId } from '@src/shared/types/ParsedNode';
 import NodeInspectInfo from '@pages/panel/components/NodeInspectInfo';
 import NodeInspectData from '@pages/panel/components/NodeInspectData';

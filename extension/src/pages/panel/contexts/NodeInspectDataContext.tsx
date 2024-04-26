@@ -4,15 +4,17 @@ import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-	InspectedDataMessageContent,
 } from '@src/shared/chrome-messages/ChromeBridge';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 
-export const InspectDataContext =
-	createContext<InspectedDataMessageContent | null>(null);
+export const InspectDataContext = createContext<NodeInspectedData[] | null>(
+	null
+);
 
 export const InspectDataProvider = (props: { children: React.ReactNode }) => {
-	const [inspectData, setInspectData] =
-		useState<InspectedDataMessageContent | null>(null);
+	const [inspectData, setInspectData] = useState<NodeInspectedData[] | null>(
+		null
+	);
 	const chromeBridge = useContext(ChromeBridgeContext);
 
 	useEffect(() => {
@@ -36,3 +38,4 @@ export const InspectDataProvider = (props: { children: React.ReactNode }) => {
 		</InspectDataContext.Provider>
 	);
 };
+

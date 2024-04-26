@@ -121,19 +121,6 @@ export type TypedData =
 			data: unknown;
 	  };
 
-export type NodeInspectedData = {
-	library: Library;
-	id: NodeId;
-	name: string;
-	nodeInfo: Array<{ label: string; value: string }>;
-	nodeData: NodeDataGroup[];
-};
-
-export type NodeDataGroup = {
-	group: string;
-	data: Array<{ label: string; value: InspectData }>;
-};
-
 export type InspectData =
 	| {
 			type: TypesWithoutData;

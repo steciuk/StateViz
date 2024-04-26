@@ -1,4 +1,4 @@
-import { NodeInspectedData } from '@src/shared/types/DataType';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import React from 'react';
 
 const NodeInspectInfo = (props: { selectedNode: NodeInspectedData }) => {

@@ -14,8 +14,7 @@ import {
 	PostMessageBridge,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { InspectedDataMessageContent } from '@src/shared/chrome-messages/ChromeBridge';
-import { NodeInspectedData } from '@src/shared/types/DataType';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { WorkTag } from '@src/shared/types/react-types';
 import { ListenersStorage } from '@pages/content/content-main/react/utils/ListenersStorage';
 import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
@@ -163,7 +162,7 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private flushInspectedData() {
-		const data: InspectedDataMessageContent = this.inspectedElementsIds
+		const data: NodeInspectedData[] = this.inspectedElementsIds
 			.map((id) => this.inspectedData.get(id))
 			.filter(
 				<T>(data: T): data is Extract<T, NodeInspectedData> =>

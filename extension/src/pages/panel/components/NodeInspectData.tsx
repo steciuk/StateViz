@@ -1,5 +1,6 @@
 import { NodeStateValue } from '@pages/panel/components/NodeStateValue';
-import { InspectData, NodeInspectedData } from '@src/shared/types/DataType';
+import { InspectData } from '@src/shared/types/DataType';
+import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import React, { Fragment } from 'react';
 
 const NodeInspectData = (props: { inspectData: NodeInspectedData }) => {
