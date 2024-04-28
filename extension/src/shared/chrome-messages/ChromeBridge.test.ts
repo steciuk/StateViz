@@ -4,7 +4,7 @@ import { Runtime } from 'vitest-chrome/types/vitest-chrome';
 
 import {
 	ChromeBridgeConnection,
-	ChromeBridgeConnector,
+	ChromeBridgeToRuntimeConnector,
 	ChromeBridgeListener,
 	ChromeBridgeMessageType,
 	ChromeBridgeToTabConnector,
@@ -28,7 +28,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should connect and disconnect successfully', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 
@@ -55,7 +55,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should throw an error when connecting twice', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 
@@ -71,7 +71,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should throw an error when sending a message without connection', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 
@@ -84,7 +84,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should call port postMessage on send with correct arguments if connected', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 
@@ -105,7 +105,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should properly register and remove message listeners via onMessage on port after connection', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const onMessageCallback = vi.fn();
@@ -124,7 +124,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should register pending message listeners when not connected', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const onMessageCallback = vi.fn();
@@ -141,7 +141,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should receive messages from the port when onMessage registered before connection', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 
@@ -167,7 +167,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should receive messages from the port when onMessage registered after connection', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		bridge.connect();
@@ -189,7 +189,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should not receive messages from the port when disconnect', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		bridge.connect();
@@ -209,7 +209,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should receive messages from the port when reconnect', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		bridge.connect();
@@ -234,7 +234,7 @@ describe('ChromeBridgeConnector', () => {
 	});
 
 	it('should not clear pending message listeners when connecting or disconnecting', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const onMessageCallback = vi.fn();
@@ -761,10 +761,6 @@ describe('ChromeBridgeListener', () => {
 
 		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
 
-		bridge.connect();
-
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
-
 		bridge.disconnect();
 
 		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
@@ -808,7 +804,7 @@ describe('ChromeBridgeConnector - ChromeBridgeListener', () => {
 	});
 
 	it('should not connect to one another if the port name does not match', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const listener = new ChromeBridgeListener(
@@ -827,7 +823,7 @@ describe('ChromeBridgeConnector - ChromeBridgeListener', () => {
 	});
 
 	it('should connect to one another if the port name matches', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const listener = new ChromeBridgeListener(
@@ -848,7 +844,7 @@ describe('ChromeBridgeConnector - ChromeBridgeListener', () => {
 
 	it('should call onConnect callback when connected and reconnected', () => {
 		const onConnectCallback = vi.fn();
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const listener = new ChromeBridgeListener(
@@ -876,7 +872,7 @@ describe('ChromeBridgeConnector - ChromeBridgeListener', () => {
 	});
 
 	it('should allow sending bidirectional messages', () => {
-		const bridge = new ChromeBridgeConnector(
+		const bridge = new ChromeBridgeToRuntimeConnector(
 			ChromeBridgeConnection.PANEL_TO_CONTENT
 		);
 		const listener = new ChromeBridgeListener(
@@ -938,3 +934,4 @@ class PortMock {
 		this.messageListeners.forEach((listener) => listener(message));
 	});
 }
+

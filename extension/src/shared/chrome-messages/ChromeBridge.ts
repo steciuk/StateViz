@@ -48,25 +48,8 @@ abstract class ChromeBridge {
 
 	constructor(protected connection: ChromeBridgeConnection) {}
 
-	protected abstract establishConnection(): chrome.runtime.Port | null;
-
 	get isConnected() {
 		return !!this.port;
-	}
-
-	connect(): void {
-		if (this.port) {
-			throw new Error('Already connected');
-		}
-
-		const port = this.establishConnection();
-		if (port) {
-			this.port = port;
-			this.port.onDisconnect.addListener(() => {
-				this.port = undefined;
-			});
-			this.registerListeners();
-		}
 	}
 
 	disconnect() {
@@ -99,20 +82,41 @@ abstract class ChromeBridge {
 		};
 	}
 
-	protected registerListeners() {
-		this.pendingListeners.forEach(
-			(listener) => this.port?.onMessage.addListener(listener)
+	protected registerListeners(port: chrome.runtime.Port) {
+		this.pendingListeners.forEach((listener) =>
+			port.onMessage.addListener(listener)
 		);
+	}
+
+	protected handleConnection(port: chrome.runtime.Port) {
+		this.port = port;
+		port.onDisconnect.addListener(() => {
+			this.port = undefined;
+		});
+		this.registerListeners(port);
 	}
 }
 
-export class ChromeBridgeConnector extends ChromeBridge {
+export abstract class ChromeBridgeConnector extends ChromeBridge {
+	protected abstract establishConnection(): chrome.runtime.Port;
+
+	connect(): void {
+		if (this.port) {
+			throw new Error('Already connected');
+		}
+
+		const port = this.establishConnection();
+		this.handleConnection(port);
+	}
+}
+
+export class ChromeBridgeToRuntimeConnector extends ChromeBridgeConnector {
 	protected override establishConnection() {
 		return chrome.runtime.connect({ name: this.connection });
 	}
 }
 
-export class ChromeBridgeToTabConnector extends ChromeBridge {
+export class ChromeBridgeToTabConnector extends ChromeBridgeConnector {
 	constructor(
 		connection: ChromeBridgeConnection,
 		private tabId: number
@@ -135,17 +139,10 @@ export class ChromeBridgeListener extends ChromeBridge {
 				console.error('Invalid connection');
 				return;
 			}
-			this.port = port;
-			this.port.onDisconnect.addListener(() => {
-				this.port = undefined;
-			});
-			this.registerListeners();
+
+			this.handleConnection(port);
 			onConnect?.();
 		});
-	}
-
-	protected override establishConnection() {
-		return null;
 	}
 }
 
