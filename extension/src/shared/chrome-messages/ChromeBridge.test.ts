@@ -131,7 +131,7 @@ describe('ChromeBridgeConnector', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 		expect(portMock.onMessage.addListener).not.toBeCalled();
 
 		bridge.connect();
@@ -241,15 +241,15 @@ describe('ChromeBridgeConnector', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 
 		bridge.connect();
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 
 		bridge.disconnect();
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 	});
 });
 
@@ -381,7 +381,7 @@ describe('ChromeBridgeToTabConnector', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 		expect(portMock.onMessage.addListener).not.toBeCalled();
 
 		bridge.connect();
@@ -495,15 +495,15 @@ describe('ChromeBridgeToTabConnector', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 
 		bridge.connect();
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 
 		bridge.disconnect();
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 	});
 });
 
@@ -645,7 +645,7 @@ describe('ChromeBridgeListener', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 		expect(portMock.onMessage.addListener).not.toBeCalled();
 
 		portMock.name = ChromeBridgeConnection.PANEL_TO_CONTENT;
@@ -759,11 +759,11 @@ describe('ChromeBridgeListener', () => {
 
 		bridge.onMessage(onMessageCallback);
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 
 		bridge.disconnect();
 
-		expect(bridge['pendingListeners']).toEqual([onMessageCallback]);
+		expect(bridge['listeners']).toEqual([onMessageCallback]);
 	});
 });
 

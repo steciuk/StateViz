@@ -43,23 +43,22 @@ export type HoverElementBridgeMessage = {
 // or at least describe it in the thesis
 abstract class ChromeBridge {
 	protected port?: chrome.runtime.Port;
-	protected pendingListeners: Array<(message: ChromeBridgeMessage) => void> =
-		[];
+	protected listeners: Array<(message: ChromeBridgeMessage) => void> = [];
 
-	constructor(protected connection: ChromeBridgeConnection) {}
+	constructor(protected readonly connectionName: ChromeBridgeConnection) {}
 
-	get isConnected() {
+	get isConnected(): boolean {
 		return !!this.port;
 	}
 
-	disconnect() {
+	disconnect(): void {
 		if (!this.port) return;
 
 		this.port.disconnect();
 		this.port = undefined;
 	}
 
-	send(message: ChromeBridgeMessage) {
+	send(message: ChromeBridgeMessage): void {
 		if (!this.port) {
 			throw new Error('Not connected');
 		}
@@ -72,32 +71,30 @@ abstract class ChromeBridge {
 			this.port.onMessage.addListener(callback);
 		}
 
-		this.pendingListeners.push(callback);
+		this.listeners.push(callback);
 
 		return () => {
 			this.port?.onMessage.removeListener(callback);
-			this.pendingListeners = this.pendingListeners.filter(
+			this.listeners = this.listeners.filter(
 				(listener) => listener !== callback
 			);
 		};
 	}
 
-	protected registerListeners(port: chrome.runtime.Port) {
-		this.pendingListeners.forEach((listener) =>
-			port.onMessage.addListener(listener)
-		);
-	}
-
-	protected handleConnection(port: chrome.runtime.Port) {
+	protected handleConnection(port: chrome.runtime.Port): void {
 		this.port = port;
 		port.onDisconnect.addListener(() => {
 			this.port = undefined;
 		});
 		this.registerListeners(port);
 	}
+
+	private registerListeners(port: chrome.runtime.Port): void {
+		this.listeners.forEach((listener) => port.onMessage.addListener(listener));
+	}
 }
 
-export abstract class ChromeBridgeConnector extends ChromeBridge {
+abstract class ChromeBridgeConnector extends ChromeBridge {
 	protected abstract establishConnection(): chrome.runtime.Port;
 
 	connect(): void {
@@ -112,36 +109,42 @@ export abstract class ChromeBridgeConnector extends ChromeBridge {
 
 export class ChromeBridgeToRuntimeConnector extends ChromeBridgeConnector {
 	protected override establishConnection() {
-		return chrome.runtime.connect({ name: this.connection });
+		return chrome.runtime.connect({ name: this.connectionName });
 	}
 }
 
 export class ChromeBridgeToTabConnector extends ChromeBridgeConnector {
 	constructor(
 		connection: ChromeBridgeConnection,
-		private tabId: number
+		private readonly tabId: number
 	) {
 		super(connection);
 	}
 
 	protected override establishConnection() {
-		return chrome.tabs.connect(this.tabId, { name: this.connection });
+		return chrome.tabs.connect(this.tabId, { name: this.connectionName });
 	}
 }
 
 export class ChromeBridgeListener extends ChromeBridge {
-	constructor(connection: ChromeBridgeConnection, onConnect?: () => void) {
+	constructor(
+		connection: ChromeBridgeConnection,
+		private readonly onConnect?: () => void
+	) {
 		super(connection);
+		this.listen();
+	}
 
+	private listen(): void {
 		chrome.runtime.onConnect.addListener((port) => {
-			if (port.name !== this.connection) {
+			if (port.name !== this.connectionName) {
 				port.disconnect();
 				console.error('Invalid connection');
 				return;
 			}
 
 			this.handleConnection(port);
-			onConnect?.();
+			this.onConnect?.();
 		});
 	}
 }

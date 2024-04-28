@@ -5,7 +5,6 @@ import {
 	ParsedNode,
 	NodeAndLibrary,
 } from '@src/shared/types/ParsedNode';
-import { OmitFromUnion } from '@src/shared/utility-types';
 
 export enum PostMessageSource {
 	ISOLATED = 'ISOLATED',
@@ -42,49 +41,41 @@ export type UpdateNodesOperations<L extends Library> = Array<
 
 // MESSAGE TYPES
 export type LibraryAttachedPostMessage = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.LIBRARY_ATTACHED;
 	content: Library;
 };
 
 export type MountRootsPostMessage<L extends Library = Library> = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_ROOTS;
 	content: MountRootsOperations<L>;
 };
 
 export type MountNodesPostMessage<L extends Library = Library> = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.MOUNT_NODES;
 	content: MountNodesOperations<L>;
 };
 
 export type UpdateNodesPostMessage<L extends Library = Library> = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.UPDATE_NODES;
 	content: UpdateNodesOperations<L>;
 };
 
 export type UnmountNodesPostMessage = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.UNMOUNT_NODES;
 	content: UnmountNodesOperation;
 };
 
 export type InspectedDataPostMessage = {
-	source: PostMessageSource.MAIN;
 	type: PostMessageType.INSPECTED_DATA;
 	content: NodeInspectedData[];
 };
 
 export type InspectElementPostMessage = {
-	source: PostMessageSource.ISOLATED;
 	type: PostMessageType.INSPECT_ELEMENT;
 	content: NodeId[];
 };
 
 export type HoverElementPostMessage = {
-	source: PostMessageSource.ISOLATED;
 	type: PostMessageType.HOVER_ELEMENT;
 	content: NodeId;
 };
@@ -99,9 +90,14 @@ export type PostMessage<L extends Library = Library> =
 	| UpdateNodesPostMessage<L>
 	| HoverElementPostMessage;
 
+type MessageWithSource<L extends Library = Library> = {
+	source: PostMessageSource;
+	message: PostMessage<L>;
+};
+
 export class PostMessageBridge {
-	private constructor(private source: PostMessageSource) {}
-	private static instance: PostMessageBridge | undefined;
+	private constructor(private readonly source: PostMessageSource) {}
+	private static instance?: PostMessageBridge;
 
 	static getInstance(source: PostMessageSource) {
 		if (!PostMessageBridge.instance) {
@@ -117,23 +113,23 @@ export class PostMessageBridge {
 		return PostMessageBridge.instance;
 	}
 
-	send<L extends Library>(message: OmitFromUnion<PostMessage<L>, 'source'>) {
+	send<L extends Library>(message: PostMessage<L>) {
 		window.postMessage(
 			{
 				source: this.source,
-				...message,
+				message,
 			},
 			window.origin
 		);
 	}
 
 	onMessage(callback: (message: PostMessage) => void): () => void {
-		const eventListener = (event: MessageEvent<PostMessage>) => {
+		const eventListener = (event: MessageEvent<MessageWithSource>) => {
 			if (event.origin !== window.origin) return;
 			if (!event.data.source) return;
 			if (event.data.source === this.source) return;
 
-			callback(event.data);
+			callback(event.data.message);
 		};
 
 		window.addEventListener('message', eventListener);
@@ -144,17 +140,16 @@ export class PostMessageBridge {
 	}
 
 	onMessageOnce(callback: (message: PostMessage) => void) {
-		window.addEventListener(
-			'message',
-			(event: MessageEvent<PostMessage>) => {
-				if (event.origin !== window.origin) return;
-				if (!event.data.source) return;
-				if (event.data.source === this.source) return;
+		const eventListener = (event: MessageEvent<MessageWithSource>) => {
+			if (event.origin !== window.origin) return;
+			if (!event.data.source) return;
+			if (event.data.source === this.source) return;
 
-				callback(event.data);
-			},
-			{ once: true }
-		);
+			window.removeEventListener('message', eventListener);
+			callback(event.data.message);
+		};
+
+		window.addEventListener('message', eventListener);
 	}
 }
 

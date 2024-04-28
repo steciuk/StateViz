@@ -6,13 +6,12 @@ import {
 	PostMessageSource,
 	PostMessageType,
 } from '@pages/content/shared/PostMessageBridge';
-import { OmitFromUnion } from '@src/shared/utility-types';
 
 // TODO: add inner describe for each function
 describe('PostMessageBridge', () => {
 	it('should send a message with the correct content', () => {
 		const source = PostMessageSource.ISOLATED;
-		const message: OmitFromUnion<PostMessage, 'source'> = {
+		const message: PostMessage = {
 			type: PostMessageType.INSPECT_ELEMENT,
 			content: ['re1', 're2', 're3'],
 		};
@@ -21,10 +20,7 @@ describe('PostMessageBridge', () => {
 
 		bridge.send(message);
 
-		expect(postMessageMock).toBeCalledWith(
-			{ source, ...message },
-			window.origin
-		);
+		expect(postMessageMock).toBeCalledWith({ message, source }, window.origin);
 	});
 
 	it('should not call the callback when receiving message without the source', () => {
@@ -63,7 +59,6 @@ describe('PostMessageBridge', () => {
 
 	it('should call the callback when receiving a message from different source', () => {
 		const message = {
-			source: PostMessageSource.MAIN,
 			type: PostMessageType.INSPECT_ELEMENT,
 			content: [1, 2, 3],
 		};
@@ -73,7 +68,10 @@ describe('PostMessageBridge', () => {
 		bridge.onMessage(callback);
 
 		window.dispatchEvent(
-			new MessageEvent('message', { data: message, origin: window.origin })
+			new MessageEvent('message', {
+				data: { message, source: PostMessageSource.MAIN },
+				origin: window.origin,
+			})
 		);
 
 		expect(callback).toBeCalledTimes(1);
@@ -119,7 +117,6 @@ describe('PostMessageBridge', () => {
 
 	it('should call the callback only once when registered with once', () => {
 		const message = {
-			source: PostMessageSource.MAIN,
 			type: PostMessageType.INSPECT_ELEMENT,
 			content: [1, 2, 3],
 		};
@@ -128,14 +125,49 @@ describe('PostMessageBridge', () => {
 		bridge.onMessageOnce(callback);
 
 		window.dispatchEvent(
-			new MessageEvent('message', { data: message, origin: window.origin })
+			new MessageEvent('message', {
+				data: { message, source: PostMessageSource.MAIN },
+				origin: window.origin,
+			})
 		);
 
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith(message);
 
 		window.dispatchEvent(
-			new MessageEvent('message', { data: message, origin: window.origin })
+			new MessageEvent('message', {
+				data: { message, source: PostMessageSource.MAIN },
+				origin: window.origin,
+			})
+		);
+
+		expect(callback).toBeCalledTimes(1);
+	});
+
+	it('should not unregister the listener when callback was not called, when registered with once', () => {
+		const message = {
+			type: PostMessageType.INSPECT_ELEMENT,
+			content: [1, 2, 3],
+		};
+		const callback = vi.fn();
+		const bridge = PostMessageBridge.getInstance(PostMessageSource.ISOLATED);
+		bridge.onMessageOnce(callback);
+
+		window.dispatchEvent(
+			new MessageEvent('message', {
+				// same source, so message will be discarded
+				data: { message, source: PostMessageSource.ISOLATED },
+				origin: window.origin,
+			})
+		);
+
+		expect(callback).not.toBeCalled();
+
+		window.dispatchEvent(
+			new MessageEvent('message', {
+				data: { message, source: PostMessageSource.MAIN },
+				origin: window.origin,
+			})
 		);
 
 		expect(callback).toBeCalledTimes(1);
