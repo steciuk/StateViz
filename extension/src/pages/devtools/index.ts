@@ -40,7 +40,7 @@ const removeListener = onChromeMessage((message, sender) => {
 // Devtools window opened after a library attached
 if (!panelCreated) {
 	sendChromeMessageToTab(currentTabId, {
-		type: ChromeMessageType.IS_LIBRARY_ATTACHED,
+		type: ChromeMessageType.WHAT_LIBRARIES_ATTACHED,
 		source: ChromeMessageSource.DEVTOOLS,
 		responseCallback: (librariesAttached: Library[]) => {
 			if (librariesAttached.length > 0) {

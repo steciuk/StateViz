@@ -12,7 +12,7 @@ import {
 import {
 	ChromeMessageSource,
 	ChromeMessageType,
-	IsLibraryAttachedChromeMessage,
+	WhatLibrariesAttachedChromeMessage,
 	onChromeMessage,
 	sendChromeMessage,
 } from '@src/shared/chrome-messages/chrome-message';
@@ -125,7 +125,7 @@ export class ContentIsolated {
 		// chrome API messages
 		onChromeMessage((message) => {
 			switch (message.type) {
-				case ChromeMessageType.IS_LIBRARY_ATTACHED:
+				case ChromeMessageType.WHAT_LIBRARIES_ATTACHED:
 					this.handleIsLibraryAttachedChromeMessage(message);
 					break;
 
@@ -324,7 +324,7 @@ export class ContentIsolated {
 
 	// CHROME MESSAGES
 	private handleIsLibraryAttachedChromeMessage(
-		message: IsLibraryAttachedChromeMessage
+		message: WhatLibrariesAttachedChromeMessage
 	): void {
 		console.log('question from devtools panel: is library attached?');
 		message.responseCallback([...this.librariesAttached.values()]);

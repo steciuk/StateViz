@@ -2,7 +2,7 @@ import { Library } from '@src/shared/types/Library';
 
 export enum ChromeMessageType {
 	LIBRARY_ATTACHED = 'LIBRARY_ATTACHED',
-	IS_LIBRARY_ATTACHED = 'IS_LIBRARY_ATTACHED',
+	WHAT_LIBRARIES_ATTACHED = 'WHAT_LIBRARIES_ATTACHED',
 	COMMIT_ROOT = 'COMMIT_ROOT',
 }
 
@@ -14,11 +14,11 @@ export enum ChromeMessageSource {
 
 export type ChromeMessage =
 	| LibraryAttachedChromeMessage
-	| IsLibraryAttachedChromeMessage;
+	| WhatLibrariesAttachedChromeMessage;
 
 // devtools script / popup -> content-isolated on specific tab
-export type IsLibraryAttachedChromeMessage = {
-	type: ChromeMessageType.IS_LIBRARY_ATTACHED;
+export type WhatLibrariesAttachedChromeMessage = {
+	type: ChromeMessageType.WHAT_LIBRARIES_ATTACHED;
 	source: ChromeMessageSource.DEVTOOLS | ChromeMessageSource.POPUP;
 	responseCallback: (librariesAttached: Library[]) => void;
 };

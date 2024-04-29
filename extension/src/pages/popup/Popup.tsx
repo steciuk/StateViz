@@ -20,7 +20,7 @@ const Popup = () => {
 	useEffect(() => {
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 			sendChromeMessageToTab(tabs[0].id!, {
-				type: ChromeMessageType.IS_LIBRARY_ATTACHED,
+				type: ChromeMessageType.WHAT_LIBRARIES_ATTACHED,
 				source: ChromeMessageSource.POPUP,
 				responseCallback: (libraries: Library[]) => {
 					setLibrariesAttached(libraries);
