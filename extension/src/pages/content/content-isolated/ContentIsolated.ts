@@ -37,7 +37,7 @@ export class ContentIsolated {
 	private readonly chromeBridge: ChromeBridgeListener;
 	private readonly librariesAttached: Set<Library> = new Set();
 
-	private currentNodes: Map<NodeId, ParsedNode> = new Map();
+	private nodes: Map<NodeId, ParsedNode> = new Map();
 	private roots: NodeAndLibrary[] = [];
 
 	private constructor() {
@@ -153,7 +153,7 @@ export class ContentIsolated {
 
 	private addNodesRecursively(nodes: ParsedNode[]) {
 		nodes.forEach((node) => {
-			this.currentNodes.set(node.id, node);
+			this.nodes.set(node.id, node);
 			this.addNodesRecursively(node.children);
 		});
 	}
@@ -192,7 +192,7 @@ export class ContentIsolated {
 		message.content.forEach((mountOperation) => {
 			const { parentId, anchor, node } = mountOperation;
 
-			const parent = this.currentNodes.get(parentId);
+			const parent = this.nodes.get(parentId);
 			if (!parent) {
 				console.error('parent not found', parentId);
 				return;
@@ -237,7 +237,7 @@ export class ContentIsolated {
 		console.log('UPDATE_NODES', message.content);
 
 		message.content.forEach((node) => {
-			const existingNode = this.currentNodes.get(node.id);
+			const existingNode = this.nodes.get(node.id);
 
 			if (!existingNode) {
 				console.error('node not found');
@@ -254,14 +254,14 @@ export class ContentIsolated {
 	}
 
 	private removeNodesRecursively(nodeId: NodeId) {
-		const node = this.currentNodes.get(nodeId);
+		const node = this.nodes.get(nodeId);
 
 		if (!node) {
 			console.error('Could not find the node to remove');
 			return;
 		}
 
-		this.currentNodes.delete(node.id);
+		this.nodes.delete(node.id);
 		node.children.forEach((node) => this.removeNodesRecursively(node.id));
 	}
 
@@ -277,7 +277,7 @@ export class ContentIsolated {
 				(root) => root.node.id !== nodeToUnmountId
 			);
 		} else {
-			const parent = this.currentNodes.get(parentId);
+			const parent = this.nodes.get(parentId);
 
 			if (!parent) {
 				console.error('parent not found');
