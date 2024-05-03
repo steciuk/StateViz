@@ -17,21 +17,6 @@ runLog('content-main.ts');
 
 const postMessageBridge = PostMessageBridge.getInstance(PostMessageSource.MAIN);
 
-const svelteAdapter = new SvelteAdapter(postMessageBridge);
-const reactAdapter = new ReactAdapter(postMessageBridge);
-
-svelteAdapter.initialize();
-reactAdapter.initialize();
-
-// TODO: why is this needed? (see: extension/src/pages/content/injection/hookFunctions/inject.ts)
-// on('renderer', ({ reactBuildType }) => {
-// 	console.log('on - renderer', reactBuildType);
-// 	window.postMessage(
-// 		{
-// 			source: 'react-devtools-detector',
-// 			reactBuildType,
-// 		},
-// 		'*'
-// 	);
-// });
+new SvelteAdapter(postMessageBridge);
+new ReactAdapter(postMessageBridge);
 

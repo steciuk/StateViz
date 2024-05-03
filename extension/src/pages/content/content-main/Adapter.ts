@@ -17,14 +17,14 @@ export abstract class Adapter<
 	T extends { node: Node | null },
 	L extends Library,
 > {
-	private static ID_COUNTER = 0;
-	private static readonly ELEMENT_TO_ID = new Map<unknown, NodeId>();
-	private static readonly REGISTERED_ADAPTERS = new Set<string>();
-	private static overlay?: HTMLElement;
+	private static idCounter = 0;
+	private static readonly elementToId = new Map<unknown, NodeId>();
+	private static readonly registeredLibraries = new Set<Library>();
+	private static readonly registeredPrefixes = new Map<string, number>();
+	private static overlay?: HTMLDivElement;
 	private static removeOverlayOnResizeUpdate?: () => void;
 
 	protected readonly adapterPrefix: string;
-	private isInitialized = false;
 
 	protected abstract inject(): void;
 	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
@@ -32,22 +32,21 @@ export abstract class Adapter<
 	protected readonly existingNodes: Map<NodeId, T> = new Map();
 
 	protected constructor(
-		protected readonly postMessageBridge: PostMessageBridge,
+		private readonly postMessageBridge: PostMessageBridge,
 		protected readonly library: L
 	) {
-		this.adapterPrefix = library.slice(0, 2).toLowerCase();
-	}
-
-	initialize() {
-		if (this.isInitialized) {
-			throw new Error('Adapter already initialized');
+		if (Adapter.registeredLibraries.has(library)) {
+			throw new Error('Adapter for this library already registered');
 		}
 
-		if (Adapter.REGISTERED_ADAPTERS.has(this.adapterPrefix)) {
-			throw new Error('Adapter with this prefix already registered');
-		}
+		Adapter.registeredLibraries.add(library);
+		const adapterPrefix = library.slice(0, 2).toLowerCase();
 
-		Adapter.REGISTERED_ADAPTERS.add(this.adapterPrefix);
+		const existingPrefixCount =
+			Adapter.registeredPrefixes.get(adapterPrefix) ?? 0;
+		Adapter.registeredPrefixes.set(adapterPrefix, existingPrefixCount + 1);
+
+		this.adapterPrefix = `${existingPrefixCount}${adapterPrefix}`;
 
 		this.postMessageBridge.onMessage((message) => {
 			this.handlePostMessageBridgeMessage(message);
@@ -57,18 +56,17 @@ export abstract class Adapter<
 			}
 		});
 
-		this.isInitialized = true;
 		this.inject();
 	}
 
-	protected sendLibraryAttached() {
+	protected sendLibraryAttached(): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.LIBRARY_ATTACHED,
 			content: this.library,
 		});
 	}
 
-	protected sendMountRoots(roots: ParsedNode<L>[]) {
+	protected sendMountRoots(roots: ParsedNode<L>[]): void {
 		const operations: MountRootsOperations<L> = roots.map((root) => ({
 			node: root,
 			library: this.library,
@@ -80,28 +78,28 @@ export abstract class Adapter<
 		});
 	}
 
-	protected sendMountNodes(operations: MountNodesOperations<L>) {
+	protected sendMountNodes(operations: MountNodesOperations<L>): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.MOUNT_NODES,
 			content: operations,
 		});
 	}
 
-	protected sendUpdateNodes(operations: UpdateNodesOperations<L>) {
+	protected sendUpdateNodes(operations: UpdateNodesOperations<L>): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.UPDATE_NODES,
 			content: operations,
 		});
 	}
 
-	protected sendUnmountNodes(operations: UnmountNodesOperation) {
+	protected sendUnmountNodes(operations: UnmountNodesOperation): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.UNMOUNT_NODES,
 			content: operations,
 		});
 	}
 
-	protected sendInspectedData(content: NodeInspectedData[]) {
+	protected sendInspectedData(content: NodeInspectedData[]): void {
 		this.postMessageBridge.send({
 			type: PostMessageType.INSPECTED_DATA,
 			content,
@@ -109,17 +107,17 @@ export abstract class Adapter<
 	}
 
 	protected getOrGenerateElementId(element: unknown): NodeId {
-		const existingId = Adapter.ELEMENT_TO_ID.get(element);
+		const existingId = Adapter.elementToId.get(element);
 		if (existingId) {
 			return existingId;
 		}
 
-		const id = `${this.adapterPrefix}${Adapter.ID_COUNTER++}`;
-		Adapter.ELEMENT_TO_ID.set(element, id);
+		const id = `${this.adapterPrefix}${Adapter.idCounter++}`;
+		Adapter.elementToId.set(element, id);
 		return id;
 	}
 
-	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage) {
+	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage): void {
 		const parsedNode = this.existingNodes.get(chromeMessage.content);
 		if (!parsedNode) {
 			return;

@@ -47,7 +47,7 @@ export class ReactAdapter extends Adapter<
 	// TODO: consider allowing more renderers
 	private readonly rendererId = 0;
 
-	constructor(protected readonly postMessageBridge: PostMessageBridge) {
+	constructor(postMessageBridge: PostMessageBridge) {
 		super(postMessageBridge, Library.REACT);
 	}
 
