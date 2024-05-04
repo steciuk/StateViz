@@ -89,11 +89,8 @@ export class ReactAdapter extends Adapter<
 			// off: off,
 			// sub: sub,
 			// used to dismiss the "Download the React DevTools" banner shown by React
-			checkDCE: () => {
-				return;
-			},
-			onCommitFiberUnmount: (rendererID: number, fiber: Fiber) =>
-				this.unmountFiber(fiber),
+			checkDCE: () => {},
+			onCommitFiberUnmount: (_, fiber) => this.unmountFiber(fiber),
 			onCommitFiberRoot: (...args) => this.handleCommitFiberRoot(...args),
 			// onPostCommitFiberRoot: (rendererID: number, root: any) => {
 			// 	// console.log('onPostCommitFiberRoot', rendererID, root);
