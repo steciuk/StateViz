@@ -6,11 +6,6 @@ import {
 } from '@pages/content/content-main/svelte/svelte-types';
 import { getNodeTypeName } from '@pages/content/content-main/svelte/utils/getNodeTypeName';
 import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
-import {
-	PostMessage,
-	PostMessageBridge,
-	PostMessageType,
-} from '@pages/content/shared/PostMessageBridge';
 import { InspectData } from '@src/shared/types/DataType';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
@@ -61,12 +56,12 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			propsKeys: string[];
 		}
 	>();
-	private inspectedComponentsIds = new Set<NodeId>();
+	private inspectedElementsIds = new Set<NodeId>();
 
 	private currentBlockId: NodeId | null = null;
 
-	constructor(postMessageBridge: PostMessageBridge) {
-		super(postMessageBridge, Library.SVELTE);
+	constructor() {
+		super(Library.SVELTE);
 	}
 
 	protected override inject() {
@@ -93,24 +88,14 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		});
 	}
 
-	protected override handlePostMessageBridgeMessage(message: PostMessage) {
-		// Request to inspect nodes
-		if (message.type === PostMessageType.INSPECT_ELEMENT) {
-			// filter out not existing or other library elements
-			const ownInspectedElementsIds = message.content.filter((id) =>
-				this.existingNodes.has(id)
-			);
-
-			this.inspectedComponentsIds = new Set(ownInspectedElementsIds);
-			// if empty array it means that front stopped inspecting
-			if (ownInspectedElementsIds.length === 0) return;
-
-			console.log('INSPECT_ELEMENT', ownInspectedElementsIds);
-
-			ownInspectedElementsIds.forEach((id) => {
-				this.handleNodeInspect(id);
-			});
-		}
+	protected override inspectElements(ids: NodeId[]) {
+		this.inspectedElementsIds = new Set(ids);
+		// if empty array it means that front stopped inspecting
+		if (ids.length === 0) return;
+		console.log('INSPECT_ELEMENT', ids);
+		ids.forEach((id) => {
+			this.handleNodeInspect(id);
+		});
 	}
 
 	private injectListeners() {
@@ -219,7 +204,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 	// we don't have to traverse and dehydrate data if user
 	// inspects the same node again and nothing changed
 	private handleNodeInspect(nodeId: NodeId) {
-		if (!this.inspectedComponentsIds.has(nodeId)) {
+		if (!this.inspectedElementsIds.has(nodeId)) {
 			return;
 		}
 
@@ -579,7 +564,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 		this.existingNodes.delete(id);
 		this.componentsCaptureStates.delete(id);
-		this.inspectedComponentsIds.delete(id);
+		this.inspectedElementsIds.delete(id);
 
 		let sendUpdates = true;
 		let parentId = nodeInfo.parentId;

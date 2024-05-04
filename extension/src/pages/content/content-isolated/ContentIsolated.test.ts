@@ -145,8 +145,8 @@ describe(ContentIsolated.name, () => {
 
 			contentIsolated['addNodesRecursively'](nodes);
 
-			expect(contentIsolated['currentNodes'].size).toBe(4);
-			expect(contentIsolated['currentNodes']).toEqual(
+			expect(contentIsolated['nodes'].size).toBe(4);
+			expect(contentIsolated['nodes']).toEqual(
 				new Map([
 					['re1', nodes[0]],
 					['re2', nodes[0].children[0]],
@@ -174,13 +174,9 @@ describe(ContentIsolated.name, () => {
 
 			contentIsolated['handleMountRootsPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].size).toBe(2);
-			expect(contentIsolated['currentNodes'].get('re1')).toBe(
-				message.content[0].node
-			);
-			expect(contentIsolated['currentNodes'].get('sv1')).toBe(
-				message.content[1].node
-			);
+			expect(contentIsolated['nodes'].size).toBe(2);
+			expect(contentIsolated['nodes'].get('re1')).toBe(message.content[0].node);
+			expect(contentIsolated['nodes'].get('sv1')).toBe(message.content[1].node);
 			expect(chromeBridge.send).toBeCalledWith({
 				type: ChromeBridgeMessageType.FULL_SKELETON,
 				content: message.content,
@@ -197,14 +193,11 @@ describe(ContentIsolated.name, () => {
 				],
 			};
 
-			contentIsolated['currentNodes'].set(
-				're1',
-				message.content[0].node as any
-			);
+			contentIsolated['nodes'].set('re1', message.content[0].node as any);
 
 			contentIsolated['handleMountRootsPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].size).toBe(1);
+			expect(contentIsolated['nodes'].size).toBe(1);
 			expect(chromeBridge.send).toBeCalledWith({
 				type: ChromeBridgeMessageType.FULL_SKELETON,
 				content: message.content,
@@ -226,7 +219,7 @@ describe(ContentIsolated.name, () => {
 
 			contentIsolated['handleMountNodesPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].size).toBe(0);
+			expect(contentIsolated['nodes'].size).toBe(0);
 			expect(chromeBridge.send).not.toBeCalled();
 		});
 
@@ -261,9 +254,7 @@ describe(ContentIsolated.name, () => {
 			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
 			contentIsolated['handleMountNodesPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
-				message.content[0].node
-			);
+			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
 				message.content[0].node,
 				{ id: 'sv2', children: [] },
@@ -306,9 +297,7 @@ describe(ContentIsolated.name, () => {
 			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
 			contentIsolated['handleMountNodesPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
-				message.content[0].node
-			);
+			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
 				{ id: 'sv2', children: [] },
 				message.content[0].node,
@@ -355,9 +344,7 @@ describe(ContentIsolated.name, () => {
 			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
 			contentIsolated['handleMountNodesPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
-				message.content[0].node
-			);
+			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
 				{ id: 'sv2', children: [] },
 				message.content[0].node,
@@ -405,9 +392,7 @@ describe(ContentIsolated.name, () => {
 			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
 			contentIsolated['handleMountNodesPostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].get('sv3')).toBe(
-				message.content[0].node
-			);
+			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
 				{ id: 'sv2', children: [] },
 				message.content[0].node,
@@ -452,7 +437,7 @@ describe(ContentIsolated.name, () => {
 			contentIsolated['handleMountRootsPostMessage'](rootsMessage as any);
 			contentIsolated['handleNodeUpdatePostMessage'](message as any);
 
-			expect(contentIsolated['currentNodes'].get('sv2')?.name).toBe('new name');
+			expect(contentIsolated['nodes'].get('sv2')?.name).toBe('new name');
 
 			expect(chromeBridge.send).toBeCalledWith({
 				type: ChromeBridgeMessageType.FULL_SKELETON,
@@ -472,10 +457,10 @@ describe(ContentIsolated.name, () => {
 					],
 				},
 			] as unknown as ParsedNode[]);
-			expect(contentIsolated['currentNodes'].size).toBe(3);
+			expect(contentIsolated['nodes'].size).toBe(3);
 
 			contentIsolated['removeNodesRecursively']('re1');
-			expect(contentIsolated['currentNodes'].size).toBe(0);
+			expect(contentIsolated['nodes'].size).toBe(0);
 		});
 	});
 
@@ -491,14 +476,8 @@ describe(ContentIsolated.name, () => {
 					node: { id: 'sv1', children: [] } as unknown as ParsedSvelteNode,
 				},
 			];
-			contentIsolated['currentNodes'].set(
-				're1',
-				contentIsolated['roots'][0].node
-			);
-			contentIsolated['currentNodes'].set(
-				'sv1',
-				contentIsolated['roots'][1].node
-			);
+			contentIsolated['nodes'].set('re1', contentIsolated['roots'][0].node);
+			contentIsolated['nodes'].set('sv1', contentIsolated['roots'][1].node);
 
 			const message = {
 				content: {
@@ -508,9 +487,9 @@ describe(ContentIsolated.name, () => {
 			};
 
 			contentIsolated['handleUnmountNodesPostMessage'](message as any);
-			expect(contentIsolated['currentNodes'].size).toBe(1);
-			expect(contentIsolated['currentNodes'].get('re1')).toBeUndefined();
-			expect(contentIsolated['currentNodes'].get('sv1')).toBeDefined();
+			expect(contentIsolated['nodes'].size).toBe(1);
+			expect(contentIsolated['nodes'].get('re1')).toBeUndefined();
+			expect(contentIsolated['nodes'].get('sv1')).toBeDefined();
 		});
 
 		it('should remove child node from parent node', () => {
@@ -535,9 +514,9 @@ describe(ContentIsolated.name, () => {
 			};
 
 			contentIsolated['handleUnmountNodesPostMessage'](message as any);
-			expect(contentIsolated['currentNodes'].size).toBe(1);
-			expect(contentIsolated['currentNodes'].get('re2')).toBeUndefined();
-			expect(contentIsolated['currentNodes'].get('re1')?.children).toEqual([]);
+			expect(contentIsolated['nodes'].size).toBe(1);
+			expect(contentIsolated['nodes'].get('re2')).toBeUndefined();
+			expect(contentIsolated['nodes'].get('re1')?.children).toEqual([]);
 			expect(contentIsolated['roots']).toEqual([
 				{
 					library: Library.REACT,

@@ -1,10 +1,11 @@
 import { NodeId, ParsedNode } from '@src/shared/types/ParsedNode';
 import {
 	HoverElementPostMessage,
+	InspectElementPostMessage,
 	MountNodesOperations,
 	MountRootsOperations,
-	PostMessage,
 	PostMessageBridge,
+	PostMessageSource,
 	PostMessageType,
 	UnmountNodesOperation,
 	UpdateNodesOperations,
@@ -24,35 +25,46 @@ export abstract class Adapter<
 	private static overlay?: HTMLDivElement;
 	private static removeOverlayOnResizeUpdate?: () => void;
 
-	protected readonly adapterPrefix: string;
-
 	protected abstract inject(): void;
-	protected abstract handlePostMessageBridgeMessage(message: PostMessage): void;
+	protected abstract inspectElements(ids: NodeId[]): void;
 
+	protected adapterPrefix: string = '';
 	protected readonly existingNodes: Map<NodeId, T> = new Map();
 
-	protected constructor(
-		private readonly postMessageBridge: PostMessageBridge,
-		protected readonly library: L
-	) {
-		if (Adapter.registeredLibraries.has(library)) {
+	private readonly postMessageBridge: PostMessageBridge;
+
+	protected constructor(protected readonly library: L) {
+		this.postMessageBridge = PostMessageBridge.getInstance(
+			PostMessageSource.MAIN
+		);
+	}
+
+	initialize(): void {
+		if (Adapter.registeredLibraries.has(this.library)) {
 			throw new Error('Adapter for this library already registered');
 		}
 
-		Adapter.registeredLibraries.add(library);
-		const adapterPrefix = library.slice(0, 2).toLowerCase();
+		Adapter.registeredLibraries.add(this.library);
+
+		const adapterPrefix = this.library.slice(0, 2).toLowerCase();
 
 		const existingPrefixCount =
 			Adapter.registeredPrefixes.get(adapterPrefix) ?? 0;
 		Adapter.registeredPrefixes.set(adapterPrefix, existingPrefixCount + 1);
 
-		this.adapterPrefix = `${existingPrefixCount}${adapterPrefix}`;
+		this.adapterPrefix =
+			existingPrefixCount === 0
+				? adapterPrefix
+				: `${existingPrefixCount}${adapterPrefix}`;
 
 		this.postMessageBridge.onMessage((message) => {
-			this.handlePostMessageBridgeMessage(message);
-
-			if (message.type === PostMessageType.HOVER_ELEMENT) {
-				this.handleHoverPostMessage(message);
+			switch (message.type) {
+				case PostMessageType.INSPECT_ELEMENT:
+					this.handleInspectElementPostMessage(message);
+					break;
+				case PostMessageType.HOVER_ELEMENT:
+					this.handleHoverPostMessage(message);
+					break;
 			}
 		});
 
@@ -115,6 +127,15 @@ export abstract class Adapter<
 		const id = `${this.adapterPrefix}${Adapter.idCounter++}`;
 		Adapter.elementToId.set(element, id);
 		return id;
+	}
+
+	private handleInspectElementPostMessage(
+		chromeMessage: InspectElementPostMessage
+	): void {
+		const ownIds = chromeMessage.content.filter((id) =>
+			this.existingNodes.has(id)
+		);
+		this.inspectElements(ownIds);
 	}
 
 	private handleHoverPostMessage(chromeMessage: HoverElementPostMessage): void {

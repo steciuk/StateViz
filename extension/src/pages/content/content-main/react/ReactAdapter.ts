@@ -8,12 +8,7 @@ import {
 	RendererID,
 } from '@pages/content/content-main/react/react-types';
 import { Library } from '@src/shared/types/Library';
-import {
-	MountNodesOperations,
-	PostMessage,
-	PostMessageBridge,
-	PostMessageType,
-} from '@pages/content/shared/PostMessageBridge';
+import { MountNodesOperations } from '@pages/content/shared/PostMessageBridge';
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { WorkTag } from '@src/shared/types/react-types';
 import { ListenersStorage } from '@pages/content/content-main/react/utils/ListenersStorage';
@@ -41,14 +36,14 @@ export class ReactAdapter extends Adapter<
 	private readonly fiberToId = new Map<Fiber, NodeId>();
 	private idCounter = 0;
 
-	private inspectedElementsIds: NodeId[] = [];
+	private inspectedElementsIds = new Set<NodeId>();
 	private readonly inspectedData = new Map<NodeId, NodeInspectedData>();
 
 	// TODO: consider allowing more renderers
 	private readonly rendererId = 0;
 
-	constructor(postMessageBridge: PostMessageBridge) {
-		super(postMessageBridge, Library.REACT);
+	constructor() {
+		super(Library.REACT);
 	}
 
 	protected override inject(): void {
@@ -119,35 +114,27 @@ export class ReactAdapter extends Adapter<
 			// },
 		};
 	}
-	protected override handlePostMessageBridgeMessage(
-		message: PostMessage
-	): void {
-		// Request to inspect nodes
-		if (message.type === PostMessageType.INSPECT_ELEMENT) {
-			// filter out not existing or other library elements
-			const ownInspectedElementsIds = message.content.filter((id) =>
-				this.existingNodes.has(id)
-			);
 
-			this.inspectedElementsIds = ownInspectedElementsIds;
-			// if empty array it means that front stopped inspecting
-			if (ownInspectedElementsIds.length === 0) return;
+	protected override inspectElements(ids: NodeId[]): void {
+		this.inspectedElementsIds = new Set(ids);
+		// if empty array it means that front stopped inspecting
+		if (ids.length === 0) return;
+		console.log('INSPECT_ELEMENT', ids);
 
-			console.log('INSPECT_ELEMENT', ownInspectedElementsIds);
-
-			const fibersToInspect = ownInspectedElementsIds
-				.map((id) => this.existingNodes.get(id)?.fiber)
-				.filter((fiber): fiber is Fiber => fiber !== undefined);
-
-			fibersToInspect.forEach((fiber) => this.refreshInspectedData(fiber));
-			this.flushInspectedData();
+		for (const id of ids) {
+			const nodeData = this.existingNodes.get(id);
+			if (nodeData) {
+				this.refreshInspectedData(nodeData.fiber);
+			}
 		}
+
+		this.flushInspectedData();
 	}
 
 	private refreshInspectedData(fiber: Fiber) {
 		const id = this.getOrGenerateElementId(fiber);
 
-		if (this.inspectedElementsIds.includes(id)) {
+		if (this.inspectedElementsIds.has(id)) {
 			console.log(fiber);
 			const nodeData = getNodeData(fiber);
 
@@ -162,7 +149,7 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private flushInspectedData() {
-		const data: NodeInspectedData[] = this.inspectedElementsIds
+		const data: NodeInspectedData[] = [...this.inspectedElementsIds.values()]
 			.map((id) => this.inspectedData.get(id))
 			.filter(
 				<T>(data: T): data is Extract<T, NodeInspectedData> =>
