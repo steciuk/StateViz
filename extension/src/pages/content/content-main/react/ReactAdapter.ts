@@ -52,7 +52,7 @@ export class ReactAdapter extends Adapter<
 		// Check if RTD or StateViz already hooked
 		if (reactHook) {
 			if (reactHook.stateViz) {
-				console.error('StateViz for React already hooked');
+				console.error('State-Viz for React already hooked');
 				return;
 			} else {
 				// TODO: consider integrating with RDT
@@ -113,6 +113,16 @@ export class ReactAdapter extends Adapter<
 			// 	// console.log('registerInternalModuleStop', moduleStopError);
 			// },
 		};
+
+		// Check if RTD didn't override the hook
+		// TODO: check if it works
+		setTimeout(() => {
+			if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.stateViz) {
+				console.error(
+					'React DevTools override detected. Disable it to use State-Viz for React'
+				);
+			}
+		}, 5000);
 	}
 
 	protected override inspectElements(ids: NodeId[]): void {
