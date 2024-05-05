@@ -11,7 +11,6 @@ import { Library } from '@src/shared/types/Library';
 import { MountNodesOperations } from '@pages/content/shared/PostMessageBridge';
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { WorkTag } from '@src/shared/types/react-types';
-import { ListenersStorage } from '@pages/content/content-main/react/utils/ListenersStorage';
 import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
 import { getNearestStateNode } from '@pages/content/content-main/react/utils/getNearestStateNode';
@@ -31,16 +30,11 @@ export class ReactAdapter extends Adapter<
 	Library.REACT
 > {
 	private readonly renderers = new Map<RendererID, ReactRenderer>();
-	private readonly listeners = new ListenersStorage();
-
-	private readonly fiberToId = new Map<Fiber, NodeId>();
-	private idCounter = 0;
 
 	private inspectedElementsIds = new Set<NodeId>();
 	private readonly inspectedData = new Map<NodeId, NodeInspectedData>();
 
-	// TODO: consider allowing more renderers
-	private readonly rendererId = 0;
+	private rendererIdCounter = 0;
 
 	constructor() {
 		super(Library.REACT);
@@ -139,7 +133,7 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private refreshInspectedData(fiber: Fiber) {
-		const id = this.getOrGenerateElementId(fiber);
+		const id = this.getElementId(fiber);
 
 		if (this.inspectedElementsIds.has(id)) {
 			console.log(fiber);
@@ -170,34 +164,14 @@ export class ReactAdapter extends Adapter<
 
 	private handleInject(renderer: ReactRenderer): number | null {
 		console.log('inject', renderer);
-		if (this.renderers.size > 0) {
-			// TODO: consider allowing more renderers
-			console.warn('Only one renderer is supported');
-			return null;
-		}
 
 		this.sendLibraryAttached();
-
-		this.renderers.set(this.rendererId, renderer);
-		// this.rendererId++
+		this.renderers.set(this.rendererIdCounter, renderer);
+		this.rendererIdCounter += 1;
 
 		// TODO: Possible console patching here
 
-		// Why is this needed? (see: extension/src/pages/content/index.ts)
-		// window.postMessage(
-		// 	{
-		// 		source: 'react-devtools-detector',
-		// 		reactBuildType: 'development',
-		// 	},
-		// 	'*'
-		// );
-		// emit('renderer', {
-		//   id: rendererId,
-		//   renderer,
-		//   reactBuildType: 'development'
-		// });
-
-		return this.rendererId;
+		return this.rendererIdCounter;
 	}
 
 	private handleCommitFiberRoot(
@@ -243,7 +217,7 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private mountNewRoot(root: Fiber): void {
-		const rootId = this.getOrGenerateElementId(root);
+		const rootId = this.getElementId(root);
 
 		this.refreshInspectedData(root);
 		this.existingNodes.set(rootId, {
@@ -266,9 +240,9 @@ export class ReactAdapter extends Adapter<
 		let currentChild: Fiber | null = parent.child;
 		const children: ParsedReactNode[] = [];
 		while (currentChild) {
-			const childId = this.getOrGenerateElementId(currentChild);
+			const childId = this.getElementId(currentChild);
 			this.existingNodes.set(childId, {
-				parentId: this.getOrGenerateElementId(parent),
+				parentId: this.getElementId(parent),
 				fiber: currentChild,
 				node: getNearestStateNode(currentChild),
 			});
@@ -295,7 +269,7 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private unmountFiber(fiber: Fiber): void {
-		const id = this.getOrGenerateElementId(fiber);
+		const id = this.getElementId(fiber);
 
 		let shouldSendUnmount = true;
 		const nodeData = this.existingNodes.get(id);
@@ -332,9 +306,9 @@ export class ReactAdapter extends Adapter<
 		let higherSibling: Fiber | null = null;
 		let child = nextFiber.child;
 		if (child !== prevFiber.child) {
-			const parentId = this.getOrGenerateElementId(nextFiber);
+			const parentId = this.getElementId(nextFiber);
 			while (child) {
-				const childId = this.getOrGenerateElementId(child);
+				const childId = this.getElementId(child);
 
 				this.refreshInspectedData(child);
 				this.existingNodes.set(childId, {
@@ -353,15 +327,13 @@ export class ReactAdapter extends Adapter<
 						parentId,
 						anchor: {
 							type: 'after',
-							id: higherSibling
-								? this.getOrGenerateElementId(higherSibling)
-								: null,
+							id: higherSibling ? this.getElementId(higherSibling) : null,
 						},
 						node: {
 							type: child.tag,
 							name: getFiberName(child),
 							children: this.getParseChildren(child),
-							id: this.getOrGenerateElementId(child),
+							id: this.getElementId(child),
 						},
 					});
 				}
@@ -373,32 +345,32 @@ export class ReactAdapter extends Adapter<
 		return operations;
 	}
 
-	protected override getOrGenerateElementId(fiber: Fiber): NodeId {
+	protected override getElementId(fiber: Fiber): NodeId {
 		const alternate = fiber.alternate;
-		const fiberId = this.fiberToId.get(fiber);
+		const fiberId = this.elementToId.get(fiber);
 
 		if (fiberId !== undefined) {
-			if (alternate && !this.fiberToId.has(alternate)) {
-				this.fiberToId.set(alternate, fiberId);
+			if (alternate && !this.elementToId.has(alternate)) {
+				this.elementToId.set(alternate, fiberId);
 			}
 
 			return fiberId;
 		}
 
 		if (alternate) {
-			const alternateId = this.fiberToId.get(alternate);
+			const alternateId = this.elementToId.get(alternate);
 
 			if (alternateId) {
-				this.fiberToId.set(fiber, alternateId);
+				this.elementToId.set(fiber, alternateId);
 				return alternateId;
 			}
 		}
 
-		const id = `${this.adapterPrefix}${this.idCounter++}`;
-		this.fiberToId.set(fiber, id);
+		const id = this.generateNewElementId();
+		this.elementToId.set(fiber, id);
 
 		if (alternate) {
-			this.fiberToId.set(alternate, id);
+			this.elementToId.set(alternate, id);
 		}
 
 		return id;

@@ -18,8 +18,6 @@ export abstract class Adapter<
 	T extends { node: Node | null },
 	L extends Library,
 > {
-	private static idCounter = 0;
-	private static readonly elementToId = new Map<unknown, NodeId>();
 	private static readonly registeredLibraries = new Set<Library>();
 	private static readonly registeredPrefixes = new Map<string, number>();
 	private static overlay?: HTMLDivElement;
@@ -28,9 +26,11 @@ export abstract class Adapter<
 	protected abstract inject(): void;
 	protected abstract inspectElements(ids: NodeId[]): void;
 
-	protected adapterPrefix: string = '';
 	protected readonly existingNodes: Map<NodeId, T> = new Map();
+	protected readonly elementToId = new Map<unknown, NodeId>();
 
+	private elementIdCounter = 0;
+	private adapterPrefix: string = '';
 	private readonly postMessageBridge: PostMessageBridge;
 
 	protected constructor(protected readonly library: L) {
@@ -118,15 +118,19 @@ export abstract class Adapter<
 		});
 	}
 
-	protected getOrGenerateElementId(element: unknown): NodeId {
-		const existingId = Adapter.elementToId.get(element);
+	protected getElementId(element: unknown): NodeId {
+		const existingId = this.elementToId.get(element);
 		if (existingId) {
 			return existingId;
 		}
 
-		const id = `${this.adapterPrefix}${Adapter.idCounter++}`;
-		Adapter.elementToId.set(element, id);
+		const id = this.generateNewElementId();
+		this.elementToId.set(element, id);
 		return id;
+	}
+
+	protected generateNewElementId(): NodeId {
+		return `${this.adapterPrefix}${this.elementIdCounter++}`;
 	}
 
 	private handleInspectElementPostMessage(

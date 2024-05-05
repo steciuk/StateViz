@@ -183,7 +183,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		detail: SvelteEventMap['SvelteRegisterComponent']
 	) {
 		const { component, tagName } = detail;
-		const id = this.getOrGenerateElementId(component.$$.fragment);
+		const id = this.getElementId(component.$$.fragment);
 
 		this.componentsCaptureStates.set(id, {
 			captureState: component.$capture_state,
@@ -262,7 +262,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			const original = block.m;
 
 			block.m = (target, anchor) => {
-				let blockId = this.getOrGenerateElementId(block);
+				let blockId = this.getElementId(block);
 				const parsedNode: ParsedSvelteNode = {
 					type,
 					name: getParsedNodeDisplayName({ type, name: type }),
@@ -347,7 +347,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 			block.p = (changed, ctx) => {
 				// set last block id for successors
-				const blockId = this.getOrGenerateElementId(block);
+				const blockId = this.getElementId(block);
 
 				if (type === SvelteBlockType.component) {
 					this.handleNodeInspect(blockId);
@@ -365,7 +365,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			const original = block.d;
 
 			block.d = (detaching) => {
-				const blockId = this.getOrGenerateElementId(block);
+				const blockId = this.getElementId(block);
 
 				try {
 					if (type === SvelteBlockType.each) {
@@ -402,7 +402,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const { target, node, anchor } = detail;
 
 		const parseNode = (node: Node, root: boolean): ParsedSvelteNode => {
-			const id = this.getOrGenerateElementId(node);
+			const id = this.getElementId(node);
 			const [type, name] = getNodeTypeName(node);
 
 			const block: ParsedSvelteNode = {
@@ -436,7 +436,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 	private handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
 		const { node } = detail;
-		const id = this.getOrGenerateElementId(node);
+		const id = this.getElementId(node);
 		this.unmount(id);
 	}
 
@@ -447,7 +447,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		node: Node | null,
 		anchor?: Node
 	) {
-		let targetId = this.getOrGenerateElementId(target);
+		let targetId = this.getElementId(target);
 		const targetNode = this.existingNodes.get(targetId);
 
 		if (
@@ -483,7 +483,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			node: node,
 		});
 
-		const anchorId = anchor ? this.getOrGenerateElementId(anchor) : null;
+		const anchorId = anchor ? this.getElementId(anchor) : null;
 		// this.batchMountNodes(node, targetId, anchorId);
 		this.sendMountNodes([
 			{
