@@ -166,12 +166,12 @@ export class ReactAdapter extends Adapter<
 		console.log('inject', renderer);
 
 		this.sendLibraryAttached();
-		this.renderers.set(this.rendererIdCounter, renderer);
-		this.rendererIdCounter += 1;
+		const id = this.rendererIdCounter++;
+		this.renderers.set(id, renderer);
 
 		// TODO: Possible console patching here
 
-		return this.rendererIdCounter;
+		return id;
 	}
 
 	private handleCommitFiberRoot(
