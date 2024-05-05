@@ -1,8 +1,6 @@
 import { ReactElement } from 'react';
 
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { NodeId } from '@src/shared/types/ParsedNode';
-import { Library } from '@src/shared/types/Library';
 
 // Based on react/packages/react-devtools-shared/src/utils.js
 export enum DataType {
