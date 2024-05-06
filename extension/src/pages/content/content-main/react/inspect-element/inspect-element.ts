@@ -50,11 +50,11 @@ function parseContext(fiber: Fiber): NodeDataGroup | null {
 	let context = fiber.dependencies?.firstContext;
 	if (!context) return null;
 
-	let contextsData: InspectData[] = [];
+	let rawContextData: unknown[] = [];
 
 	while (context) {
 		if (Object.hasOwn(context, 'memoizedValue')) {
-			contextsData.push(dehydrate(context.memoizedValue, 0));
+			rawContextData.push(context.memoizedValue, 0);
 		}
 		context = context.next;
 	}
@@ -69,16 +69,19 @@ function parseContext(fiber: Fiber): NodeDataGroup | null {
 	const numberOfContexts = fiber._debugHookTypes?.filter(
 		(hookType) => hookType === 'useContext'
 	).length;
+
 	if (numberOfContexts !== undefined) {
-		contextsData = contextsData.slice(0, numberOfContexts);
+		rawContextData = rawContextData.slice(0, numberOfContexts);
 	}
+
+	const contextsData = rawContextData.map((data) => ({
+		label: 'Context',
+		value: dehydrate(data, 0),
+	}));
 
 	return {
 		group: 'Contexts',
-		data: contextsData.map((data, _index) => ({
-			label: `Context`,
-			value: data,
-		})),
+		data: contextsData,
 	};
 }
 
