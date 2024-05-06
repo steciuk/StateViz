@@ -277,7 +277,8 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 						case SvelteBlockType.then:
 						case SvelteBlockType.catch:
 							// TODO: implement
-							throw new Error('then/catch not implemented');
+							console.error('then/catch not implemented');
+							break;
 
 						case SvelteBlockType.component: {
 							const component = this.pendingComponents.get(blockId);
@@ -304,8 +305,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 					// TODO: for each element in each block
 					// there is a new each mounted
-					// investigate that and come up with a better solution
-					// TODO: check if it works for more than one each in one block
+					// investigate that maybe and come up with a better solution
 					if (type === SvelteBlockType.each) {
 						if (!this.currentBlockId) {
 							throw new Error('each outside of block');
