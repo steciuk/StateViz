@@ -208,7 +208,7 @@ export class ContentIsolated {
 			if (anchorNodeIndex === -1) {
 				// TODO: think of some type fix
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				if (anchor.type === 'before') parent.children.unshift(node as any);
+				if (anchor.type === 'after') parent.children.unshift(node as any);
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				else parent.children.push(node as any);
 
