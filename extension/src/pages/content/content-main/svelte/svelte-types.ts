@@ -4,6 +4,7 @@ export type SvelteDevToolsHook = {
 	v: Set<string>;
 };
 
+// TODO: clean this up
 export interface SvelteEventMap {
 	SvelteRegisterComponent: SvelteComponentDetail;
 	SvelteRegisterBlock: SvelteBlockDetail;
@@ -22,7 +23,8 @@ export interface SvelteEventMap {
 		detail: unknown;
 	};
 	SvelteDOMSetData: {
-		detail: unknown;
+		data?: unknown;
+		node: Node;
 	};
 	SvelteDOMSetProperty: {
 		detail: unknown;

@@ -141,11 +141,12 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		// 	})
 		// );
 
-		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMSetData', (event) => {
-		// 		console.log('SvelteDOMSetData', event.detail);
-		// 	})
-		// );
+		listenerRemovers.push(
+			this.addSvelteListener('SvelteDOMSetData', ({ detail }) => {
+				console.log('SvelteDOMSetData', detail);
+				this.handleSvelteDOMSetData(detail);
+			})
+		);
 
 		// listenerRemovers.push(
 		// 	this.addSvelteListener('SvelteDOMSetProperty', (event) => {
@@ -440,6 +441,22 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		this.unmount(id);
 	}
 
+	private handleSvelteDOMSetData(detail: SvelteEventMap['SvelteDOMSetData']) {
+		const { node, data } = detail;
+		const id = this.getElementId(node);
+
+		// New value is in data, node has the old value
+		const [type, oldName] = getNodeTypeName(node);
+
+		// TODO: Can this be anything other than string?
+		const name =
+			typeof data === 'string'
+				? getParsedNodeDisplayName({ type, name: data })
+				: oldName;
+
+		this.update({ id, name });
+	}
+
 	private mount(
 		parsedNode: ParsedSvelteNode,
 		target: Node,
@@ -551,6 +568,14 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 	}
 
 	private update(node: { id: NodeId; name: string }) {
+		const oldNode = this.existingNodes.get(node.id);
+		if (oldNode) {
+			this.existingNodes.set(node.id, {
+				...oldNode,
+				name: node.name,
+			});
+		}
+		this.handleNodeInspect(node.id);
 		this.sendUpdateNodes([node]);
 	}
 
