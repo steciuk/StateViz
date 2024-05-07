@@ -290,10 +290,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 								this.pendingComponents.delete(blockId);
 							} else {
 								// root component is mounted before it's registered
-								parsedNode.name = getParsedNodeDisplayName({
-									type,
-									name: 'Unknown',
-								});
+								parsedNode.name = 'Unknown';
 								this.pendingComponents.set(blockId, { name: 'Unknown' });
 							}
 
@@ -464,6 +461,21 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		node: Node | null,
 		anchor?: Node
 	) {
+		// TODO: check if change in this commit doesn't break anything
+		if (containingBlockId === null) {
+			// we are not processing any block, node has to be the root
+			this.sendMountRoots([parsedNode]);
+
+			this.existingNodes.set(parsedNode.id, {
+				parentId: null,
+				containingBlockId: null,
+				name: parsedNode.name,
+				type: parsedNode.type,
+				node,
+			});
+			return;
+		}
+
 		let targetId = this.getElementId(target);
 		const targetNode = this.existingNodes.get(targetId);
 
@@ -474,20 +486,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			// i.e. there is a Svelte block between them
 			containingBlockId !== targetNode.containingBlockId
 		) {
-			if (containingBlockId === null) {
-				// we are not processing any block, node has to be the root
-				this.sendMountRoots([parsedNode]);
-
-				this.existingNodes.set(parsedNode.id, {
-					parentId: null,
-					containingBlockId: null,
-					name: parsedNode.name,
-					type: parsedNode.type,
-					node,
-				});
-				return;
-			}
-
 			// mount under current block
 			targetId = containingBlockId;
 		}
