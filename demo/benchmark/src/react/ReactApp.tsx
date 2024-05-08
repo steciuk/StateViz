@@ -7,6 +7,7 @@ import { NameProvider } from "./contexts/NameContext";
 import { PersonConsumerFunc } from "./PersonConsumerFunc";
 import { AgeProvider } from "./contexts/AgeContext";
 import { PersonConsumerClass } from "./PersonConsumerClass";
+import { ComplexProp } from "./ComplexProp";
 
 export function ReactApp() {
   return (
@@ -26,6 +27,7 @@ export function ReactApp() {
           <PersonConsumerClass />
         </AgeProvider>
       </NameProvider>
+      <ComplexProp />
     </div>
   );
 }

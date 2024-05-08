@@ -28,9 +28,9 @@ const NodeInspectData = (props: { inspectData: NodeInspectedData }) => {
 const NodeStateRecord = (props: { label: string; value: InspectData }) => {
 	return (
 		<div className="border-b-1 border-secondary">
-			<span>{props.label}: </span>
+			<span>{props.label}</span>
 			<span className="font-mono">
-				<NodeStateValue inspectData={props.value} />
+				: <NodeStateValue inspectData={props.value} />
 			</span>
 		</div>
 	);

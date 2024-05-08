@@ -68,7 +68,7 @@ const NodeStateArrayValue = (props: {
 			{expanded ? (
 				<>
 					{inspectData.data.map((value, index) => (
-						<p key={index}>
+						<p key={index} className="ml-4">
 							{index}: <NodeStateValue inspectData={value} />
 						</p>
 					))}
@@ -101,7 +101,7 @@ const NodeStateObjectValue = (props: {
 			{expanded ? (
 				<>
 					{Object.entries(inspectData.data).map(([key, value]) => (
-						<p key={key}>
+						<p key={key} className="ml-4">
 							{key}: <NodeStateValue inspectData={value} />
 						</p>
 					))}

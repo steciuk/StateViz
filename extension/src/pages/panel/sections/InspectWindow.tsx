@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
