@@ -69,12 +69,14 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 		<div className="flex h-full w-full items-start">
 			<div
 				className={classNames('h-full overflow-auto', {
+					// TODO: this should not be here. Make it generic
 					'flex-grow': selectedNode === null,
 				})}
 				ref={leftRef}
 			>
 				{props.left}
 			</div>
+			{/* FIXME: this also should not be here */}
 			{selectedNode && (
 				<>
 					<div

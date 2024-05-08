@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { use, useContext, useEffect, useState } from 'react';
 
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
@@ -60,6 +60,16 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 			content: nodeId === null ? [] : [nodeId],
 		});
 	}, [nodeId, chromeBridge, lastInspectedFiberId]);
+
+	// FIXME: this is needed only because SplitView destroys the component
+	useEffect(() => {
+		return () => {
+			chromeBridge.send({
+				type: ChromeBridgeMessageType.INSPECT_ELEMENT,
+				content: [],
+			});
+		};
+	}, [chromeBridge]);
 
 	return nodeInspectData;
 };
