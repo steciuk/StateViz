@@ -16,13 +16,13 @@ import {
 	SelectedNodeUpdateContext,
 } from '@pages/panel/contexts/SelectedNodeContext';
 import { NodeAndLibrary, NodeId } from '@src/shared/types/ParsedNode';
-import NodeRowText from '../../library-specific/components/NodeRowText';
-import { ExpandAllContext } from '@pages/panel/contexts/ColapseContext';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
 import useStorage from '@src/shared/hooks/useStorage';
 import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
+import { NodeRowText } from '@pages/panel/components/NodeRowText';
+import { ExpandContext } from '@pages/panel/contexts/ExpandContext';
 
 export const Row = (props: {
 	nodeAndLibrary: NodeAndLibrary;
@@ -99,7 +99,7 @@ function useExpandAllSignal(
 	isExpanded: boolean,
 	expand: (expand: boolean) => void
 ): void {
-	const expandAll = useContext(ExpandAllContext);
+	const expandAll = useContext(ExpandContext);
 	const prevExpandAll = usePrevious(expandAll);
 
 	useEffect(() => {

@@ -415,6 +415,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				this.existingNodes.set(id, {
 					// parentId and containingBlockId are not important for children
 					// there wont be any mounts under them
+					// TODO: am I sure about this?
 					parentId: null,
 					containingBlockId: null,
 					//

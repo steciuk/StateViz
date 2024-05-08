@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { faAnglesUp, faAnglesDown } from '@fortawesome/free-solid-svg-icons';
-import { ExpandAllUpdateContext } from '@pages/panel/contexts/ColapseContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useStorage from '@src/shared/hooks/useStorage';
 import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
+import { ExpandUpdateContext } from '@pages/panel/contexts/ExpandContext';
 
 export const ActionsMenu = () => {
 	const indentSize = useStorage(indentSizeStorage);
-	const { collapseAll, expandAll } = useContext(ExpandAllUpdateContext);
+	const { collapseAll, expandAll } = useContext(ExpandUpdateContext);
 
 	const handleIndentChange = (value: string) => {
 		const parsedValue = parseInt(value);

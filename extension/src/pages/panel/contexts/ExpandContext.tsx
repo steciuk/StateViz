@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react';
 
-export const ExpandAllContext = createContext({ value: false });
-export const ExpandAllUpdateContext = createContext({
+export const ExpandContext = createContext({ value: false });
+export const ExpandUpdateContext = createContext({
 	collapseAll: () => {},
 	expandAll: () => {},
 });
@@ -19,11 +19,11 @@ export const ExpandProvider = (props: { children: React.ReactNode }) => {
 	};
 
 	return (
-		<ExpandAllContext.Provider value={expanded}>
-			<ExpandAllUpdateContext.Provider value={{ collapseAll, expandAll }}>
+		<ExpandContext.Provider value={expanded}>
+			<ExpandUpdateContext.Provider value={{ collapseAll, expandAll }}>
 				{props.children}
-			</ExpandAllUpdateContext.Provider>
-		</ExpandAllContext.Provider>
+			</ExpandUpdateContext.Provider>
+		</ExpandContext.Provider>
 	);
 };
 

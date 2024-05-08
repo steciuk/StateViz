@@ -15,8 +15,6 @@ export const ChromeBridgeContext = createContext(
 );
 
 export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
-	// TODO: Should we keep chromeBridge as a state variable?
-	// So the dependent components can add again all the listeners?
 	useEffect(() => {
 		console.log('Connecting chrome bridge');
 		chromeBridge.connect();

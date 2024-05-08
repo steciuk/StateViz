@@ -30,6 +30,7 @@ export const FilterSettings = () => {
 				<span>for </span>
 				<select
 					onChange={(e) => setFilterForLibrary(e.target.value as Library)}
+					className="rounded-md border border-primary bg-secondary p-0.5 text-[1.2em] focus:border-accent focus:outline-none"
 				>
 					{Object.values(Library).map((library) => (
 						<option key={library}>{library}</option>
