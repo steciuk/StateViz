@@ -1,8 +1,7 @@
-import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import { ParsedNode } from '@src/shared/types/ParsedNode';
 
-export const NodeRowText = (props: { nodeAndLibrary: NodeAndLibrary }) => {
-	const { nodeAndLibrary } = props;
-	const { node } = nodeAndLibrary;
+export const NodeRowText = (props: { node: ParsedNode }) => {
+	const { node } = props;
 
 	return node.name;
 };

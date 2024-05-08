@@ -15,7 +15,7 @@ import {
 	SelectedNodeContext,
 	SelectedNodeUpdateContext,
 } from '@pages/panel/contexts/SelectedNodeContext';
-import { NodeAndLibrary, NodeId } from '@src/shared/types/ParsedNode';
+import { NodeId, ParsedNode } from '@src/shared/types/ParsedNode';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
@@ -24,13 +24,9 @@ import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
 import { NodeRowText } from '@pages/panel/components/NodeRowText';
 import { ExpandContext } from '@pages/panel/contexts/ExpandContext';
 
-export const Row = (props: {
-	nodeAndLibrary: NodeAndLibrary;
-	level: number;
-}) => {
+export const Row = (props: { node: ParsedNode; level: number }) => {
 	const indentSize = useStorage(indentSizeStorage);
-	const { nodeAndLibrary, level } = props;
-	const { node, library } = nodeAndLibrary;
+	const { node, level } = props;
 
 	const updateSelectedNode = useContext(SelectedNodeUpdateContext);
 	const selectedNode = useContext(SelectedNodeContext);
@@ -41,7 +37,7 @@ export const Row = (props: {
 
 	const handleRowClick = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
-		updateSelectedNode(nodeAndLibrary);
+		updateSelectedNode(node);
 	};
 
 	const handleHover = useSendHover();
@@ -52,7 +48,7 @@ export const Row = (props: {
 		<>
 			<div
 				className={classNames('fiber-row whitespace-nowrap hover:bg-accent', {
-					'bg-secondary': selectedNode?.node.id === node.id,
+					'bg-secondary': selectedNode?.id === node.id,
 				})}
 				onClick={handleRowClick}
 				onMouseEnter={() => handleHover(node.id)}
@@ -65,7 +61,7 @@ export const Row = (props: {
 						className="mr-1"
 					/>
 					<span className="cursor-default">
-						<NodeRowText nodeAndLibrary={nodeAndLibrary} />
+						<NodeRowText node={node} />
 					</span>
 				</div>
 			</div>
@@ -82,11 +78,7 @@ export const Row = (props: {
 					)}
 				/>
 				{node.children.map((child) => (
-					<MemoRow
-						key={child.id}
-						nodeAndLibrary={{ node: child, library } as NodeAndLibrary}
-						level={level + 1}
-					/>
+					<MemoRow key={child.id} node={child} level={level + 1} />
 				))}
 			</div>
 		</>

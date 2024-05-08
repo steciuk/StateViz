@@ -24,12 +24,7 @@ const Roots = () => {
 					<h2 className="text-center text-lg">{root.library}</h2>
 					{root.nodes.map((node) => (
 						<Fragment key={node.id}>
-							<Row
-								nodeAndLibrary={
-									{ node, library: root.library } as NodeAndLibrary
-								}
-								level={0}
-							/>
+							<Row node={node} level={0} />
 						</Fragment>
 					))}
 				</div>

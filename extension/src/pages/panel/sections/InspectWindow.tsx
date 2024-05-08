@@ -11,10 +11,8 @@ import NodeInspectData from '@pages/panel/components/NodeInspectData';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 
 export const InspectWindow = (props: { className?: string }) => {
-	const selectedNodeAndLibrary = useContext(SelectedNodeContext);
-	const nodeInspectData = useInspectNodeData(
-		selectedNodeAndLibrary?.node.id ?? null
-	);
+	const selectedNode = useContext(SelectedNodeContext);
+	const nodeInspectData = useInspectNodeData(selectedNode?.id ?? null);
 
 	if (!nodeInspectData) {
 		return null;

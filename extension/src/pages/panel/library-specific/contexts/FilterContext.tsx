@@ -70,7 +70,7 @@ const reactFilterStorage = createStorage(
 	}
 );
 
-type SettingIdentifier<T extends Library> = T extends Library.REACT
+type FilterIdentifier<T extends Library> = T extends Library.REACT
 	? WorkTag
 	: T extends Library.SVELTE
 	  ? SvelteBlockType
@@ -98,7 +98,7 @@ export const FilterContext = createContext<
 export const FilterUpdateContext = createContext<
 	<T extends Library>(
 		library: T,
-		key: SettingIdentifier<T>,
+		key: FilterIdentifier<T>,
 		value: boolean
 	) => void
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -108,10 +108,10 @@ export const FilterProvider = (props: { children: React.ReactNode }) => {
 	const reactFilterSettings = useStorage(reactFilterStorage);
 	const svelteFilterSettings = useStorage(svelteFilterStorage);
 
-	const updateSettings = useCallback(
+	const updateFilter = useCallback(
 		<T extends Library>(
 			library: T,
-			key: SettingIdentifier<T>,
+			key: FilterIdentifier<T>,
 			value: boolean
 		) => {
 			switch (library) {
@@ -132,7 +132,7 @@ export const FilterProvider = (props: { children: React.ReactNode }) => {
 		[]
 	);
 
-	const shouldRender = useCallback(
+	const shouldDisplayNode = useCallback(
 		(nodeAndLibrary: FilterDifferentiator) => {
 			const { library, node } = nodeAndLibrary;
 			switch (library) {
@@ -147,8 +147,8 @@ export const FilterProvider = (props: { children: React.ReactNode }) => {
 	);
 
 	return (
-		<FilterContext.Provider value={shouldRender}>
-			<FilterUpdateContext.Provider value={updateSettings}>
+		<FilterContext.Provider value={shouldDisplayNode}>
+			<FilterUpdateContext.Provider value={updateFilter}>
 				{props.children}
 			</FilterUpdateContext.Provider>
 		</FilterContext.Provider>

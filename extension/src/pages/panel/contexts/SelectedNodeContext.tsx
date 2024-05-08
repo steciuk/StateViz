@@ -1,18 +1,18 @@
 import { createContext, useCallback, useState } from 'react';
 
-import { NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import { ParsedNode } from '@src/shared/types/ParsedNode';
 
-export const SelectedNodeContext = createContext<NodeAndLibrary | null>(null);
+export const SelectedNodeContext = createContext<ParsedNode | null>(null);
 export const SelectedNodeUpdateContext = createContext<
-	(Root: NodeAndLibrary | null) => void
+	(node: ParsedNode | null) => void
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 >(() => {});
 
 export const SelectedNodeProvider = (props: { children: React.ReactNode }) => {
-	const [selectedNode, setSelectedNode] = useState<NodeAndLibrary | null>(null);
+	const [selectedNode, setSelectedNode] = useState<ParsedNode | null>(null);
 
-	const updateSelectedNode = useCallback((id: NodeAndLibrary | null) => {
-		setSelectedNode(id);
+	const updateSelectedNode = useCallback((node: ParsedNode | null) => {
+		setSelectedNode(node);
 	}, []);
 
 	return (

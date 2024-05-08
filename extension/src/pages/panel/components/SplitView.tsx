@@ -13,7 +13,7 @@ const MIN_WIDTH = 200;
 const INIT_WIDTH = 400;
 
 export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
-	const selectedNodeAndLibrary = useContext(SelectedNodeContext);
+	const selectedNode = useContext(SelectedNodeContext);
 
 	const [leftWidth, setLeftWidth] = useState<number>(INIT_WIDTH);
 	const leftRef = useRef<HTMLDivElement>(null);
@@ -69,13 +69,13 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 		<div className="flex h-full w-full items-start">
 			<div
 				className={classNames('h-full overflow-auto', {
-					'flex-grow': selectedNodeAndLibrary === null,
+					'flex-grow': selectedNode === null,
 				})}
 				ref={leftRef}
 			>
 				{props.left}
 			</div>
-			{selectedNodeAndLibrary && (
+			{selectedNode && (
 				<>
 					<div
 						className="h-full w-0.5 cursor-col-resize bg-secondary"
