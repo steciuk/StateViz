@@ -223,7 +223,7 @@ describe(ContentIsolated.name, () => {
 			expect(chromeBridge.send).not.toBeCalled();
 		});
 
-		it('should properly add nodes at the beginning of children array', () => {
+		it('should properly add nodes at the end of children array', () => {
 			const rootsMessage = {
 				content: [
 					{
@@ -256,8 +256,8 @@ describe(ContentIsolated.name, () => {
 
 			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
-				message.content[0].node,
 				{ id: 'sv2', children: [] },
+				message.content[0].node,
 			]);
 
 			expect(chromeBridge.send).toBeCalledWith({
@@ -266,7 +266,7 @@ describe(ContentIsolated.name, () => {
 			});
 		});
 
-		it('should properly add nodes at the end of children array', () => {
+		it('should properly add nodes at the beginning of children array', () => {
 			const rootsMessage = {
 				content: [
 					{
@@ -299,8 +299,8 @@ describe(ContentIsolated.name, () => {
 
 			expect(contentIsolated['nodes'].get('sv3')).toBe(message.content[0].node);
 			expect(contentIsolated['roots'][0].node.children).toEqual([
-				{ id: 'sv2', children: [] },
 				message.content[0].node,
+				{ id: 'sv2', children: [] },
 			]);
 
 			expect(chromeBridge.send).toBeCalledWith({
