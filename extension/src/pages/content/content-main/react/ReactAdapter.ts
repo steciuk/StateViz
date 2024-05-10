@@ -8,7 +8,10 @@ import {
 	RendererID,
 } from '@pages/content/content-main/react/react-types';
 import { Library } from '@src/shared/types/Library';
-import { MountNodesOperations } from '@pages/content/shared/PostMessageBridge';
+import {
+	MountNodesOperations,
+	PostMessageBridge,
+} from '@pages/content/shared/PostMessageBridge';
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { WorkTag } from '@src/shared/types/react-types';
 import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
@@ -36,8 +39,8 @@ export class ReactAdapter extends Adapter<
 
 	private rendererIdCounter = 0;
 
-	constructor() {
-		super(Library.REACT);
+	constructor(postMessageBridge: PostMessageBridge) {
+		super(Library.REACT, postMessageBridge);
 	}
 
 	protected override inject(): void {

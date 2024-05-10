@@ -6,6 +6,7 @@ import {
 } from '@pages/content/content-main/svelte/svelte-types';
 import { getNodeTypeName } from '@pages/content/content-main/svelte/utils/getNodeTypeName';
 import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
+import { PostMessageBridge } from '@pages/content/shared/PostMessageBridge';
 import { InspectData } from '@src/shared/types/DataType';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
@@ -60,8 +61,8 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 	private currentBlockId: NodeId | null = null;
 
-	constructor() {
-		super(Library.SVELTE);
+	constructor(postMessageBridge: PostMessageBridge) {
+		super(Library.SVELTE, postMessageBridge);
 	}
 
 	protected override inject() {

@@ -28,3 +28,7 @@ function getName(node: Node, type: SvelteBlockType) {
 	}
 }
 
+export const exportedForTest = {
+	getName,
+};
+
