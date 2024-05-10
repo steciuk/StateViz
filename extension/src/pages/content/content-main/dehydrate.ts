@@ -39,14 +39,8 @@ export function dehydrate(value: unknown, depth: number = 0): InspectData {
 			return { type: typedData.type, data };
 		}
 		case DataType.REACT_ELEMENT: {
-			// TODO: experiments shows this could be anything
-			const reactType = typedData.data.type;
-			const name = extractNameFromType(reactType);
-			if (isForwardRef(reactType)) {
-				return { type: DataType.REACT_ELEMENT, data: `ForwardRef(${name})` };
-			} else {
-				return { type: DataType.REACT_ELEMENT, data: name };
-			}
+			const name = extractNameFromType(typedData.data.type);
+			return { type: typedData.type, data: name };
 		}
 		case DataType.ARRAY: {
 			const data: InspectData[] = [];

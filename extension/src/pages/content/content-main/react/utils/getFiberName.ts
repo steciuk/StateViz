@@ -23,8 +23,6 @@ export function getFiberName(fiber: Fiber): string {
 			return 'Context.Provider';
 		case WorkTag.ContextConsumer:
 			return 'Context.Consumer';
-		case WorkTag.ForwardRef:
-			return `ForwardRef(${typeName})`;
 		default:
 			return typeName;
 	}
@@ -43,7 +41,7 @@ export function extractNameFromType(type: Fiber['type']): string {
 
 export function isForwardRef(obj: unknown): obj is ForwardRef {
 	if (typeof obj !== 'object') return false;
-	if (obj === null) return false;
+	if (obj === null || obj === undefined) return false;
 	if (!('$$typeof' in obj)) return false;
 	if (typeof obj['$$typeof'] !== 'symbol') return false;
 	if (obj['$$typeof'] !== Symbol.for('react.forward_ref')) return false;
@@ -57,10 +55,16 @@ type ForwardRef = {
 };
 
 function getForwardRefName(ref: ForwardRef): string {
+	let name = 'Unknown';
+
 	if (typeof ref.displayName === 'string' && ref.displayName.trim() !== '')
-		return ref.displayName;
-	if (typeof ref.render === 'function' && ref.render.name.trim() !== '')
-		return ref.render.name;
-	return 'Unknown';
+		name = ref.displayName;
+	else if (typeof ref.render === 'function' && ref.render.name.trim() !== '')
+		name = ref.render.name;
+
+	return `ForwardRef(${name})`;
 }
 
+export const exportedForTest = {
+	getForwardRefName,
+};
