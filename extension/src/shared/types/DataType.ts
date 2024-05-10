@@ -67,7 +67,7 @@ export type TypedData =
 	  }
 	| {
 			type: DataType.REACT_ELEMENT;
-			data: ReactElement;
+			data: { type: unknown };
 	  }
 	| {
 			type: DataType.HTML_ALL_COLLECTION;
@@ -144,9 +144,18 @@ export type InspectData =
 			data: InspectData[];
 	  }
 	| {
-			type: DataType.CLASS_INSTANCE | DataType.OBJECT;
+			type: DataType.OBJECT;
 			data: {
 				[key: string]: InspectData;
+			};
+	  }
+	| {
+			type: DataType.CLASS_INSTANCE;
+			data: {
+				className: string;
+				data: {
+					[key: string]: InspectData;
+				};
 			};
 	  }
 	| {

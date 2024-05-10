@@ -5,7 +5,6 @@ import {
 	MountNodesOperations,
 	MountRootsOperations,
 	PostMessageBridge,
-	PostMessageSource,
 	PostMessageType,
 	UnmountNodesOperation,
 	UpdateNodesOperations,
@@ -31,13 +30,11 @@ export abstract class Adapter<
 
 	private elementIdCounter = 0;
 	private adapterPrefix: string = '';
-	private readonly postMessageBridge: PostMessageBridge;
 
-	protected constructor(protected readonly library: L) {
-		this.postMessageBridge = PostMessageBridge.getInstance(
-			PostMessageSource.MAIN
-		);
-	}
+	protected constructor(
+		protected readonly library: L,
+		private readonly postMessageBridge: PostMessageBridge
+	) {}
 
 	initialize(): void {
 		if (Adapter.registeredLibraries.has(this.library)) {

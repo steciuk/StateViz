@@ -10,6 +10,12 @@ import { NodeDataGroup } from '@src/shared/types/NodeInspectedData';
 import { WorkTag } from '@src/shared/types/react-types';
 
 export function getNodeData(fiber: Fiber): NodeDataGroup[] {
+	switch (fiber.tag) {
+		case WorkTag.Fragment:
+		case WorkTag.HostRoot:
+			return [];
+	}
+
 	// TODO: maybe try to check if changed and don't send if not
 	const props = parseProps(fiber);
 	const context = parseContext(fiber);
@@ -23,12 +29,6 @@ export function getNodeData(fiber: Fiber): NodeDataGroup[] {
 }
 
 function parseProps(fiber: Fiber): NodeDataGroup | null {
-	switch (fiber.tag) {
-		case WorkTag.Fragment:
-		case WorkTag.HostRoot:
-			return null;
-	}
-
 	const fiberProps = fiber.memoizedProps;
 
 	if (!fiberProps) return null;
@@ -54,7 +54,7 @@ function parseContext(fiber: Fiber): NodeDataGroup | null {
 
 	while (context) {
 		if (Object.hasOwn(context, 'memoizedValue')) {
-			rawContextData.push(context.memoizedValue, 0);
+			rawContextData.push(context.memoizedValue);
 		}
 		context = context.next;
 	}
@@ -86,15 +86,10 @@ function parseContext(fiber: Fiber): NodeDataGroup | null {
 }
 
 function getNodeState(fiber: Fiber): NodeDataGroup | null {
-	switch (fiber.tag) {
-		case WorkTag.Fragment:
-		case WorkTag.HostRoot:
-			return null;
-	}
-
 	const state = fiber.memoizedState;
 
 	if (!state) return null;
+	if (typeof state !== 'object') return null;
 
 	if (
 		Object.hasOwn(state, 'baseState') &&
@@ -125,10 +120,14 @@ function parseHooks(
 		(hookType) => hookType !== 'useDebugValue' && hookType !== 'useContext'
 	);
 
-	const hooksNames =
-		hookTypes && hookTypes.length === state.length
+	const hooksNames = hookTypes
+		? hookTypes.length >= state.length
 			? hookTypes
-			: new Array<HookType | 'unknown'>(state.length).fill('unknown');
+			: [
+					...hookTypes,
+					...Array(state.length - hookTypes.length).fill('unknown'),
+			  ]
+		: Array(state.length).fill('unknown');
 
 	return {
 		group: 'Hooks',
@@ -139,7 +138,11 @@ function parseHooks(
 	};
 }
 
-function parseState(memoizedState: HookLessMemoizedState): NodeDataGroup {
+function parseState(
+	memoizedState: HookLessMemoizedState | null
+): NodeDataGroup | null {
+	if (!memoizedState) return null;
+
 	return {
 		group: 'State',
 		data: Object.entries(memoizedState).map(([key, value]) => ({
@@ -148,4 +151,12 @@ function parseState(memoizedState: HookLessMemoizedState): NodeDataGroup {
 		})),
 	};
 }
+
+export const exportedForTest = {
+	parseProps,
+	parseContext,
+	parseHooks,
+	parseState,
+	getNodeState,
+};
 

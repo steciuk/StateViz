@@ -89,7 +89,16 @@ const NodeStateObjectValue = (props: {
 	const { inspectData } = props;
 	const [expanded, setExpanded] = useState<boolean>(false);
 
-	const isEmpty = Object.keys(inspectData.data).length === 0;
+	const data =
+		inspectData.type === DataType.CLASS_INSTANCE
+			? inspectData.data.data
+			: inspectData.data;
+	const className =
+		inspectData.type === DataType.CLASS_INSTANCE
+			? inspectData.data.className
+			: null;
+
+	const isEmpty = Object.keys(data).length === 0;
 
 	return (
 		<span>
@@ -98,9 +107,11 @@ const NodeStateObjectValue = (props: {
 				onClick={(value) => setExpanded(value)}
 				disabled={isEmpty}
 			/>
+			{/* TODO: check if className is displayed correctly */}
+			{className && <span>{className}</span>}
 			{expanded ? (
 				<>
-					{Object.entries(inspectData.data).map(([key, value]) => (
+					{Object.entries(data).map(([key, value]) => (
 						<p key={key} className="ml-4">
 							{key}: <NodeStateValue inspectData={value} />
 						</p>
