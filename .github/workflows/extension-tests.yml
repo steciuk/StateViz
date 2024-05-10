@@ -1,0 +1,28 @@
+name: Extension tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  extension-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ./extension/.nvmrc
+
+      - name: Install dependencies
+        working-directory: ./extension
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./extension
+        run: npm test
