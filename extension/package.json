@@ -8,18 +8,19 @@
 		"url": "https://github.com/steciuk/state-viz.git"
 	},
 	"scripts": {
+    "postinstall": "patch-package", // TODO: remove if https://github.com/probil/vitest-chrome/pull/1 is merged
 		"build": "tsc --noEmit && vite build",
-		"build:firefox": "tsc --noEmit && cross-env __FIREFOX__=true vite build",
+		// "build:firefox": "tsc --noEmit && cross-env __FIREFOX__=true vite build",
 		"build:watch": "cross-env __DEV__=true vite build -w --mode development",
-		"build:firefox:watch": "cross-env __DEV__=true __FIREFOX__=true vite build -w --mode development",
+		// "build:firefox:watch": "cross-env __DEV__=true __FIREFOX__=true vite build -w --mode development",
 		"build:hmr": "rollup --config utils/reload/rollup.config.mjs",
 		"wss": "node utils/reload/initReloadServer.js",
 		"dev": "npm run build:hmr && (run-p wss build:watch)",
-		"dev:firefox": "npm run build:hmr && (run-p wss build:firefox:watch)",
+		// "dev:firefox": "npm run build:hmr && (run-p wss build:firefox:watch)",
 		"test": "vitest",
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "npm run lint --fix",
-		"prettier": "prettier . --write"
+		"prettier": "prettier . --write",
 	},
 	"type": "module",
 	"dependencies": {
@@ -58,6 +59,7 @@
 		"fs-extra": "11.1.1",
 		"jsdom": "^22.1.0",
 		"npm-run-all": "4.1.5",
+		"patch-package": "^8.0.0", // TODO: remove if https://github.com/probil/vitest-chrome/pull/1 is merged
 		"prettier": "3.1.0",
 		"prettier-plugin-tailwindcss": "^0.5.9",
 		"rollup": "4.3.0",

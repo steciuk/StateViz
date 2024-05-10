@@ -1,0 +1,16 @@
+diff --git a/node_modules/vitest-chrome/package.json b/node_modules/vitest-chrome/package.json
+index 7851237..f881478 100644
+--- a/node_modules/vitest-chrome/package.json
++++ b/node_modules/vitest-chrome/package.json
+@@ -19,6 +19,11 @@
+   "main": "lib/index.cjs.js",
+   "module": "lib/index.esm.js",
+   "types": "types/index.d.ts",
++  "exports": {
++    "import": "./lib/index.esm.js",
++    "require": "./lib/index.cjs.js",
++    "types": "./types/index.d.ts"
++  },
+   "files": [
+     "lib",
+     "types",
