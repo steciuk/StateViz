@@ -23,24 +23,44 @@ export function getFiberName(fiber: Fiber): string {
 			return 'Context.Provider';
 		case WorkTag.ContextConsumer:
 			return 'Context.Consumer';
+		case WorkTag.ForwardRef:
+			return `ForwardRef(${typeName})`;
 		default:
 			return typeName;
 	}
 }
 
-function extractNameFromType(type: Fiber['type']): string {
-	switch (typeof type) {
-		case 'string':
-			return type;
+export function extractNameFromType(type: Fiber['type']): string {
+	if (type === null || type === undefined) return 'Unknown';
+	if (typeof type === 'string') return type;
+	if (typeof type === 'function') return type.name;
+	if (typeof type === 'symbol') return type.toString();
 
-		case 'function':
-			return type.name;
+	if (isForwardRef(type)) return getForwardRefName(type);
 
-		case 'symbol':
-			return type.toString();
+	return 'Unknown';
+}
 
-		default:
-			return 'Unknown';
-	}
+export function isForwardRef(obj: unknown): obj is ForwardRef {
+	if (typeof obj !== 'object') return false;
+	if (obj === null) return false;
+	if (!('$$typeof' in obj)) return false;
+	if (typeof obj['$$typeof'] !== 'symbol') return false;
+	if (obj['$$typeof'] !== Symbol.for('react.forward_ref')) return false;
+	return true;
+}
+
+type ForwardRef = {
+	displayName: unknown;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	render: Function;
+};
+
+function getForwardRefName(ref: ForwardRef): string {
+	if (typeof ref.displayName === 'string' && ref.displayName.trim() !== '')
+		return ref.displayName;
+	if (typeof ref.render === 'function' && ref.render.name.trim() !== '')
+		return ref.render.name;
+	return 'Unknown';
 }
 

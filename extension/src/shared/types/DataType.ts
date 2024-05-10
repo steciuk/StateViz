@@ -67,7 +67,7 @@ export type TypedData =
 	  }
 	| {
 			type: DataType.REACT_ELEMENT;
-			data: ReactElement;
+			data: { type: unknown };
 	  }
 	| {
 			type: DataType.HTML_ALL_COLLECTION;

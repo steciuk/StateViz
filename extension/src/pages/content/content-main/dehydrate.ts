@@ -1,5 +1,8 @@
+import {
+	extractNameFromType,
+	isForwardRef,
+} from '@pages/content/content-main/react/utils/getFiberName';
 import { DataType, InspectData, TypedData } from '@src/shared/types/DataType';
-import { ReactElement } from 'react';
 
 export const MAX_DEHYDRATE_DEPTH = 5;
 export function dehydrate(value: unknown, depth: number = 0): InspectData {
@@ -36,11 +39,13 @@ export function dehydrate(value: unknown, depth: number = 0): InspectData {
 			return { type: typedData.type, data };
 		}
 		case DataType.REACT_ELEMENT: {
-			const reactElementType = typedData.data.type;
-			if (typeof reactElementType === 'string') {
-				return { type: typedData.type, data: reactElementType };
+			// TODO: experiments shows this could be anything
+			const reactType = typedData.data.type;
+			const name = extractNameFromType(reactType);
+			if (isForwardRef(reactType)) {
+				return { type: DataType.REACT_ELEMENT, data: `ForwardRef(${name})` };
 			} else {
-				return { type: typedData.type, data: reactElementType.name };
+				return { type: DataType.REACT_ELEMENT, data: name };
 			}
 		}
 		case DataType.ARRAY: {
@@ -111,7 +116,7 @@ function typeData(data: unknown): TypedData {
 	if (typeof data === 'object') {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		if ((data as any)?.$$typeof === Symbol.for('react.element'))
-			return { type: DataType.REACT_ELEMENT, data: data as ReactElement };
+			return { type: DataType.REACT_ELEMENT, data: data as { type: unknown } };
 		if (Array.isArray(data))
 			return { type: DataType.ARRAY, data: data as unknown[] };
 		// TODO: TYPED_ARRAY

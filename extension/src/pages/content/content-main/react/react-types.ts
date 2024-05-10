@@ -70,7 +70,7 @@ export type Fiber = {
 
 	// ? The resolved function/class/ associated with this fiber.
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	type: string | Function | Symbol | null;
+	type: unknown;
 
 	// ? The local state associated with this fiber.
 	stateNode: any;
