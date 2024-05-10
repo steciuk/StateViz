@@ -16,7 +16,6 @@ const storage = createStorage<Theme>('state-viz-theme', 'light', {
 
 const themeStorage: ThemeStorage = {
 	...storage,
-	// TODO: extends your own methods
 	toggle: () => {
 		storage.set((currentTheme) => {
 			return currentTheme === 'light' ? 'dark' : 'light';
