@@ -1,9 +1,11 @@
 import { Adapter } from '@pages/content/content-main/Adapter';
 import { dehydrate } from '@pages/content/content-main/dehydrate';
 import {
+	SvelteComponentFragment,
 	SvelteDevToolsHook,
 	SvelteEventMap,
 } from '@pages/content/content-main/svelte/svelte-types';
+import { addSvelteListener } from '@pages/content/content-main/svelte/utils/addSvelteListener';
 import { getNodeTypeName } from '@pages/content/content-main/svelte/utils/getNodeTypeName';
 import { getParsedNodeDisplayName } from '@pages/content/content-main/svelte/utils/getParsedNodeDisplayName';
 import { PostMessageBridge } from '@pages/content/shared/PostMessageBridge';
@@ -86,7 +88,9 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 			// let the content-isolated know that the library is attached
 			this.sendLibraryAttached();
-		});
+			console.log('Svelte library attached');
+		}),
+			{ once: true };
 	}
 
 	protected override inspectElements(ids: NodeId[]) {
@@ -103,66 +107,66 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const listenerRemovers: (() => void)[] = [];
 
 		listenerRemovers.push(
-			this.addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
+			addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
 				console.log('SvelteRegisterComponent', detail);
 				this.handleSvelteRegisterComponent(detail);
 			})
 		);
 
 		listenerRemovers.push(
-			this.addSvelteListener('SvelteRegisterBlock', ({ detail }) => {
+			addSvelteListener('SvelteRegisterBlock', ({ detail }) => {
 				console.log('SvelteRegisterBlock', detail);
 				this.handleSvelteRegisterBlock(detail);
 			})
 		);
 
 		listenerRemovers.push(
-			this.addSvelteListener('SvelteDOMInsert', ({ detail }) => {
+			addSvelteListener('SvelteDOMInsert', ({ detail }) => {
 				console.log('SvelteDOMInsert', detail);
 				this.handleSvelteDOMInsert(detail);
 			})
 		);
 
 		listenerRemovers.push(
-			this.addSvelteListener('SvelteDOMRemove', ({ detail }) => {
+			addSvelteListener('SvelteDOMRemove', ({ detail }) => {
 				console.log('SvelteDOMRemove', detail);
 				this.handleSvelteDOMRemove(detail);
 			})
 		);
 
 		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMAddEventListener', (event) => {
+		// 	addSvelteListener('SvelteDOMAddEventListener', (event) => {
 		// 		console.log('SvelteDOMAddEventListener', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMRemoveEventListener', (event) => {
+		// 	addSvelteListener('SvelteDOMRemoveEventListener', (event) => {
 		// 		console.log('SvelteDOMRemoveEventListener', event.detail);
 		// 	})
 		// );
 
 		listenerRemovers.push(
-			this.addSvelteListener('SvelteDOMSetData', ({ detail }) => {
+			addSvelteListener('SvelteDOMSetData', ({ detail }) => {
 				console.log('SvelteDOMSetData', detail);
 				this.handleSvelteDOMSetData(detail);
 			})
 		);
 
 		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMSetProperty', (event) => {
+		// 	addSvelteListener('SvelteDOMSetProperty', (event) => {
 		// 		console.log('SvelteDOMSetProperty', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMSetAttribute', (event) => {
+		// 	addSvelteListener('SvelteDOMSetAttribute', (event) => {
 		// 		console.log('SvelteDOMSetAttribute', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
-		// 	this.addSvelteListener('SvelteDOMRemoveAttribute', (event) => {
+		// 	addSvelteListener('SvelteDOMRemoveAttribute', (event) => {
 		// 		console.log('SvelteDOMRemoveAttribute', event.detail);
 		// 	})
 		// );
@@ -170,14 +174,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		return () => {
 			listenerRemovers.forEach((remover) => remover());
 		};
-	}
-
-	private addSvelteListener<K extends keyof SvelteEventMap>(
-		type: K,
-		listener: (event: CustomEvent<SvelteEventMap[K]>) => void
-	) {
-		window.addEventListener(type, listener);
-		return () => window.removeEventListener(type, listener);
 	}
 
 	private handleSvelteRegisterComponent(
@@ -254,11 +250,11 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		]);
 	}
 
-	private handleSvelteRegisterBlock(
-		detail: SvelteEventMap['SvelteRegisterBlock']
+	private hijackBlockMount(
+		type: SvelteBlockType,
+		block: SvelteComponentFragment,
+		svelteBlockId: string
 	) {
-		const { type, block, id: svelteBlockId } = detail;
-
 		if (block.m) {
 			const original = block.m;
 
@@ -292,9 +288,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 								parsedNode.name = 'Unknown';
 								this.pendingComponents.set(blockId, { name: 'Unknown' });
 							}
-
-							this.handleNodeInspect(blockId);
-
 							break;
 						}
 					}
@@ -338,7 +331,12 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				}
 			};
 		}
+	}
 
+	private hijackBlockPatch(
+		type: SvelteBlockType,
+		block: SvelteComponentFragment
+	) {
 		if (block.p) {
 			const original = block.p;
 
@@ -346,9 +344,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				// set last block id for successors
 				const blockId = this.getElementId(block);
 
-				if (type === SvelteBlockType.component) {
-					this.handleNodeInspect(blockId);
-				}
+				this.handleNodeInspect(blockId);
 
 				const previousBlockId = this.currentBlockId;
 				this.currentBlockId = blockId;
@@ -357,7 +353,13 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				this.currentBlockId = previousBlockId;
 			};
 		}
+	}
 
+	private hijackBlockDestroy(
+		type: SvelteBlockType,
+		block: SvelteComponentFragment,
+		svelteBlockId: string
+	) {
 		if (block.d) {
 			const original = block.d;
 
@@ -395,10 +397,23 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		}
 	}
 
+	private handleSvelteRegisterBlock(
+		detail: SvelteEventMap['SvelteRegisterBlock']
+	) {
+		const { type, block, id: svelteBlockId } = detail;
+
+		this.hijackBlockMount(type, block, svelteBlockId);
+		this.hijackBlockPatch(type, block);
+		this.hijackBlockDestroy(type, block, svelteBlockId);
+	}
+
 	private handleSvelteDOMInsert(detail: SvelteEventMap['SvelteDOMInsert']) {
 		const { target, node, anchor } = detail;
 
-		const parseNode = (node: Node, root: boolean): ParsedSvelteNode => {
+		const parseNode = (
+			node: Node,
+			parentId: NodeId | null = null
+		): ParsedSvelteNode => {
 			const id = this.getElementId(node);
 			const [type, name] = getNodeTypeName(node);
 
@@ -406,17 +421,14 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				id,
 				name,
 				type,
-				children: [...node.childNodes].map((child) => parseNode(child, false)),
+				children: [...node.childNodes].map((child) => parseNode(child, id)),
 			};
 
 			// set only for children as they won't be set in mount
-			if (!root) {
+			if (parentId !== null) {
 				this.existingNodes.set(id, {
-					// parentId and containingBlockId are not important for children
-					// there wont be any mounts under them
-					// TODO: am I sure about this?
-					parentId: null,
-					containingBlockId: null,
+					parentId,
+					containingBlockId: this.currentBlockId,
 					//
 					name: block.name,
 					type: block.type,
@@ -427,7 +439,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 			return block;
 		};
 
-		const parsedNode = parseNode(node, true);
+		const parsedNode = parseNode(node);
 		const element = node;
 		this.mount(parsedNode, target, this.currentBlockId, element, anchor);
 	}
@@ -507,62 +519,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				node: parsedNode,
 			},
 		]);
-	}
-
-	private debounceTime = 100;
-	private debouncer: NodeJS.Timeout | null = null;
-	private pendingMounts = new Map<
-		NodeId,
-		{
-			parentId: NodeId;
-			anchor: NodeId | null;
-			node: ParsedSvelteNode;
-		}
-	>();
-
-	private batchMountNodes(
-		node: ParsedSvelteNode,
-		parentId: NodeId,
-		beforeNode: NodeId | null
-	) {
-		if (this.debouncer) {
-			clearTimeout(this.debouncer);
-		}
-
-		const pendingParent = this.pendingMounts.get(parentId);
-		if (pendingParent) {
-			if (beforeNode === null) {
-				pendingParent.node.children.push(node);
-			} else {
-				const index = pendingParent.node.children.findIndex(
-					(child) => child.id === beforeNode
-				);
-				if (index === -1) {
-					console.error('AnchorNode not found');
-					return;
-				} else {
-					pendingParent.node.children.splice(index, 0, node);
-				}
-			}
-		} else {
-			this.pendingMounts.set(node.id, {
-				parentId,
-				anchor: beforeNode,
-				node,
-			});
-		}
-
-		this.debouncer = setTimeout(() => {
-			this.sendMountNodes(
-				Array.from(this.pendingMounts.values()).map((mount) => ({
-					parentId: mount.parentId,
-					anchor: { type: 'before', id: mount.anchor },
-					node: mount.node,
-				}))
-			);
-			this.pendingMounts.clear();
-			this.debouncer = null;
-		}, this.debounceTime);
 	}
 
 	private update(node: { id: NodeId; name: string }) {

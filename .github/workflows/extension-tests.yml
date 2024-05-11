@@ -9,8 +9,16 @@ jobs:
   extension-tests:
     runs-on: ubuntu-latest
 
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -22,4 +30,19 @@ jobs:
 
       - name: Run tests
         working-directory: ./extension
-        run: npm test
+        run: npm run test:coverage
+
+      - name: Publish tests results and badge
+        uses: wjervis7/vitest-badge-action@v1.0.0
+        if: success() || failure()
+        with:
+          result-type: statements
+          upload-badge: false
+          vitest-config-path: extension/vitest.config.js
+          summary-path: extension/coverage/coverage-summary.json
+          badge-path: doc/badges/badge.svg
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          file_pattern: doc/badges/badge.svg extension/test-output.json

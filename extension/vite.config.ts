@@ -115,6 +115,16 @@ export default defineConfig({
 		environment: 'jsdom',
 		include: ['**/*.test.ts', '**/*.test.tsx'],
 		setupFiles: './test-utils/vitest.setup.js',
+		coverage: {
+			reporter: ['json-summary'],
+			include: ['src/shared/chrome-messages/*.ts', 'src/pages/**/*.ts'],
+			// TODO: add tsx when tests done
+			exclude: [
+				'src/**/index.ts',
+				'src/pages/content/content-main/content-main.ts',
+				'src/pages/content/content-isolated/content-isolated.ts',
+			],
+		},
 	},
 });
 
