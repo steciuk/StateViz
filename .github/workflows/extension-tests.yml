@@ -9,10 +9,16 @@ jobs:
   extension-tests:
     runs-on: ubuntu-latest
 
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
+          ref: ${{ github.head_ref }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -35,6 +41,6 @@ jobs:
           badge-path: doc/badge.svg
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: doc/badge.svg extension/test-output.json
