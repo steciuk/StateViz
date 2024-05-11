@@ -38,9 +38,11 @@ jobs:
         with:
           result-type: statements
           upload-badge: false
-          badge-path: doc/badge.svg
+          vitest-config-path: extension/vitest.config.js
+          summary-path: extension/coverage/coverage-summary.json
+          badge-path: doc/badges/badge.svg
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          file_pattern: doc/badge.svg extension/test-output.json
+          file_pattern: doc/badges/badge.svg extension/test-output.json
