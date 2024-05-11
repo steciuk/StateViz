@@ -1,12 +1,9 @@
-import { runLog } from '@src/shared/run-log';
 import { SvelteAdapter } from '@pages/content/content-main/svelte/SvelteAdapter';
 import { ReactAdapter } from '@pages/content/content-main/react/ReactAdapter';
 import {
 	PostMessageBridge,
 	PostMessageSource,
 } from '@pages/content/shared/PostMessageBridge';
-
-runLog('content-main.ts');
 
 // Attach the content view to the page
 // TODO: enabling this causes content script react renderer to try to

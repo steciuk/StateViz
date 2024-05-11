@@ -169,7 +169,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 		return () => {
 			listenerRemovers.forEach((remover) => remover());
-			console.warn('All Svelte listeners removed');
 		};
 	}
 
@@ -212,7 +211,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 		const nodeInfo = this.existingNodes.get(nodeId);
 		if (!nodeInfo) {
-			console.error('node not found', nodeId);
+			console.error('Node not found', nodeId);
 			return;
 		}
 
@@ -278,7 +277,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 						case SvelteBlockType.then:
 						case SvelteBlockType.catch:
 							// TODO: implement
-							console.error('then/catch not implemented');
 							break;
 
 						case SvelteBlockType.component: {
@@ -540,7 +538,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 					(child) => child.id === beforeNode
 				);
 				if (index === -1) {
-					console.error('anchorNode not found');
+					console.error('AnchorNode not found');
 					return;
 				} else {
 					pendingParent.node.children.splice(index, 0, node);
@@ -583,7 +581,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const nodeInfo = this.existingNodes.get(id);
 
 		if (!nodeInfo) {
-			console.error('node not found', id);
+			console.error('Node not found', id);
 			return;
 		}
 

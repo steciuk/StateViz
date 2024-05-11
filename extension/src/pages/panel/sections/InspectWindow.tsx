@@ -54,7 +54,6 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 	useEffect(() => {
 		if (lastInspectedFiberId === nodeId) return;
 
-		console.log('Requested', nodeId);
 		chromeBridge.send({
 			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
 			content: nodeId === null ? [] : [nodeId],

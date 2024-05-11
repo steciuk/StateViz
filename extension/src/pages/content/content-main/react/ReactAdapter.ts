@@ -49,14 +49,12 @@ export class ReactAdapter extends Adapter<
 		// Check if RTD or StateViz already hooked
 		if (reactHook) {
 			if (reactHook.stateViz) {
-				console.error('State-Viz for React already hooked');
-				return;
+				throw new Error('State-Viz for React already hooked');
 			} else {
 				// TODO: consider integrating with RDT
-				console.error(
-					'React DevTools already hooked. Disable it to use StateViz for React'
+				throw new Error(
+					'React DevTools already hooked. Disable it to use State-Viz for React'
 				);
-				return;
 			}
 		}
 
@@ -112,7 +110,7 @@ export class ReactAdapter extends Adapter<
 		// TODO: check if it works
 		setTimeout(() => {
 			if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.stateViz) {
-				console.error(
+				throw new Error(
 					'React DevTools override detected. Disable it to use State-Viz for React'
 				);
 			}
@@ -183,7 +181,6 @@ export class ReactAdapter extends Adapter<
 		_priorityLevel?: number,
 		_didError?: boolean
 	): void {
-		console.log(root);
 		const current = root.current;
 		const alternate = current.alternate;
 
@@ -204,15 +201,12 @@ export class ReactAdapter extends Adapter<
 
 		if (!wasMounted && isMounted) {
 			// ? Mount a new root.
-			console.log('mount new root');
 			this.mountNewRoot(current);
 		} else if (wasMounted && isMounted) {
 			// ? Update an existing root.
-			console.log('update existing root');
 			this.updateRoot(current, alternate);
 		} else if (wasMounted && !isMounted) {
 			// ? Unmount an existing root.
-			console.log('unmount existing root');
 			this.unmountFiber(current);
 		}
 
