@@ -30,7 +30,7 @@ jobs:
         with:
           result-type: statements
           upload-badge: false
-          badge-path: ./doc/badge.svg
+          badge-path: doc/badge.svg
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4

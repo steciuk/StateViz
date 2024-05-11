@@ -23,7 +23,7 @@
 		"dev": "npm run build:hmr && (run-p wss build:watch)",
 		"test": "vitest run --silent",
 		"test:watch": "vitest --silent",
-		"test:coverage": "vitest run --silent --coverage --reporter=json --outputFile=./test-output.json && prettier --write test-output.json",
+		"test:coverage": "vitest run --silent --coverage --reporter=json --outputFile=test-output.json && prettier --write test-output.json",
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "npm run lint --fix",
 		"prettier": "prettier . --write"
