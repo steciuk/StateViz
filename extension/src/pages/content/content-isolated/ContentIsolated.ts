@@ -98,10 +98,6 @@ export class ContentIsolated {
 				case PostMessageType.INSPECTED_DATA:
 					this.handleInspectedDataPostMessage(message);
 					break;
-
-				default:
-					console.error('unknown postMessageBridge message type', message);
-					break;
 			}
 		});
 
@@ -115,10 +111,6 @@ export class ContentIsolated {
 				case ChromeBridgeMessageType.HOVER_ELEMENT:
 					this.handleHoverElementBridgeMessage(message);
 					break;
-
-				default:
-					console.error('unknown chromeBridge message type', message);
-					break;
 			}
 		});
 
@@ -127,10 +119,6 @@ export class ContentIsolated {
 			switch (message.type) {
 				case ChromeMessageType.WHAT_LIBRARIES_ATTACHED:
 					this.handleIsLibraryAttachedChromeMessage(message);
-					break;
-
-				default:
-					console.error('unknown chrome message type', message);
 					break;
 			}
 		});
@@ -194,7 +182,7 @@ export class ContentIsolated {
 
 			const parent = this.nodes.get(parentId);
 			if (!parent) {
-				console.error('parent not found', parentId);
+				console.error('Parent not found', parentId);
 				return;
 			}
 
@@ -240,7 +228,7 @@ export class ContentIsolated {
 			const existingNode = this.nodes.get(node.id);
 
 			if (!existingNode) {
-				console.error('node not found');
+				console.error('Node not found');
 				return;
 			}
 
@@ -280,7 +268,7 @@ export class ContentIsolated {
 			const parent = this.nodes.get(parentId);
 
 			if (!parent) {
-				console.error('parent not found');
+				console.error('Parent not found');
 				return;
 			}
 
@@ -326,7 +314,7 @@ export class ContentIsolated {
 	private handleIsLibraryAttachedChromeMessage(
 		message: WhatLibrariesAttachedChromeMessage
 	): void {
-		console.log('question from devtools panel: is library attached?');
+		console.log('Is library attached?');
 		message.responseCallback([...this.librariesAttached.values()]);
 	}
 

@@ -19,7 +19,6 @@ console.log('background loaded');
 onChromeMessage((message, sender) => {
 	if (message.type === ChromeMessageType.LIBRARY_ATTACHED) {
 		// set extension icon
-		console.warn('Library attached in BACKGROUND', message.content);
 		chrome.action.setIcon({
 			path: {
 				32: '/icons/enabled-32.png',

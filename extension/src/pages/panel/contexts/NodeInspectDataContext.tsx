@@ -21,7 +21,6 @@ export const InspectDataProvider = (props: { children: React.ReactNode }) => {
 		const removeChromeMessageListener = chromeBridge.onMessage(
 			(message: ChromeBridgeMessage) => {
 				if (message.type === ChromeBridgeMessageType.INSPECTED_DATA) {
-					console.log('Set node inspect data');
 					setInspectData(message.content);
 				}
 			}
