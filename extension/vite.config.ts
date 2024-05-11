@@ -115,6 +115,9 @@ export default defineConfig({
 		environment: 'jsdom',
 		include: ['**/*.test.ts', '**/*.test.tsx'],
 		setupFiles: './test-utils/vitest.setup.js',
+		coverage: {
+			reporter: ['json-summary'],
+		},
 	},
 });
 

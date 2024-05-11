@@ -22,4 +22,17 @@ jobs:
 
       - name: Run tests
         working-directory: ./extension
-        run: npm test
+        run: npm run test:coverage
+
+      - name: Publish tests results and badge
+        uses: wjervis7/vitest-badge-action@v1.0.0
+        if: success() || failure()
+        with:
+          result-type: statements
+          upload-badge: false
+          badge-path: ./doc/badge.svg
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: doc/badge.svg extension/test-output.json
