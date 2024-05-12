@@ -21,7 +21,7 @@ const Roots = () => {
 		<div className="flex-grow space-y-2 p-2">
 			{filteredNodes.map((root, i) => (
 				<div key={i}>
-					<h2 className="text-center text-lg">{root.library}</h2>
+					<h2 className="text-left text-lg">{root.library}</h2>
 					{root.nodes.map((node) => (
 						<Fragment key={node.id}>
 							<Row node={node} level={0} />
