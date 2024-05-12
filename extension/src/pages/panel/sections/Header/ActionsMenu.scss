@@ -1,0 +1,11 @@
+.indent-range-container {
+  span {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  &:hover {
+    span {
+      display: block;
+    }
+  }
+}

@@ -66,6 +66,11 @@ export const Row = (props: { node: ParsedNode; level: number }) => {
 				</div>
 			</div>
 
+			{/* TODO: would it be better to not render collapsed components at all?
+          - More performant if large subtree is collapsed
+          - State lost on expand
+          - Less performant on expand and collapse
+        */}
 			<div
 				className={classNames('children-wrapper', 'relative', {
 					hidden: !isExpanded,
