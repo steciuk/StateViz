@@ -1,14 +1,14 @@
 {
-	"numTotalTestSuites": 95,
-	"numPassedTestSuites": 95,
+	"numTotalTestSuites": 97,
+	"numPassedTestSuites": 97,
 	"numFailedTestSuites": 0,
 	"numPendingTestSuites": 0,
-	"numTotalTests": 249,
-	"numPassedTests": 249,
+	"numTotalTests": 252,
+	"numPassedTests": 252,
 	"numFailedTests": 0,
 	"numPendingTests": 0,
 	"numTodoTests": 0,
-	"startTime": 1715446214287,
+	"startTime": 1715518927106,
 	"success": true,
 	"testResults": [
 		{
@@ -50,7 +50,7 @@
 					"fullName": " ChromeBridgeConnector should properly register and remove message listeners via onMessage on port after connection",
 					"status": "passed",
 					"title": "should properly register and remove message listeners via onMessage on port after connection",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -58,7 +58,7 @@
 					"fullName": " ChromeBridgeConnector should register pending message listeners when not connected",
 					"status": "passed",
 					"title": "should register pending message listeners when not connected",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -82,7 +82,7 @@
 					"fullName": " ChromeBridgeConnector should not receive messages from the port when disconnect",
 					"status": "passed",
 					"title": "should not receive messages from the port when disconnect",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -98,7 +98,7 @@
 					"fullName": " ChromeBridgeConnector should not clear pending message listeners when connecting or disconnecting",
 					"status": "passed",
 					"title": "should not clear pending message listeners when connecting or disconnecting",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -114,7 +114,7 @@
 					"fullName": " ChromeBridgeToTabConnector should throw an error when connecting twice",
 					"status": "passed",
 					"title": "should throw an error when connecting twice",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -154,7 +154,7 @@
 					"fullName": " ChromeBridgeToTabConnector should receive messages from the port when onMessage registered before connection",
 					"status": "passed",
 					"title": "should receive messages from the port when onMessage registered before connection",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -178,7 +178,7 @@
 					"fullName": " ChromeBridgeToTabConnector should receive messages from the port when reconnect",
 					"status": "passed",
 					"title": "should receive messages from the port when reconnect",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -202,7 +202,7 @@
 					"fullName": " ChromeBridgeListener should not connect if the port name does not match",
 					"status": "passed",
 					"title": "should not connect if the port name does not match",
-					"duration": 2,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -226,7 +226,7 @@
 					"fullName": " ChromeBridgeListener should throw an error when sending a message without connection",
 					"status": "passed",
 					"title": "should throw an error when sending a message without connection",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -250,7 +250,7 @@
 					"fullName": " ChromeBridgeListener should register pending message listeners when not connected",
 					"status": "passed",
 					"title": "should register pending message listeners when not connected",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -274,7 +274,7 @@
 					"fullName": " ChromeBridgeListener should not receive messages from the port when disconnect",
 					"status": "passed",
 					"title": "should not receive messages from the port when disconnect",
-					"duration": 0,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -312,7 +312,7 @@
 					"fullName": " ChromeBridgeConnector - ChromeBridgeListener should connect to one another if the port name matches",
 					"status": "passed",
 					"title": "should connect to one another if the port name matches",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -334,15 +334,15 @@
 					"fullName": " ChromeBridgeConnector - ChromeBridgeListener should allow sending bidirectional messages",
 					"status": "passed",
 					"title": "should allow sending bidirectional messages",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446215810,
-			"endTime": 1715446215845,
+			"startTime": 1715518929228,
+			"endTime": 1715518929280,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/shared/chrome-messages/ChromeBridge.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/shared/chrome-messages/ChromeBridge.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -351,7 +351,7 @@
 					"fullName": " onChromeMessage should add and remove a listener",
 					"status": "passed",
 					"title": "should add and remove a listener",
-					"duration": 3,
+					"duration": 5,
 					"failureMessages": []
 				},
 				{
@@ -359,7 +359,7 @@
 					"fullName": " onChromeMessage should call the callback function with the correct arguments",
 					"status": "passed",
 					"title": "should call the callback function with the correct arguments",
-					"duration": 3,
+					"duration": 7,
 					"failureMessages": []
 				},
 				{
@@ -367,7 +367,7 @@
 					"fullName": " onChromeMessage should not call the callback function after the listener is removed",
 					"status": "passed",
 					"title": "should not call the callback function after the listener is removed",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -399,15 +399,15 @@
 					"fullName": " sendChromeMessageToTab - onChromeMessage should send and receive a message with correct content",
 					"status": "passed",
 					"title": "should send and receive a message with correct content",
-					"duration": 0,
+					"duration": 2,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446221602,
-			"endTime": 1715446221612,
+			"startTime": 1715518930993,
+			"endTime": 1715518931012,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/shared/chrome-messages/chrome-message.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/shared/chrome-messages/chrome-message.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -416,7 +416,7 @@
 					"fullName": " ContentIsolated initialize should call ChromeBridgeListener constructor",
 					"status": "passed",
 					"title": "should call ChromeBridgeListener constructor",
-					"duration": 5,
+					"duration": 11,
 					"failureMessages": []
 				},
 				{
@@ -424,7 +424,7 @@
 					"fullName": " ContentIsolated initialize should throw an error if ContentIsolated is already initialized",
 					"status": "passed",
 					"title": "should throw an error if ContentIsolated is already initialized",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -436,7 +436,7 @@
 					"fullName": " ContentIsolated handleDevtoolsPanelConnection should send FULL_SKELETON message",
 					"status": "passed",
 					"title": "should send FULL_SKELETON message",
-					"duration": 2,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -452,7 +452,7 @@
 					"fullName": " ContentIsolated setupListeners should setup chromeBridge listener",
 					"status": "passed",
 					"title": "should setup chromeBridge listener",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -472,7 +472,7 @@
 					"fullName": " ContentIsolated handleLibraryAttachedPostMessage should register the library",
 					"status": "passed",
 					"title": "should register the library",
-					"duration": 0,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -492,7 +492,7 @@
 					"fullName": " ContentIsolated addNodesRecursively should add nodes to currentNodes",
 					"status": "passed",
 					"title": "should add nodes to currentNodes",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -504,7 +504,7 @@
 					"fullName": " ContentIsolated handleMountRootsPostMessage should add roots to currentNodes and send FULL_SKELETON message",
 					"status": "passed",
 					"title": "should add roots to currentNodes and send FULL_SKELETON message",
-					"duration": 3,
+					"duration": 5,
 					"failureMessages": []
 				},
 				{
@@ -552,7 +552,7 @@
 					"fullName": " ContentIsolated handleMountNodesPostMessage should properly add nodes at the beginning of children array",
 					"status": "passed",
 					"title": "should properly add nodes at the beginning of children array",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -564,7 +564,7 @@
 					"fullName": " ContentIsolated handleMountNodesPostMessage should properly add nodes after the anchor node",
 					"status": "passed",
 					"title": "should properly add nodes after the anchor node",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -596,7 +596,7 @@
 					"fullName": " ContentIsolated removeNodesRecursively should remove node and its children from currentNodes",
 					"status": "passed",
 					"title": "should remove node and its children from currentNodes",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -632,7 +632,7 @@
 					"fullName": " ContentIsolated handleInspectedDataPostMessage should send INSPECTED_DATA ChromeBridge message",
 					"status": "passed",
 					"title": "should send INSPECTED_DATA ChromeBridge message",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -644,7 +644,7 @@
 					"fullName": " ContentIsolated handleInspectElementBridgeMessage should send INSPECT_ELEMENT PostMessageBridge message",
 					"status": "passed",
 					"title": "should send INSPECT_ELEMENT PostMessageBridge message",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -656,7 +656,7 @@
 					"fullName": " ContentIsolated handleHoverElementBridgeMessage should send HOVER_ELEMENT PostMessageBridge message",
 					"status": "passed",
 					"title": "should send HOVER_ELEMENT PostMessageBridge message",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -668,15 +668,96 @@
 					"fullName": " ContentIsolated handleIsLibraryAttachedChromeMessage should respond with librariesAttached",
 					"status": "passed",
 					"title": "should respond with librariesAttached",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446217731,
-			"endTime": 1715446217752,
+			"startTime": 1715518929250,
+			"endTime": 1715518929290,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-isolated/ContentIsolated.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-isolated/ContentIsolated.test.ts"
+		},
+		{
+			"assertionResults": [
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should send a message with the correct content",
+					"status": "passed",
+					"title": "should send a message with the correct content",
+					"duration": 7,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should not call the callback when receiving message without the source",
+					"status": "passed",
+					"title": "should not call the callback when receiving message without the source",
+					"duration": 3,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should not call the callback when receiving message with the same source",
+					"status": "passed",
+					"title": "should not call the callback when receiving message with the same source",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should call the callback when receiving a message from different source",
+					"status": "passed",
+					"title": "should call the callback when receiving a message from different source",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should not call the callback when receiving a message from different origin",
+					"status": "passed",
+					"title": "should not call the callback when receiving a message from different origin",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should not call the callback when the listener is removed",
+					"status": "passed",
+					"title": "should not call the callback when the listener is removed",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should call the callback only once when registered with once",
+					"status": "passed",
+					"title": "should call the callback only once when registered with once",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should not unregister the listener when callback was not called, when registered with once",
+					"status": "passed",
+					"title": "should not unregister the listener when callback was not called, when registered with once",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "PostMessageBridge"],
+					"fullName": " PostMessageBridge should throw an error when trying to get instance with different source in the same context",
+					"status": "passed",
+					"title": "should throw an error when trying to get instance with different source in the same context",
+					"duration": 2,
+					"failureMessages": []
+				}
+			],
+			"startTime": 1715518930993,
+			"endTime": 1715518931011,
+			"status": "passed",
+			"message": "",
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/shared/PostMessageBridge.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -693,7 +774,7 @@
 					"fullName": " Adapter initialize should throw error if library already registered",
 					"status": "passed",
 					"title": "should throw error if library already registered",
-					"duration": 2,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -701,7 +782,7 @@
 					"fullName": " Adapter initialize should add other library to registered libraries",
 					"status": "passed",
 					"title": "should add other library to registered libraries",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -709,7 +790,7 @@
 					"fullName": " Adapter initialize should set adapter prefix",
 					"status": "passed",
 					"title": "should set adapter prefix",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -717,7 +798,7 @@
 					"fullName": " Adapter initialize should set adapter prefix with count",
 					"status": "passed",
 					"title": "should set adapter prefix with count",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -733,7 +814,7 @@
 					"fullName": " Adapter initialize should call inject",
 					"status": "passed",
 					"title": "should call inject",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -741,7 +822,7 @@
 					"fullName": " Adapter sendLibraryAttached should call postMessageBridge.send with correct library",
 					"status": "passed",
 					"title": "should call postMessageBridge.send with correct library",
-					"duration": 3,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -749,7 +830,7 @@
 					"fullName": " Adapter sendMountRoots should call postMessageBridge.send with passed roots",
 					"status": "passed",
 					"title": "should call postMessageBridge.send with passed roots",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -765,7 +846,7 @@
 					"fullName": " Adapter sendUpdateNodes should call postMessageBridge.send with passed operations",
 					"status": "passed",
 					"title": "should call postMessageBridge.send with passed operations",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -773,7 +854,7 @@
 					"fullName": " Adapter sendUnmountNodes should call postMessageBridge.send with passed operations",
 					"status": "passed",
 					"title": "should call postMessageBridge.send with passed operations",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -781,7 +862,7 @@
 					"fullName": " Adapter sendInspectedData should call postMessageBridge.send with passed content",
 					"status": "passed",
 					"title": "should call postMessageBridge.send with passed content",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -789,7 +870,7 @@
 					"fullName": " Adapter generateNewElementId should return adapter prefix with 0 for the first node",
 					"status": "passed",
 					"title": "should return adapter prefix with 0 for the first node",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -805,7 +886,7 @@
 					"fullName": " Adapter getElementId should return new id for not seen elements",
 					"status": "passed",
 					"title": "should return new id for not seen elements",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -813,7 +894,7 @@
 					"fullName": " Adapter getElementId should return existing id for seen elements",
 					"status": "passed",
 					"title": "should return existing id for seen elements",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -837,7 +918,7 @@
 					"fullName": " Adapter handleHoverPostMessage should do nothing if node not found",
 					"status": "passed",
 					"title": "should do nothing if node not found",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -853,7 +934,7 @@
 					"fullName": " Adapter handleHoverPostMessage should call setOverlay initially and on every resize",
 					"status": "passed",
 					"title": "should call setOverlay initially and on every resize",
-					"duration": 2,
+					"duration": 8,
 					"failureMessages": []
 				},
 				{
@@ -861,15 +942,15 @@
 					"fullName": " Adapter setOverlay should set overlay element",
 					"status": "passed",
 					"title": "should set overlay element",
-					"duration": 30,
+					"duration": 55,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446219227,
-			"endTime": 1715446219275,
+			"startTime": 1715518929247,
+			"endTime": 1715518929330,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/Adapter.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/Adapter.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -878,7 +959,7 @@
 					"fullName": " typeData should return DataType.NULL if data is null",
 					"status": "passed",
 					"title": "should return DataType.NULL if data is null",
-					"duration": 2,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -902,7 +983,7 @@
 					"fullName": " typeData should return DataType.HTML_ALL_COLLECTION if data is an HTMLCollection",
 					"status": "passed",
 					"title": "should return DataType.HTML_ALL_COLLECTION if data is an HTMLCollection",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -918,7 +999,7 @@
 					"fullName": " typeData should return DataType.FUNCTION if data is a function",
 					"status": "passed",
 					"title": "should return DataType.FUNCTION if data is a function",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -934,7 +1015,7 @@
 					"fullName": " typeData should return DataType.SYMBOL if data is a symbol",
 					"status": "passed",
 					"title": "should return DataType.SYMBOL if data is a symbol",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -942,7 +1023,7 @@
 					"fullName": " typeData should return DataType.BIGINT if data is a bigint",
 					"status": "passed",
 					"title": "should return DataType.BIGINT if data is a bigint",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -958,7 +1039,7 @@
 					"fullName": " typeData should return DataType.INFINITY if data is Infinity",
 					"status": "passed",
 					"title": "should return DataType.INFINITY if data is Infinity",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -974,7 +1055,7 @@
 					"fullName": " typeData should return DataType.REACT_ELEMENT if data is a React element",
 					"status": "passed",
 					"title": "should return DataType.REACT_ELEMENT if data is a React element",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -990,7 +1071,7 @@
 					"fullName": " typeData should return DataType.REGEXP if data is a RegExp",
 					"status": "passed",
 					"title": "should return DataType.REGEXP if data is a RegExp",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1006,7 +1087,7 @@
 					"fullName": " typeData should return DataType.OBJECT if data is a plain object",
 					"status": "passed",
 					"title": "should return DataType.OBJECT if data is a plain object",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -1014,7 +1095,7 @@
 					"fullName": " typeData should return DataType.CLASS_INSTANCE if data is a class instance",
 					"status": "passed",
 					"title": "should return DataType.CLASS_INSTANCE if data is a class instance",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1030,7 +1111,7 @@
 					"fullName": " dehydrate should return DataType.NULL if value is null",
 					"status": "passed",
 					"title": "should return DataType.NULL if value is null",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -1038,7 +1119,7 @@
 					"fullName": " dehydrate should return DataType.UNDEFINED if value is undefined",
 					"status": "passed",
 					"title": "should return DataType.UNDEFINED if value is undefined",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1110,7 +1191,7 @@
 					"fullName": " dehydrate should return DataType.DATE if value is a Date",
 					"status": "passed",
 					"title": "should return DataType.DATE if value is a Date",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1142,7 +1223,7 @@
 					"fullName": " dehydrate should return DataType.ARRAY if value is an array",
 					"status": "passed",
 					"title": "should return DataType.ARRAY if value is an array",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1150,7 +1231,7 @@
 					"fullName": " dehydrate should return DataType.OBJECT if value is a plain object",
 					"status": "passed",
 					"title": "should return DataType.OBJECT if value is a plain object",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -1158,7 +1239,7 @@
 					"fullName": " dehydrate should return DataType.CLASS_INSTANCE if value is a class instance",
 					"status": "passed",
 					"title": "should return DataType.CLASS_INSTANCE if value is a class instance",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1174,96 +1255,15 @@
 					"fullName": " dehydrate should return properly dehydrated nested objects",
 					"status": "passed",
 					"title": "should return properly dehydrated nested objects",
-					"duration": 0,
-					"failureMessages": []
-				}
-			],
-			"startTime": 1715446218459,
-			"endTime": 1715446218471,
-			"status": "passed",
-			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/dehydrate.test.ts"
-		},
-		{
-			"assertionResults": [
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should send a message with the correct content",
-					"status": "passed",
-					"title": "should send a message with the correct content",
-					"duration": 5,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should not call the callback when receiving message without the source",
-					"status": "passed",
-					"title": "should not call the callback when receiving message without the source",
-					"duration": 1,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should not call the callback when receiving message with the same source",
-					"status": "passed",
-					"title": "should not call the callback when receiving message with the same source",
-					"duration": 0,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should call the callback when receiving a message from different source",
-					"status": "passed",
-					"title": "should call the callback when receiving a message from different source",
-					"duration": 1,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should not call the callback when receiving a message from different origin",
-					"status": "passed",
-					"title": "should not call the callback when receiving a message from different origin",
-					"duration": 0,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should not call the callback when the listener is removed",
-					"status": "passed",
-					"title": "should not call the callback when the listener is removed",
-					"duration": 1,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should call the callback only once when registered with once",
-					"status": "passed",
-					"title": "should call the callback only once when registered with once",
-					"duration": 0,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should not unregister the listener when callback was not called, when registered with once",
-					"status": "passed",
-					"title": "should not unregister the listener when callback was not called, when registered with once",
-					"duration": 1,
-					"failureMessages": []
-				},
-				{
-					"ancestorTitles": ["", "PostMessageBridge"],
-					"fullName": " PostMessageBridge should throw an error when trying to get instance with different source in the same context",
-					"status": "passed",
-					"title": "should throw an error when trying to get instance with different source in the same context",
 					"duration": 1,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446222364,
-			"endTime": 1715446222374,
+			"startTime": 1715518929260,
+			"endTime": 1715518929283,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/shared/PostMessageBridge.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/dehydrate.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -1272,15 +1272,15 @@
 					"fullName": " appTest render text",
 					"status": "passed",
 					"title": "render text",
-					"duration": 24,
+					"duration": 39,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446227438,
-			"endTime": 1715446227462,
+			"startTime": 1715518932635,
+			"endTime": 1715518932674,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/components/Demo/app.test.tsx"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/components/Demo/app.test.tsx"
 		},
 		{
 			"assertionResults": [
@@ -1289,7 +1289,7 @@
 					"fullName": " ReactAdapter inject should throw an error if React DevTools is already hooked",
 					"status": "passed",
 					"title": "should throw an error if React DevTools is already hooked",
-					"duration": 2,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -1297,7 +1297,7 @@
 					"fullName": " ReactAdapter inject should throw an error if React DevTools is already hooked",
 					"status": "passed",
 					"title": "should throw an error if React DevTools is already hooked",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1305,7 +1305,7 @@
 					"fullName": " ReactAdapter inject should set the State-Viz hook",
 					"status": "passed",
 					"title": "should set the State-Viz hook",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -1313,7 +1313,7 @@
 					"fullName": " ReactAdapter handleCommitFiberRoot should mount a new root if there is no alternate",
 					"status": "passed",
 					"title": "should mount a new root if there is no alternate",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -1321,7 +1321,7 @@
 					"fullName": " ReactAdapter handleCommitFiberRoot should update an existing root if there is an alternate",
 					"status": "passed",
 					"title": "should update an existing root if there is an alternate",
-					"duration": 0,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -1345,7 +1345,7 @@
 					"fullName": " ReactAdapter updateRoot should send the mount nodes message with the updated nodes",
 					"status": "passed",
 					"title": "should send the mount nodes message with the updated nodes",
-					"duration": 0,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -1381,11 +1381,11 @@
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446219994,
-			"endTime": 1715446220004,
+			"startTime": 1715518929286,
+			"endTime": 1715518929305,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/react/ReactAdapter.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/react/ReactAdapter.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -1394,7 +1394,7 @@
 					"fullName": " SvelteAdapter injectListeners should add event listeners",
 					"status": "passed",
 					"title": "should add event listeners",
-					"duration": 5,
+					"duration": 10,
 					"failureMessages": []
 				},
 				{
@@ -1402,7 +1402,7 @@
 					"fullName": " SvelteAdapter injectListeners should return a function that removes all event listeners",
 					"status": "passed",
 					"title": "should return a function that removes all event listeners",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1430,19 +1430,11 @@
 					"failureMessages": []
 				},
 				{
-					"ancestorTitles": ["", "SvelteAdapter", "inject"],
-					"fullName": " SvelteAdapter inject should sendLibraryAttached if Svelte version is 4",
-					"status": "passed",
-					"title": "should sendLibraryAttached if Svelte version is 4",
-					"duration": 1,
-					"failureMessages": []
-				},
-				{
 					"ancestorTitles": ["", "SvelteAdapter", "inspectElements"],
 					"fullName": " SvelteAdapter inspectElements should save ids to the set",
 					"status": "passed",
 					"title": "should save ids to the set",
-					"duration": 2,
+					"duration": 6,
 					"failureMessages": []
 				},
 				{
@@ -1474,7 +1466,7 @@
 					"fullName": " SvelteAdapter handleSvelteRegisterComponent should call update if component is already mounted",
 					"status": "passed",
 					"title": "should call update if component is already mounted",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1502,7 +1494,7 @@
 					"fullName": " SvelteAdapter handleNodeInspect should call sendInspectedData with correct data",
 					"status": "passed",
 					"title": "should call sendInspectedData with correct data",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -1510,7 +1502,7 @@
 					"fullName": " SvelteAdapter handleSvelteRegisterBlock should call hijacks",
 					"status": "passed",
 					"title": "should call hijacks",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1614,7 +1606,7 @@
 					"fullName": " SvelteAdapter hijackBlockDestroy should not call unmount for each if count is not 0",
 					"status": "passed",
 					"title": "should not call unmount for each if count is not 0",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1630,7 +1622,7 @@
 					"fullName": " SvelteAdapter handleSvelteDOMInsert should call mount",
 					"status": "passed",
 					"title": "should call mount",
-					"duration": 2,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -1646,7 +1638,7 @@
 					"fullName": " SvelteAdapter handleSvelteDOMInsert should add children to existingNodes",
 					"status": "passed",
 					"title": "should add children to existingNodes",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1670,7 +1662,7 @@
 					"fullName": " SvelteAdapter mount should sendMountRoots if containingBlockId is null",
 					"status": "passed",
 					"title": "should sendMountRoots if containingBlockId is null",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1686,7 +1678,7 @@
 					"fullName": " SvelteAdapter mount should sendMountNodes with containingBlockId as a parent if they are under different blocks",
 					"status": "passed",
 					"title": "should sendMountNodes with containingBlockId as a parent if they are under different blocks",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1710,7 +1702,7 @@
 					"fullName": " SvelteAdapter update should patch existingNodes and sendUpdateNodes with correct data",
 					"status": "passed",
 					"title": "should patch existingNodes and sendUpdateNodes with correct data",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1726,7 +1718,7 @@
 					"fullName": " SvelteAdapter unmount should not sendUnmountNodes if cannot reach root node",
 					"status": "passed",
 					"title": "should not sendUnmountNodes if cannot reach root node",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1738,11 +1730,11 @@
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446216939,
-			"endTime": 1715446216969,
+			"startTime": 1715518929289,
+			"endTime": 1715518929340,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/svelte/SvelteAdapter.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/svelte/SvelteAdapter.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -1751,7 +1743,7 @@
 					"fullName": " getClosestElement should return the element itself if it is an Element node",
 					"status": "passed",
 					"title": "should return the element itself if it is an Element node",
-					"duration": 2,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -1767,15 +1759,15 @@
 					"fullName": " getClosestElement should return null if the node has no parent element",
 					"status": "passed",
 					"title": "should return null if the node has no parent element",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446225911,
-			"endTime": 1715446225914,
+			"startTime": 1715518932308,
+			"endTime": 1715518932313,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/utils/getClosestElement.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/utils/getClosestElement.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -1784,7 +1776,7 @@
 					"fullName": " parseProps should return null if fiberProps is null",
 					"status": "passed",
 					"title": "should return null if fiberProps is null",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -1792,7 +1784,7 @@
 					"fullName": " parseProps should parse and return group data for props",
 					"status": "passed",
 					"title": "should parse and return group data for props",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -1800,7 +1792,7 @@
 					"fullName": " parseProps should parse and return single prop",
 					"status": "passed",
 					"title": "should parse and return single prop",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -1808,7 +1800,7 @@
 					"fullName": " parseContext should return null if fiber does not have context",
 					"status": "passed",
 					"title": "should return null if fiber does not have context",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1816,7 +1808,7 @@
 					"fullName": " parseContext should filter out contexts without memoizedValue",
 					"status": "passed",
 					"title": "should filter out contexts without memoizedValue",
-					"duration": 1,
+					"duration": 2,
 					"failureMessages": []
 				},
 				{
@@ -1840,7 +1832,7 @@
 					"fullName": " parseHooks should return an empty data array if memoizedState is null",
 					"status": "passed",
 					"title": "should return an empty data array if memoizedState is null",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1872,7 +1864,7 @@
 					"fullName": " parseState should return null if memoizedState is null",
 					"status": "passed",
 					"title": "should return null if memoizedState is null",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -1888,7 +1880,7 @@
 					"fullName": " getNodeState should return null if memoizedState is null",
 					"status": "passed",
 					"title": "should return null if memoizedState is null",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -1896,15 +1888,15 @@
 					"fullName": " getNodeState should return null if memoizedState is not an object",
 					"status": "passed",
 					"title": "should return null if memoizedState is not an object",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446220776,
-			"endTime": 1715446220783,
+			"startTime": 1715518929248,
+			"endTime": 1715518929262,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/react/inspect-element/inspect-element.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/react/inspect-element/inspect-element.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -1913,7 +1905,7 @@
 					"fullName": " extractNameFromType should return the correct fiber name when type is a string",
 					"status": "passed",
 					"title": "should return the correct fiber name when type is a string",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -2001,7 +1993,7 @@
 					"fullName": " getFiberName should return the correct fiber name for ContextConsumer tag",
 					"status": "passed",
 					"title": "should return the correct fiber name for ContextConsumer tag",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -2017,7 +2009,7 @@
 					"fullName": " isForwardRef should return false for null",
 					"status": "passed",
 					"title": "should return false for null",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				},
 				{
@@ -2033,7 +2025,7 @@
 					"fullName": " isForwardRef should return false for an object without $$typeof property",
 					"status": "passed",
 					"title": "should return false for an object without $$typeof property",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -2057,7 +2049,7 @@
 					"fullName": " getForwardRefName should return \"Unknown\" when displayName and render name are empty",
 					"status": "passed",
 					"title": "should return \"Unknown\" when displayName and render name are empty",
-					"duration": 0,
+					"duration": 1,
 					"failureMessages": []
 				},
 				{
@@ -2073,15 +2065,15 @@
 					"fullName": " getForwardRefName should return the render name when displayName is empty and render name is a non-empty string",
 					"status": "passed",
 					"title": "should return the render name when displayName is empty and render name is a non-empty string",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446223111,
-			"endTime": 1715446223116,
+			"startTime": 1715518931059,
+			"endTime": 1715518931068,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/react/utils/getFiberName.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/react/utils/getFiberName.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -2090,7 +2082,7 @@
 					"fullName": " getNearestStateNode should return stateNode if is already an instance of Node",
 					"status": "passed",
 					"title": "should return stateNode if is already an instance of Node",
-					"duration": 2,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -2106,15 +2098,56 @@
 					"fullName": " getNearestStateNode should return the nearest stateNode in the fiber tree",
 					"status": "passed",
 					"title": "should return the nearest stateNode in the fiber tree",
+					"duration": 1,
+					"failureMessages": []
+				}
+			],
+			"startTime": 1715518931037,
+			"endTime": 1715518931042,
+			"status": "passed",
+			"message": "",
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/react/utils/getNearestStateNode.test.ts"
+		},
+		{
+			"assertionResults": [
+				{
+					"ancestorTitles": ["", "getRendererMajorVersion"],
+					"fullName": " getRendererMajorVersion should return the version when it is a number",
+					"status": "passed",
+					"title": "should return the version when it is a number",
+					"duration": 4,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "getRendererMajorVersion"],
+					"fullName": " getRendererMajorVersion should return the major version when it is a string",
+					"status": "passed",
+					"title": "should return the major version when it is a string",
+					"duration": 0,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "getRendererMajorVersion"],
+					"fullName": " getRendererMajorVersion should return null when the version is not a number or string",
+					"status": "passed",
+					"title": "should return null when the version is not a number or string",
+					"duration": 1,
+					"failureMessages": []
+				},
+				{
+					"ancestorTitles": ["", "getRendererMajorVersion"],
+					"fullName": " getRendererMajorVersion should return null when the major version cannot be parsed from the string",
+					"status": "passed",
+					"title": "should return null when the major version cannot be parsed from the string",
 					"duration": 0,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446225182,
-			"endTime": 1715446225185,
+			"startTime": 1715518931143,
+			"endTime": 1715518931149,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/react/utils/getNearestStateNode.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/react/utils/getRendererMajorVersion.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -2123,7 +2156,7 @@
 					"fullName": " addSvelteListener should add an event listener",
 					"status": "passed",
 					"title": "should add an event listener",
-					"duration": 3,
+					"duration": 4,
 					"failureMessages": []
 				},
 				{
@@ -2135,11 +2168,11 @@
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446226593,
-			"endTime": 1715446226597,
+			"startTime": 1715518932282,
+			"endTime": 1715518932287,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/svelte/utils/addSvelteListener.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/svelte/utils/addSvelteListener.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -2148,7 +2181,7 @@
 					"fullName": " getNodeTypeName should return the correct type and name for an element node",
 					"status": "passed",
 					"title": "should return the correct type and name for an element node",
-					"duration": 3,
+					"duration": 10,
 					"failureMessages": []
 				},
 				{
@@ -2156,7 +2189,7 @@
 					"fullName": " getNodeTypeName should return the correct type and name for a text node",
 					"status": "passed",
 					"title": "should return the correct type and name for a text node",
-					"duration": 1,
+					"duration": 3,
 					"failureMessages": []
 				},
 				{
@@ -2180,15 +2213,15 @@
 					"fullName": " getName should return the node name for other node types",
 					"status": "passed",
 					"title": "should return the node name for other node types",
-					"duration": 1,
+					"duration": 0,
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446224487,
-			"endTime": 1715446224492,
+			"startTime": 1715518931120,
+			"endTime": 1715518931135,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/svelte/utils/getNodeTypeName.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/svelte/utils/getNodeTypeName.test.ts"
 		},
 		{
 			"assertionResults": [
@@ -2233,11 +2266,11 @@
 					"failureMessages": []
 				}
 			],
-			"startTime": 1715446223802,
-			"endTime": 1715446223805,
+			"startTime": 1715518931043,
+			"endTime": 1715518931047,
 			"status": "passed",
 			"message": "",
-			"name": "/home/runner/work/state-viz/state-viz/extension/src/pages/content/content-main/svelte/utils/getParsedNodeDisplayName.test.ts"
+			"name": "/home/steciuk/Coding/state-viz/extension/src/pages/content/content-main/svelte/utils/getParsedNodeDisplayName.test.ts"
 		}
 	]
 }

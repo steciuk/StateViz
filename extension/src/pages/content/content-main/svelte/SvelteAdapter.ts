@@ -72,6 +72,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const removeAllListeners = this.injectListeners();
 
 		window.addEventListener('DOMContentLoaded', () => {
+			// TODO: come up with a better solution for the timeout
 			setTimeout(() => {
 				const versions: number[] = [...(window.__svelte?.v ?? [])].map(
 					(v) => +v
