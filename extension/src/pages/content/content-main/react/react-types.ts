@@ -193,7 +193,7 @@ export type ContextDependency<T = unknown> = {
 // TODO: currently not using RendererInterface at all
 export type ReactRenderer = {
 	// findFiberByHostInstance: (hostInstance: object) => Fiber | null;
-	// version: string;
+	version?: unknown;
 	// rendererPackageName: string;
 	// // ? bundleType: BundleType,
 	// // ? 16.9+

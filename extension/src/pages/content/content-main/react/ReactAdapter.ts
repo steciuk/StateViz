@@ -17,12 +17,15 @@ import { WorkTag } from '@src/shared/types/react-types';
 import { getNodeData } from '@pages/content/content-main/react/inspect-element/inspect-element';
 import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
 import { getNearestStateNode } from '@pages/content/content-main/react/utils/getNearestStateNode';
+import { getRendererMajorVersion } from '@pages/content/content-main/react/utils/getRendererMajorVersion';
 
 declare global {
 	interface Window {
 		__REACT_DEVTOOLS_GLOBAL_HOOK__?: ReactDevToolsHook;
 	}
 }
+
+const MIN_REACT_VERSION = 16;
 
 export class ReactAdapter extends Adapter<
 	{
@@ -165,6 +168,12 @@ export class ReactAdapter extends Adapter<
 
 	private handleInject(renderer: ReactRenderer): number | null {
 		console.log('inject', renderer);
+
+		const rendererVersion = getRendererMajorVersion(renderer.version);
+		if (rendererVersion === null || rendererVersion < MIN_REACT_VERSION) {
+			console.error(`Unsupported React version: ${renderer.version}`);
+			return null;
+		}
 
 		this.sendLibraryAttached();
 		const id = this.rendererIdCounter++;
