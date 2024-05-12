@@ -18,7 +18,7 @@ const Roots = () => {
 
 	//TODO: check if we can use index asd key here
 	return (
-		<div className="space-y-2">
+		<div className="flex-grow space-y-2 p-2">
 			{filteredNodes.map((root, i) => (
 				<div key={i}>
 					<h2 className="text-center text-lg">{root.library}</h2>
