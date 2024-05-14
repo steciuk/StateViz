@@ -8,7 +8,7 @@ import {
 	ChromeBridgeListener,
 	ChromeBridgeMessageType,
 	ChromeBridgeToTabConnector,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 
 // TODO: add inner describe for each function
 describe('ChromeBridgeConnector', () => {

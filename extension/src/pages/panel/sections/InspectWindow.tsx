@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import { InspectDataContext } from '@pages/panel/contexts/NodeInspectDataContext';
 import { SelectedNodeContext } from '@pages/panel/contexts/SelectedNodeContext';
-import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
+import { ChromeBridgeMessageType } from '@src/shared/chrome/ChromeBridge';
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { NodeId } from '@src/shared/types/ParsedNode';
 import NodeInspectInfo from '@pages/panel/components/NodeInspectInfo';

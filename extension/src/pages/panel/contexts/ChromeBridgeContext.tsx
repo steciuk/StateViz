@@ -3,7 +3,7 @@ import { createContext, ReactNode, useEffect } from 'react';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeToTabConnector,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 
 const chromeBridge = new ChromeBridgeToTabConnector(
 	ChromeBridgeConnection.PANEL_TO_CONTENT,

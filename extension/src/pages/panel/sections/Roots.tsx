@@ -5,7 +5,7 @@ import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import { Library } from '@src/shared/types/Library';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';

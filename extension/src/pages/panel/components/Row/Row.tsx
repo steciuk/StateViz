@@ -18,7 +18,7 @@ import {
 import { NodeId, ParsedNode } from '@src/shared/types/ParsedNode';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
-import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
+import { ChromeBridgeMessageType } from '@src/shared/chrome/ChromeBridge';
 import useStorage from '@src/shared/hooks/useStorage';
 import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
 import { NodeRowText } from '@pages/panel/components/NodeRowText';
