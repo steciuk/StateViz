@@ -7,7 +7,7 @@ import {
 	onChromeMessage,
 	sendChromeMessage,
 	sendChromeMessageToTab,
-} from '@src/shared/chrome-messages/chrome-message';
+} from '@src/shared/chrome/chrome-message';
 import { Library } from '@src/shared/types/Library';
 
 describe('onChromeMessage', () => {

@@ -5,7 +5,7 @@ import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import { Library } from '@src/shared/types/Library';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
@@ -18,10 +18,10 @@ const Roots = () => {
 
 	//TODO: check if we can use index asd key here
 	return (
-		<div className="space-y-2">
+		<div className="flex-grow space-y-2 p-2">
 			{filteredNodes.map((root, i) => (
 				<div key={i}>
-					<h2 className="text-center text-lg">{root.library}</h2>
+					<h2 className="text-left text-lg">{root.library}</h2>
 					{root.nodes.map((node) => (
 						<Fragment key={node.id}>
 							<Row node={node} level={0} />

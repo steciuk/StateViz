@@ -22,7 +22,7 @@ export const Panel = () => {
 			<main className="flex h-0 w-full flex-grow">
 				<SplitView
 					left={
-						<div className="h-full p-2" onClick={deselectFiber}>
+						<div className="flex h-full" onClick={deselectFiber}>
 							<Roots />
 						</div>
 					}

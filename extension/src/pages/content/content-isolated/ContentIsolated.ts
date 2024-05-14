@@ -15,7 +15,7 @@ import {
 	WhatLibrariesAttachedChromeMessage,
 	onChromeMessage,
 	sendChromeMessage,
-} from '@src/shared/chrome-messages/chrome-message';
+} from '@src/shared/chrome/chrome-message';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeListener,
@@ -23,7 +23,7 @@ import {
 	ChromeBridgeMessageType,
 	HoverElementBridgeMessage,
 	InspectElementBridgeMessage,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 import { Library } from '@src/shared/types/Library';
 import {
 	NodeId,

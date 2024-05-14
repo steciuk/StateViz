@@ -13,12 +13,12 @@ import {
 	ChromeMessageType,
 	onChromeMessage,
 	sendChromeMessage,
-} from '@src/shared/chrome-messages/chrome-message';
+} from '@src/shared/chrome/chrome-message';
 import {
 	ChromeBridgeConnection,
 	ChromeBridgeListener,
 	ChromeBridgeMessageType,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 import {
 	NodeAndLibrary,
 	ParsedNode,
@@ -615,10 +615,8 @@ vi.mock('@pages/content/shared/PostMessageBridge', async () => {
 	};
 });
 
-vi.mock('@src/shared/chrome-messages/chrome-message', async () => {
-	const actual = await vi.importActual(
-		'@src/shared/chrome-messages/chrome-message'
-	);
+vi.mock('@src/shared/chrome/chrome-message', async () => {
+	const actual = await vi.importActual('@src/shared/chrome/chrome-message');
 
 	return {
 		...(actual as object),
@@ -627,10 +625,8 @@ vi.mock('@src/shared/chrome-messages/chrome-message', async () => {
 	};
 });
 
-vi.mock('@src/shared/chrome-messages/ChromeBridge', async () => {
-	const actual = await vi.importActual(
-		'@src/shared/chrome-messages/ChromeBridge'
-	);
+vi.mock('@src/shared/chrome/ChromeBridge', async () => {
+	const actual = await vi.importActual('@src/shared/chrome/ChromeBridge');
 
 	const ChromeBridgeListener = vi.fn();
 	ChromeBridgeListener.prototype.send = vi.fn();

@@ -9,7 +9,7 @@ import {
 	ChromeMessageSource,
 	ChromeMessageType,
 	sendChromeMessageToTab,
-} from '@src/shared/chrome-messages/chrome-message';
+} from '@src/shared/chrome/chrome-message';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
 
 const Popup = () => {

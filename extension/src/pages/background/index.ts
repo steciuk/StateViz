@@ -4,7 +4,7 @@ import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
 import {
 	ChromeMessageType,
 	onChromeMessage,
-} from '@src/shared/chrome-messages/chrome-message';
+} from '@src/shared/chrome/chrome-message';
 
 reloadOnUpdate('pages/background');
 

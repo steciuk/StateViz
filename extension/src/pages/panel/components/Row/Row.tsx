@@ -18,7 +18,7 @@ import {
 import { NodeId, ParsedNode } from '@src/shared/types/ParsedNode';
 import { usePrevious } from '@src/shared/hooks/usePrevious';
 import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
-import { ChromeBridgeMessageType } from '@src/shared/chrome-messages/ChromeBridge';
+import { ChromeBridgeMessageType } from '@src/shared/chrome/ChromeBridge';
 import useStorage from '@src/shared/hooks/useStorage';
 import indentSizeStorage from '@pages/panel/storages/indentSizeStorage';
 import { NodeRowText } from '@pages/panel/components/NodeRowText';
@@ -66,6 +66,11 @@ export const Row = (props: { node: ParsedNode; level: number }) => {
 				</div>
 			</div>
 
+			{/* TODO: would it be better to not render collapsed components at all?
+          - More performant if large subtree is collapsed
+          - State lost on expand
+          - Less performant on expand and collapse
+        */}
 			<div
 				className={classNames('children-wrapper', 'relative', {
 					hidden: !isExpanded,

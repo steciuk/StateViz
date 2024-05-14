@@ -72,23 +72,28 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const removeAllListeners = this.injectListeners();
 
 		window.addEventListener('DOMContentLoaded', () => {
-			const versions: number[] = [...(window.__svelte?.v ?? [])].map((v) => +v);
+			// TODO: come up with a better solution for the timeout
+			setTimeout(() => {
+				const versions: number[] = [...(window.__svelte?.v ?? [])].map(
+					(v) => +v
+				);
 
-			if (versions.length === 0) {
-				console.warn('No Svelte found');
-				removeAllListeners();
-				return;
-			}
+				if (versions.length === 0) {
+					console.warn('No Svelte found');
+					removeAllListeners();
+					return;
+				}
 
-			if (!versions.some((v) => v >= SUPPORTED_SVELTE_MAJOR)) {
-				console.warn('No supported Svelte versions found');
-				removeAllListeners();
-				return;
-			}
+				if (!versions.some((v) => v >= SUPPORTED_SVELTE_MAJOR)) {
+					console.warn('No supported Svelte versions found');
+					removeAllListeners();
+					return;
+				}
 
-			// let the content-isolated know that the library is attached
-			this.sendLibraryAttached();
-			console.log('Svelte library attached');
+				// let the content-isolated know that the library is attached
+				this.sendLibraryAttached();
+				console.log('Svelte library attached');
+			}, 1000);
 		}),
 			{ once: true };
 	}
@@ -440,8 +445,11 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		};
 
 		const parsedNode = parseNode(node);
-		const element = node;
-		this.mount(parsedNode, target, this.currentBlockId, element, anchor);
+		if (this.existingNodes.has(parsedNode.id)) {
+			this.update({ id: parsedNode.id, name: parsedNode.name });
+			return;
+		}
+		this.mount(parsedNode, target, this.currentBlockId, node, anchor);
 	}
 
 	private handleSvelteDOMRemove(detail: SvelteEventMap['SvelteDOMRemove']) {
@@ -537,7 +545,6 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		const nodeInfo = this.existingNodes.get(id);
 
 		if (!nodeInfo) {
-			console.error('Node not found', id);
 			return;
 		}
 

@@ -4,7 +4,7 @@ import { ChromeBridgeContext } from '@pages/panel/contexts/ChromeBridgeContext';
 import {
 	ChromeBridgeMessage,
 	ChromeBridgeMessageType,
-} from '@src/shared/chrome-messages/ChromeBridge';
+} from '@src/shared/chrome/ChromeBridge';
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 
 export const InspectDataContext = createContext<NodeInspectedData[] | null>(
