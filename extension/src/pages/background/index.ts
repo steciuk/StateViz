@@ -22,7 +22,8 @@ onChromeMessage((message, sender) => {
 		chrome.action.setIcon({
 			path: {
 				32: '/icons/enabled-32.png',
-				128: '/icons/enabled-128.png',
+				24: '/icons/enabled-24.png',
+				16: '/icons/enabled-16.png',
 			},
 			tabId: sender.tab?.id,
 		});

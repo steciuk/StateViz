@@ -25,7 +25,8 @@ const manifest = {
 		default_popup: 'src/pages/popup/index.html',
 		default_icon: {
       32: 'icons/disabled-32.png',
-      128: 'icons/disabled-128.png',
+      24: 'icons/disabled-24.png',
+      16: 'icons/disabled-16.png',
     }
 	},
 	// chrome_url_overrides: {
@@ -33,6 +34,7 @@ const manifest = {
 	// },
 	icons: {
 		128: 'icons/enabled-128.png',
+    48: 'icons/enabled-48.png',
     32: 'icons/enabled-32.png',
 	},
 	content_scripts: [
