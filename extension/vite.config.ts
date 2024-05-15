@@ -36,6 +36,9 @@ export default defineConfig({
 			'@root': rootDir,
 		},
 	},
+	define: {
+		VERSION: JSON.stringify(process.env.npm_package_version),
+	},
 	plugins: [
 		makeManifest({
 			getCacheInvalidationKey,
@@ -117,7 +120,11 @@ export default defineConfig({
 		setupFiles: './test-utils/vitest.setup.js',
 		coverage: {
 			reporter: ['json-summary'],
-			include: ['src/shared/chrome/*.ts', 'src/pages/**/*.ts'],
+			include: [
+				'src/shared/chrome/*.ts',
+				'src/shared/utils/*.ts',
+				'src/pages/**/*.ts',
+			],
 			// TODO: add tsx when tests done
 			exclude: [
 				'src/**/index.ts',
