@@ -11,6 +11,10 @@ import {
 	sendChromeMessageToTab,
 } from '@src/shared/chrome/chrome-message';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
+import { DetectedLibraries } from '@pages/popup/components/DetectedLibraries';
+import { Footer } from '@pages/popup/components/Footer';
+import enabled from '@src/assets/icons/enabled-128.png';
+import disabled from '@src/assets/icons/disabled-128.png';
 
 const Popup = () => {
 	const theme = useStorage(themeStorage);
@@ -37,30 +41,23 @@ const Popup = () => {
 		}
 	}, [theme]);
 
-	return (
-		<div className="min-w-[20rem] bg-background p-4 text-text">
-			<h1 className="mb-4 text-center text-xl">State-Viz</h1>
-			{librariesAttached.length === 0 ? (
-				<NoLibrariesConnected />
-			) : (
-				<div className="grid h-full w-full place-items-center">
-					<div className="flex max-w-sm flex-col items-center gap-2 text-center">
-						<div>
-							<p>Successfully detected libraries on the page:</p>
-							<ul>
-								{librariesAttached.map((library) => (
-									<li key={library}>- {library}</li>
-								))}
-							</ul>
-						</div>
+	const icon = librariesAttached.length === 0 ? disabled : enabled;
 
-						<p>
-							Open the DevTools (State-Viz tab) to inspect the state of your
-							application.
-						</p>
-					</div>
-				</div>
-			)}
+	return (
+		<div className="flex min-w-[20rem] flex-col gap-4 bg-background p-2 text-text">
+			<div>
+				<img src={icon} alt="State-Viz" className="mx-auto h-20 w-20" />
+				<h1 className="text-center text-xl">State-Viz</h1>
+			</div>
+
+			<main>
+				{librariesAttached.length === 0 ? (
+					<NoLibrariesConnected popup={true} />
+				) : (
+					<DetectedLibraries libraries={librariesAttached} />
+				)}
+			</main>
+			<Footer />
 		</div>
 	);
 };
