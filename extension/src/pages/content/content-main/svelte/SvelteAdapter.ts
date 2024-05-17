@@ -204,7 +204,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 	// TODO: cache node data similar to React Adapter so
 	// we don't have to traverse and dehydrate data if user
-	// inspects the same node again and nothing changed
+	// inspects the same node again and nothing has changed
 	private handleNodeInspect(nodeId: NodeId) {
 		if (!this.inspectedElementsIds.has(nodeId)) {
 			return;

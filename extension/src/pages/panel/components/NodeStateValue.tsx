@@ -107,7 +107,6 @@ const NodeStateObjectValue = (props: {
 				onClick={(value) => setExpanded(value)}
 				disabled={isEmpty}
 			/>
-			{/* TODO: check if className is displayed correctly */}
 			{className && <span>{className}</span>}
 			{expanded ? (
 				<>

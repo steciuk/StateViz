@@ -40,7 +40,6 @@ export type HoverElementBridgeMessage = {
 
 // TODO: https://developer.chrome.com/blog/bfcache-extension-messaging-changes
 // handle the case of BF caching
-// or at least describe it in the thesis
 abstract class ChromeBridge {
 	protected port?: chrome.runtime.Port;
 	protected listeners: Array<(message: ChromeBridgeMessage) => void> = [];

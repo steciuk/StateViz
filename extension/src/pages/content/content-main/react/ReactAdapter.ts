@@ -54,7 +54,7 @@ export class ReactAdapter extends Adapter<
 			if (reactHook.stateViz) {
 				throw new Error('State-Viz for React already hooked');
 			} else {
-				// TODO: consider integrating with RDT
+				// TODO: https://github.com/steciuk/state-viz/issues/53
 				throw new Error(
 					'React DevTools already hooked. Disable it to use State-Viz for React'
 				);
@@ -110,7 +110,6 @@ export class ReactAdapter extends Adapter<
 		};
 
 		// Check if RTD didn't override the hook
-		// TODO: check if it works
 		setTimeout(() => {
 			if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.stateViz) {
 				throw new Error(
@@ -307,7 +306,7 @@ export class ReactAdapter extends Adapter<
 		nextFiber: Fiber,
 		prevFiber: Fiber
 	): MountNodesOperations<Library.REACT> {
-		// TODO: handle node reordering
+		// TODO: https://github.com/steciuk/state-viz/issues/7
 		const operations: MountNodesOperations<Library.REACT> = [];
 		let higherSibling: Fiber | null = null;
 		let child = nextFiber.child;

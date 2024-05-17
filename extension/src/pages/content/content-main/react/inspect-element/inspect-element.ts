@@ -16,7 +16,7 @@ export function getNodeData(fiber: Fiber): NodeDataGroup[] {
 			return [];
 	}
 
-	// TODO: maybe try to check if changed and don't send if not
+	// TODO: https://github.com/steciuk/state-viz/issues/18
 	const props = parseProps(fiber);
 	const context = parseContext(fiber);
 	const state = getNodeState(fiber);

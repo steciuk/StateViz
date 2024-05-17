@@ -25,7 +25,6 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 			chromeBridge.connect();
 		};
 
-		// TODO: check if in app navigation does not trigger this event
 		chrome.devtools.network.onNavigated.addListener(handlePageReload);
 
 		return () => {

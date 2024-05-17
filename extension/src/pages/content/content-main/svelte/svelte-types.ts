@@ -4,7 +4,6 @@ export type SvelteDevToolsHook = {
 	v: Set<string>;
 };
 
-// TODO: clean this up
 export interface SvelteEventMap {
 	SvelteRegisterComponent: SvelteComponentDetail;
 	SvelteRegisterBlock: SvelteBlockDetail;
@@ -16,25 +15,16 @@ export interface SvelteEventMap {
 	SvelteDOMRemove: {
 		node: Node;
 	};
-	SvelteDOMAddEventListener: {
-		detail: unknown;
-	};
-	SvelteDOMRemoveEventListener: {
-		detail: unknown;
-	};
 	SvelteDOMSetData: {
 		data?: unknown;
 		node: Node;
 	};
-	SvelteDOMSetProperty: {
-		detail: unknown;
-	};
-	SvelteDOMSetAttribute: {
-		detail: unknown;
-	};
-	SvelteDOMRemoveAttribute: {
-		detail: unknown;
-	};
+	// not used yet
+	SvelteDOMAddEventListener: unknown;
+	SvelteDOMRemoveEventListener: unknown;
+	SvelteDOMSetProperty: unknown;
+	SvelteDOMSetAttribute: unknown;
+	SvelteDOMRemoveAttribute: unknown;
 }
 
 // copied from svelte internal types
@@ -83,6 +73,6 @@ export type SvelteBlockDetail = {
 	container?: SvelteBlockDetail;
 
 	block: SvelteComponentFragment;
-	ctx: Array<unknown>; // TODO: do we need this typed?
+	ctx: Array<unknown>;
 };
 

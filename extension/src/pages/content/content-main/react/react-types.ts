@@ -11,8 +11,6 @@ export type RefObject = {
 	current: any;
 };
 
-// Added by me.
-// TODO: make sure this is enough
 export type MemoizedState = HookFullMemoizedState | HookLessMemoizedState;
 
 export type HookFullMemoizedState = {
@@ -106,7 +104,7 @@ export type Fiber = {
 	updateQueue: any;
 
 	// ? The state used to create the output
-	// Type was any. Added by me. TODO: Check what will be needed.
+	// Type was any.
 	memoizedState: MemoizedState | null;
 
 	// ? Dependencies (contexts, events) for this fiber, if it has any
@@ -190,7 +188,6 @@ export type ContextDependency<T = unknown> = {
 	next: ContextDependency | null;
 };
 
-// TODO: currently not using RendererInterface at all
 export type ReactRenderer = {
 	// findFiberByHostInstance: (hostInstance: object) => Fiber | null;
 	version?: unknown;

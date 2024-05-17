@@ -16,7 +16,7 @@ const Roots = () => {
 	if (!filteredNodes || filteredNodes.length === 0)
 		return <NoLibrariesConnected />;
 
-	//TODO: check if we can use index asd key here
+	//TODO: check if we can use index as key here
 	return (
 		<div className="flex-grow space-y-2 p-2">
 			{filteredNodes.map((root, i) => (
