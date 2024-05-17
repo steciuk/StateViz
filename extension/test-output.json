@@ -1335,9 +1335,9 @@
 				},
 				{
 					"ancestorTitles": ["", "ReactAdapter", "inject"],
-					"fullName": " ReactAdapter inject should set the State-Viz hook",
+					"fullName": " ReactAdapter inject should set the StateViz hook",
 					"status": "passed",
-					"title": "should set the State-Viz hook",
+					"title": "should set the StateViz hook",
 					"duration": 1,
 					"failureMessages": []
 				},

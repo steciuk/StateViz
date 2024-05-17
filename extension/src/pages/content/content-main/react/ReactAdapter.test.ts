@@ -22,18 +22,18 @@ describe('ReactAdapter', () => {
 				stateViz: true,
 			} as any;
 			expect(() => adapter['inject']()).toThrowError(
-				'State-Viz for React already hooked'
+				'StateViz for React already hooked'
 			);
 		});
 
 		it('should throw an error if React DevTools is already hooked', () => {
 			window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {} as any;
 			expect(() => adapter['inject']()).toThrowError(
-				'React DevTools already hooked. Disable it to use State-Viz for React'
+				'React DevTools already hooked. Disable it to use StateViz for React'
 			);
 		});
 
-		it('should set the State-Viz hook', () => {
+		it('should set the StateViz hook', () => {
 			window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = undefined;
 			adapter['inject']();
 			expect(window.__REACT_DEVTOOLS_GLOBAL_HOOK__).toEqual({

@@ -8,7 +8,7 @@ import injectedStyle from './injected.css?inline';
 refreshOnUpdate('pages/content');
 
 const root = document.createElement('div');
-root.id = 'state-viz-content-view-root';
+root.id = 'StateViz-content-view-root';
 
 document.body.append(root);
 
@@ -31,3 +31,4 @@ shadowRoot.appendChild(styleElement);
  */
 
 createRoot(rootIntoShadow).render(<App />);
+

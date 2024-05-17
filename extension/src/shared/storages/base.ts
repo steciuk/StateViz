@@ -15,7 +15,7 @@ export type BaseStorage<D> = {
 };
 
 export function createStorage<D>(
-	key: `state-viz-${string}`,
+	key: `StateViz-${string}`,
 	fallback: D,
 	config?: { storageType?: StorageType }
 ): BaseStorage<D> {

@@ -14,7 +14,7 @@ export const Header = () => {
 		<div className="border-b-2 border-secondary p-2">
 			<header className="flex items-center justify-between">
 				<div className="mr-2 flex items-center gap-8">
-					<h1 className="text-xl font-semibold">State-Viz</h1>
+					<h1 className="text-xl font-semibold">StateViz</h1>
 					<ActionsMenu />
 				</div>
 				<FontAwesomeIcon

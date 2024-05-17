@@ -10,7 +10,7 @@ export const Footer = () => {
 			</p>
 			<p>
 				Version:{' '}
-				<Link href="https://github.com/steciuk/state-viz">{VERSION}</Link>
+				<Link href="https://github.com/steciuk/StateViz">{VERSION}</Link>
 			</p>
 		</footer>
 	);

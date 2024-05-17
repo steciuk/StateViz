@@ -1,11 +1,11 @@
 {
-	"name": "state-viz",
+	"name": "stateviz",
 	"version": "0.0.1",
 	"description": "State Visualizer",
 	"license": "",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/steciuk/state-viz.git"
+		"url": "https://github.com/steciuk/StateViz.git"
 	},
 	"//": [
 		"// TODO: if https://github.com/probil/vitest-chrome/pull/1 is merged, remove patch-package and the postinstall script",

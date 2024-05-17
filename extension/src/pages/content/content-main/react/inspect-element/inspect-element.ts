@@ -16,7 +16,7 @@ export function getNodeData(fiber: Fiber): NodeDataGroup[] {
 			return [];
 	}
 
-	// TODO: https://github.com/steciuk/state-viz/issues/18
+	// TODO: https://github.com/steciuk/StateViz/issues/18
 	const props = parseProps(fiber);
 	const context = parseContext(fiber);
 	const state = getNodeState(fiber);

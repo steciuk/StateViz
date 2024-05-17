@@ -52,11 +52,11 @@ export class ReactAdapter extends Adapter<
 		// Check if RTD or StateViz already hooked
 		if (reactHook) {
 			if (reactHook.stateViz) {
-				throw new Error('State-Viz for React already hooked');
+				throw new Error('StateViz for React already hooked');
 			} else {
-				// TODO: https://github.com/steciuk/state-viz/issues/53
+				// TODO: https://github.com/steciuk/StateViz/issues/53
 				throw new Error(
-					'React DevTools already hooked. Disable it to use State-Viz for React'
+					'React DevTools already hooked. Disable it to use StateViz for React'
 				);
 			}
 		}
@@ -113,7 +113,7 @@ export class ReactAdapter extends Adapter<
 		setTimeout(() => {
 			if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.stateViz) {
 				throw new Error(
-					'React DevTools override detected. Disable it to use State-Viz for React'
+					'React DevTools override detected. Disable it to use StateViz for React'
 				);
 			}
 		}, 5000);
@@ -306,7 +306,7 @@ export class ReactAdapter extends Adapter<
 		nextFiber: Fiber,
 		prevFiber: Fiber
 	): MountNodesOperations<Library.REACT> {
-		// TODO: https://github.com/steciuk/state-viz/issues/7
+		// TODO: https://github.com/steciuk/StateViz/issues/7
 		const operations: MountNodesOperations<Library.REACT> = [];
 		let higherSibling: Fiber | null = null;
 		let child = nextFiber.child;
