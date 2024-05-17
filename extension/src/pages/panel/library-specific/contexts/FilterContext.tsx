@@ -55,7 +55,7 @@ const defaultSvelteFilterSettings: { [key in SvelteBlockType]: boolean } = {
 } as const;
 
 const svelteFilterStorage = createStorage(
-	'state-viz-svelte-filter',
+	'StateViz-svelte-filter',
 	defaultSvelteFilterSettings,
 	{
 		storageType: StorageType.Local,
@@ -63,7 +63,7 @@ const svelteFilterStorage = createStorage(
 );
 
 const reactFilterStorage = createStorage(
-	'state-viz-react-filter',
+	'StateViz-react-filter',
 	defaultReactFilterSettings,
 	{
 		storageType: StorageType.Local,

@@ -13,7 +13,7 @@ function createPanelIfNotCreated() {
 
 	try {
 		chrome.devtools.panels.create(
-			'State-Viz',
+			'StateViz',
 			'/icons/enabled-32.png',
 			'src/pages/panel/index.html'
 		);

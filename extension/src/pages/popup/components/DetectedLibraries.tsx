@@ -9,7 +9,7 @@ export const DetectedLibraries = (props: { libraries: Library[] }) => {
 			<p>Successfully detected {joinArray(props.libraries)}.</p>
 
 			<p>
-				Open the DevTools (State-Viz tab) to inspect the state of your
+				Open the DevTools (StateViz tab) to inspect the state of your
 				application.
 			</p>
 		</Info>

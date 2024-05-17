@@ -10,7 +10,7 @@ type ThemeStorage = BaseStorage<Theme> & {
 	toggle: () => void;
 };
 
-const storage = createStorage<Theme>('state-viz-theme', 'light', {
+const storage = createStorage<Theme>('StateViz-theme', 'light', {
 	storageType: StorageType.Local,
 });
 
