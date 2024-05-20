@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="extension/src/assets/icons/enabled-128.png" alt="Logo">
+  <img src="extension/src/assets/icons/enabled-512.png" width=200 alt="Logo">
   <br>
   StateViz
 </h1>
@@ -8,18 +8,25 @@
   Analyze application state across multiple frontend libraries
 </h4>
 
-<p align="center">
-  <img src="doc/badges/badge.svg" alt="Tests status">
-</p>
-
+<div align="center">
+  Supported libraries:
+  <div>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"> 
+    <img src="https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00" alt="Svelte">
+  </div>
+  ...and more to come!
+</div>
 
 - [Why?](#why)
 - [Features](#features)
   - [Supported libraries](#supported-libraries)
+- [Requirements](#requirements)
+  - [Svelte](#svelte)
+  - [React](#react)
 - [Installation](#installation)
   - [From Source](#from-source)
 - [Tests](#tests)
-  - [Unit and Integration Tests](#unit-and-integration-tests)
+  - [Unit and Integration Tests ](#unit-and-integration-tests-)
   - [Example Applications](#example-applications)
 - [Future Work](#future-work)
 - [License](#license)
@@ -42,18 +49,28 @@ So, I decided to develop a proof-of-concept. As things progressed, it became the
 - **DOM Element Highlighting**: Efficiently highlight DOM elements corresponding to selected tree nodes.
 - **Light and Dark Mode**: Choose between light and dark themes for a comfortable user experience in any lighting condition.
 
+
 ### Supported libraries
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Svelte](https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00)
+- [React](https://react.dev/)
+- [Svelte](https://svelte.dev/)
 
 ... and more to come!
 
-## Installation
+![Screenshot](doc/screenshots/todo-split.png)
 
+## Requirements
+### Svelte
+- The extension is compatible with Svelte version `4.0.0` and above.
+- In order to use this extension to analyze Svelte applications, you need to build the application with the `dev` option set to `true`.
+
+### React
+- The extension is compatible with React version `16.0.0` and above.
+
+## Installation
 <!-- ### Chrome Web Store
 The extension is available on the Chrome Web Store. You can install it from [here](https://chrome.google.com/webstore/detail/stateviz/).
-6. Open the developer tools in any tab that runs a supported frontend library application.
-7. Click on the StateViz tab in the developer tools to start using the extension. -->
+1. Open the developer tools in any tab that runs a supported frontend library application.
+2. Click on the StateViz tab in the developer tools to start using the extension. -->
 
 ### From Source
 1. Clone the repository:
@@ -81,7 +98,8 @@ npm run build
 7. Click on the StateViz tab in the developer tools to start using the extension.
 
 ## Tests
-### Unit and Integration Tests
+### Unit and Integration Tests <img src="doc/badges/badge.svg" alt="Tests badge">
+
 To run the tests, use the following command in the `extension` directory:
 
 ```bash
