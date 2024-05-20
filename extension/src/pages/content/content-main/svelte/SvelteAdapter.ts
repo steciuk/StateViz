@@ -328,6 +328,8 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 					// set current block id for successors
 					this.currentBlockId = blockId;
+				} catch (err) {
+					console.error(err);
 				} finally {
 					// do not interrupt the mounting in case of an error
 					original(target, anchor);
@@ -395,6 +397,8 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 					} else {
 						this.unmount(blockId);
 					}
+				} catch (err) {
+					console.error(err);
 				} finally {
 					original(detaching);
 				}

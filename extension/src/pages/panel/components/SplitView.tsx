@@ -25,6 +25,8 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 	const [dragging, setDragging] = useState(false);
 
 	const onMouseDown = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
 		setSeparatorXPosition(e.clientX);
 		setDragging(true);
 	};
@@ -33,6 +35,7 @@ export const SplitView = (props: { left: ReactNode; right: ReactNode }) => {
 		(e: MouseEvent) => {
 			if (dragging && separatorXPosition !== undefined) {
 				e.preventDefault();
+				e.stopPropagation();
 
 				const newLeftWidth = Math.max(
 					leftWidth + e.clientX - separatorXPosition,
