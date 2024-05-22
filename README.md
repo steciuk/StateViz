@@ -140,23 +140,21 @@ Current extension logo made by [Tanvir Islam](https://thenounproject.com/creator
 The thesis document can be found [here](doc/thesis.pdf). It provides a detailed overview of the extension, its architecture, and the technologies used to build it. It also includes a comprehensive evaluation of the extension's performance and usability. Unfortunately, the document is only available in Polish, but in the future, I plan to provide an English *GPTranslated* version.
 
 ### Thesis Abstract
-```
-This paper delves into the complex realm of integrating developer tools with modern frontend libraries, culminating in the creation of a versatile tool aimed at analyzing structure and data flow between components in web applications.
+    This paper delves into the complex realm of integrating developer tools with modern frontend libraries, culminating in the creation of a versatile tool aimed at analyzing structure and data flow between components in web applications.
 
-A thorough examination of existing solutions identified essential features for the new tool, leading to its implementation as a browser extension aligned with established requirements. 
+    A thorough examination of existing solutions identified essential features for the new tool, leading to its implementation as a browser extension aligned with established requirements. 
 
-By delving into the inner workings of React and Svelte libraries, representing different approaches to state management in web applications, a universal tool architecture was devised, prioritizing performance, flexibility, and extensibility to accommodate additional libraries.
+    By delving into the inner workings of React and Svelte libraries, representing different approaches to state management in web applications, a universal tool architecture was devised, prioritizing performance, flexibility, and extensibility to accommodate additional libraries.
 
-The analysis of React Developer Tools, a prominent browser extension, provided valuable insights into established design practices and communication methodologies. Leveraging these insights, an efficient communication system was implemented, facilitating seamless interaction between the extension's components and web applications.
+    The analysis of React Developer Tools, a prominent browser extension, provided valuable insights into established design practices and communication methodologies. Leveraging these insights, an efficient communication system was implemented, facilitating seamless interaction between the extension's components and web applications.
 
-Overcoming unforeseen challenges during the project resulted in improving an open- source unit testing library used for Chrome extensions, as well as the creation and release of a new library enhancing the capabilities of the Vite web application building tool.
+    Overcoming unforeseen challenges during the project resulted in improving an open- source unit testing library used for Chrome extensions, as well as the creation and release of a new library enhancing the capabilities of the Vite web application building tool.
 
-Thorough testing and comparison with existing extensions confirmed the developed solution's stability, performance, and adaptability while highlighting areas for further development and enhancement.
+    Thorough testing and comparison with existing extensions confirmed the developed solution's stability, performance, and adaptability while highlighting areas for further development and enhancement.
 
-This paper offers a comprehensive overview of designing and implementing a browser extension for developer tools, setting the stage for future research and innovation in supporting the web application development process.
+    This paper offers a comprehensive overview of designing and implementing a browser extension for developer tools, setting the stage for future research and innovation in supporting the web application development process.
 
-Keywords: React, Svelte, developer tools, universal browser extensions, application state analysis, Vite, React Developer Tools, Chrome Extension API
-```
+    Keywords: React, Svelte, developer tools, universal browser extensions, application state analysis, Vite, React Developer Tools, Chrome Extension API
 
 ### Extension Communication UML Diagram
 
