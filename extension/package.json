@@ -1,7 +1,7 @@
 {
 	"name": "stateviz",
 	"version": "0.1.1",
-	"description": "Universal devtools Chrome extension",
+	"description": "A universal Chrome extension for visualizing data flow in web applications.",
 	"keywords": [
 		"devtools",
 		"chrome",
