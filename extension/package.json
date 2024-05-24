@@ -1,14 +1,20 @@
 {
 	"name": "stateviz",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Universal devtools Chrome extension",
-  "keywords": ["devtools", "chrome", "extension", "react", "svelte"],
+	"keywords": [
+		"devtools",
+		"chrome",
+		"extension",
+		"react",
+		"svelte"
+	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/steciuk/StateViz.git"
 	},
-  "author": "Adam Steciuk",
+	"author": "Adam Steciuk",
 	"//": [
 		"// TODO: if https://github.com/probil/vitest-chrome/pull/1 is merged, remove patch-package and the postinstall script",
 		"// TODO: one day, those scripts will be used to build the extension for Firefox :)",
