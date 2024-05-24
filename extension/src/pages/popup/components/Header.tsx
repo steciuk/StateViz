@@ -5,7 +5,7 @@ import { Library } from '@src/shared/types/Library';
 
 export const Header = (props: { libraries: Library[] | undefined }) => {
 	const icon =
-		props.libraries && props.libraries.length >= 0 ? enabled : disabled;
+		props.libraries && props.libraries.length > 0 ? enabled : disabled;
 
 	return (
 		<header>

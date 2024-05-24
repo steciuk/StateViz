@@ -7,7 +7,7 @@ export const Content = (props: { libraries: Library[] | undefined }) => {
 
 	return (
 		<main>
-			{librariesAttached && librariesAttached.length >= 0 ? (
+			{librariesAttached && librariesAttached.length > 0 ? (
 				<DetectedLibraries libraries={librariesAttached} />
 			) : (
 				<NoLibrariesConnected />
