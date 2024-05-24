@@ -84,13 +84,13 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				);
 
 				if (versions.length === 0) {
-					consoleWarn('No Svelte found');
+					consoleLog('No Svelte found');
 					removeAllListeners();
 					return;
 				}
 
 				if (!versions.some((v) => v >= SUPPORTED_SVELTE_MAJOR)) {
-					consoleWarn('No supported Svelte versions found');
+					consoleLog('No supported Svelte versions found');
 					removeAllListeners();
 					return;
 				}
