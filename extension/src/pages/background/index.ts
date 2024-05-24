@@ -5,6 +5,7 @@ import {
 	ChromeMessageType,
 	onChromeMessage,
 } from '@src/shared/chrome/chrome-message';
+import { consoleLog } from '@src/shared/utils/console';
 
 reloadOnUpdate('pages/background');
 
@@ -14,7 +15,7 @@ reloadOnUpdate('pages/background');
  */
 reloadOnUpdate('pages/content/style.scss');
 
-console.log('background loaded');
+consoleLog('background loaded');
 
 onChromeMessage((message, sender) => {
 	if (message.type === ChromeMessageType.LIBRARY_ATTACHED) {

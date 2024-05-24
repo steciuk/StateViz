@@ -13,6 +13,11 @@ import { InspectData } from '@src/shared/types/DataType';
 import { Library } from '@src/shared/types/Library';
 import { NodeId, ParsedSvelteNode } from '@src/shared/types/ParsedNode';
 import { SvelteBlockType } from '@src/shared/types/svelte-types';
+import {
+	consoleError,
+	consoleLog,
+	consoleWarn,
+} from '@src/shared/utils/console';
 
 declare global {
 	interface Window {
@@ -79,20 +84,20 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 				);
 
 				if (versions.length === 0) {
-					console.warn('No Svelte found');
+					consoleWarn('No Svelte found');
 					removeAllListeners();
 					return;
 				}
 
 				if (!versions.some((v) => v >= SUPPORTED_SVELTE_MAJOR)) {
-					console.warn('No supported Svelte versions found');
+					consoleWarn('No supported Svelte versions found');
 					removeAllListeners();
 					return;
 				}
 
 				// let the content-isolated know that the library is attached
 				this.sendLibraryAttached();
-				console.log('Svelte library attached');
+				consoleLog('Svelte library attached');
 			}, 1000);
 		}),
 			{ once: true };
@@ -102,7 +107,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 		this.inspectedElementsIds = new Set(ids);
 		// if empty array it means that front stopped inspecting
 		if (ids.length === 0) return;
-		console.log('INSPECT_ELEMENT', ids);
+		consoleLog('INSPECT_ELEMENT', ids);
 		ids.forEach((id) => {
 			this.handleNodeInspect(id);
 		});
@@ -113,66 +118,66 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 		listenerRemovers.push(
 			addSvelteListener('SvelteRegisterComponent', ({ detail }) => {
-				console.log('SvelteRegisterComponent', detail);
+				consoleLog('SvelteRegisterComponent', detail);
 				this.handleSvelteRegisterComponent(detail);
 			})
 		);
 
 		listenerRemovers.push(
 			addSvelteListener('SvelteRegisterBlock', ({ detail }) => {
-				console.log('SvelteRegisterBlock', detail);
+				consoleLog('SvelteRegisterBlock', detail);
 				this.handleSvelteRegisterBlock(detail);
 			})
 		);
 
 		listenerRemovers.push(
 			addSvelteListener('SvelteDOMInsert', ({ detail }) => {
-				console.log('SvelteDOMInsert', detail);
+				consoleLog('SvelteDOMInsert', detail);
 				this.handleSvelteDOMInsert(detail);
 			})
 		);
 
 		listenerRemovers.push(
 			addSvelteListener('SvelteDOMRemove', ({ detail }) => {
-				console.log('SvelteDOMRemove', detail);
+				consoleLog('SvelteDOMRemove', detail);
 				this.handleSvelteDOMRemove(detail);
 			})
 		);
 
 		// listenerRemovers.push(
 		// 	addSvelteListener('SvelteDOMAddEventListener', (event) => {
-		// 		console.log('SvelteDOMAddEventListener', event.detail);
+		// 		consoleLog('SvelteDOMAddEventListener', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
 		// 	addSvelteListener('SvelteDOMRemoveEventListener', (event) => {
-		// 		console.log('SvelteDOMRemoveEventListener', event.detail);
+		// 		consoleLog('SvelteDOMRemoveEventListener', event.detail);
 		// 	})
 		// );
 
 		listenerRemovers.push(
 			addSvelteListener('SvelteDOMSetData', ({ detail }) => {
-				console.log('SvelteDOMSetData', detail);
+				consoleLog('SvelteDOMSetData', detail);
 				this.handleSvelteDOMSetData(detail);
 			})
 		);
 
 		// listenerRemovers.push(
 		// 	addSvelteListener('SvelteDOMSetProperty', (event) => {
-		// 		console.log('SvelteDOMSetProperty', event.detail);
+		// 		consoleLog('SvelteDOMSetProperty', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
 		// 	addSvelteListener('SvelteDOMSetAttribute', (event) => {
-		// 		console.log('SvelteDOMSetAttribute', event.detail);
+		// 		consoleLog('SvelteDOMSetAttribute', event.detail);
 		// 	})
 		// );
 
 		// listenerRemovers.push(
 		// 	addSvelteListener('SvelteDOMRemoveAttribute', (event) => {
-		// 		console.log('SvelteDOMRemoveAttribute', event.detail);
+		// 		consoleLog('SvelteDOMRemoveAttribute', event.detail);
 		// 	})
 		// );
 
@@ -212,7 +217,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 
 		const nodeInfo = this.existingNodes.get(nodeId);
 		if (!nodeInfo) {
-			console.error('Node not found', nodeId);
+			consoleError('Node not found', nodeId);
 			return;
 		}
 
@@ -329,7 +334,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 					// set current block id for successors
 					this.currentBlockId = blockId;
 				} catch (err) {
-					console.error(err);
+					consoleError(err);
 				} finally {
 					// do not interrupt the mounting in case of an error
 					original(target, anchor);
@@ -398,7 +403,7 @@ export class SvelteAdapter extends Adapter<ExistingNodeData, Library.SVELTE> {
 						this.unmount(blockId);
 					}
 				} catch (err) {
-					console.error(err);
+					consoleError(err);
 				} finally {
 					original(detaching);
 				}

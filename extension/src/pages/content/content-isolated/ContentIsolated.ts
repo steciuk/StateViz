@@ -30,6 +30,7 @@ import {
 	ParsedNode,
 	NodeAndLibrary,
 } from '@src/shared/types/ParsedNode';
+import { consoleError, consoleLog } from '@src/shared/utils/console';
 
 export class ContentIsolated {
 	private static instance: ContentIsolated | undefined;
@@ -64,7 +65,7 @@ export class ContentIsolated {
 	}
 
 	private handleDevtoolsPanelConnection(): void {
-		console.log('connection from devtools panel established');
+		consoleLog('connection from devtools panel established');
 		this.chromeBridge.send({
 			type: ChromeBridgeMessageType.FULL_SKELETON,
 			content: this.roots,
@@ -147,7 +148,7 @@ export class ContentIsolated {
 	}
 
 	private handleMountRootsPostMessage(message: MountRootsPostMessage) {
-		console.log('MOUNT_ROOTS', message.content);
+		consoleLog('MOUNT_ROOTS', message.content);
 
 		this.addNodesRecursively(
 			message.content.map((mountOperation) => mountOperation.node)
@@ -159,7 +160,7 @@ export class ContentIsolated {
 				(root) => root.node.id === mountOperation.node.id
 			);
 			if (inRootIndex !== -1) {
-				console.error('Trying to mount root that is already mounted');
+				consoleError('Trying to mount root that is already mounted');
 				return;
 			}
 
@@ -173,7 +174,7 @@ export class ContentIsolated {
 	}
 
 	private handleMountNodesPostMessage(message: MountNodesPostMessage) {
-		console.log('MOUNT_NODES', message.content);
+		consoleLog('MOUNT_NODES', message.content);
 
 		let areUpdates = false;
 
@@ -182,7 +183,7 @@ export class ContentIsolated {
 
 			const parent = this.nodes.get(parentId);
 			if (!parent) {
-				console.error('Parent not found', parentId);
+				consoleError('Parent not found', parentId);
 				return;
 			}
 
@@ -222,13 +223,13 @@ export class ContentIsolated {
 	}
 
 	private handleNodeUpdatePostMessage(message: UpdateNodesPostMessage) {
-		console.log('UPDATE_NODES', message.content);
+		consoleLog('UPDATE_NODES', message.content);
 
 		message.content.forEach((node) => {
 			const existingNode = this.nodes.get(node.id);
 
 			if (!existingNode) {
-				console.error('Node not found');
+				consoleError('Node not found');
 				return;
 			}
 
@@ -245,7 +246,7 @@ export class ContentIsolated {
 		const node = this.nodes.get(nodeId);
 
 		if (!node) {
-			console.error('Could not find the node to remove');
+			consoleError('Could not find the node to remove');
 			return;
 		}
 
@@ -254,7 +255,7 @@ export class ContentIsolated {
 	}
 
 	private handleUnmountNodesPostMessage(message: UnmountNodesPostMessage) {
-		console.log('UNMOUNT_NODES', message.content);
+		consoleLog('UNMOUNT_NODES', message.content);
 
 		const { parentId, id: nodeToUnmountId } = message.content;
 
@@ -268,7 +269,7 @@ export class ContentIsolated {
 			const parent = this.nodes.get(parentId);
 
 			if (!parent) {
-				console.error('Parent not found');
+				consoleError('Parent not found');
 				return;
 			}
 
@@ -284,7 +285,7 @@ export class ContentIsolated {
 	}
 
 	private handleInspectedDataPostMessage(message: InspectedDataPostMessage) {
-		console.log('INSPECTED_DATA', message.content);
+		consoleLog('INSPECTED_DATA', message.content);
 		this.sendMessageThroughChromeBridgeIfConnected({
 			type: ChromeBridgeMessageType.INSPECTED_DATA,
 			content: message.content,
@@ -314,7 +315,7 @@ export class ContentIsolated {
 	private handleIsLibraryAttachedChromeMessage(
 		message: WhatLibrariesAttachedChromeMessage
 	): void {
-		console.log('Is library attached?');
+		consoleLog('Is library attached?');
 		message.responseCallback([...this.librariesAttached.values()]);
 	}
 

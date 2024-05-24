@@ -9,6 +9,7 @@ import {
 import { FilterContext } from '@pages/panel/library-specific/contexts/FilterContext';
 import { Library } from '@src/shared/types/Library';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
+import { consoleLog } from '@src/shared/utils/console';
 
 const Roots = () => {
 	const { isBridgeConnected } = useContext(ChromeBridgeContext);
@@ -44,7 +45,7 @@ const useRoots = () => {
 		const removeChromeMessageListener = onBridgeMessage(
 			(message: ChromeBridgeMessage) => {
 				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
-					console.log('Set fiber root');
+					consoleLog('Set fiber root');
 					setFiberRoot(message.content);
 				}
 			}

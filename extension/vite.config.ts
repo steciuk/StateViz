@@ -2,7 +2,6 @@
 import path, { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { inlineImports } from 'vite-plugin-inline-imports';
-import removeConsole from 'vite-plugin-remove-console';
 
 import react from '@vitejs/plugin-react';
 
@@ -21,7 +20,6 @@ const publicDir = resolve(rootDir, 'public');
 const isDev = process.env.__DEV__ === 'true';
 const isProduction = !isDev;
 const isVitest = process.env.VITEST === 'true';
-const disableLogs = false;
 
 // ENABLE HMR IN BACKGROUND SCRIPT
 const enableHmrInBackgroundScript = true;
@@ -38,6 +36,7 @@ export default defineConfig({
 	},
 	define: {
 		VERSION: JSON.stringify(process.env.npm_package_version),
+		IS_PROD: isProduction,
 	},
 	plugins: [
 		makeManifest({
@@ -57,13 +56,12 @@ export default defineConfig({
 							/src\/pages\/content\/shared\/.*\.ts/,
 						],
 					},
+					{
+						for: [/src\/.*\.ts/],
+						inline: [/src\/shared\/utils\/console\.ts/],
+					},
 				],
 			}),
-		isProduction || disableLogs
-			? removeConsole({
-					includes: ['log'],
-			  })
-			: null,
 	],
 	publicDir,
 	build: {

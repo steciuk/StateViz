@@ -1,5 +1,3 @@
-import { ReactElement } from 'react';
-
 /* eslint-disable no-mixed-spaces-and-tabs */
 
 // Based on react/packages/react-devtools-shared/src/utils.js

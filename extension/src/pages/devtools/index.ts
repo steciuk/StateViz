@@ -5,6 +5,7 @@ import {
 	sendChromeMessageToTab,
 } from '@src/shared/chrome/chrome-message';
 import { Library } from '@src/shared/types/Library';
+import { consoleError } from '@src/shared/utils/console';
 
 let panelCreated = false;
 
@@ -19,7 +20,7 @@ function createPanelIfNotCreated() {
 		);
 		panelCreated = true;
 	} catch (e) {
-		console.error(e);
+		consoleError(e);
 	}
 }
 

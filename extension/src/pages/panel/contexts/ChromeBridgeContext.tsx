@@ -12,6 +12,7 @@ import {
 	ChromeBridgeMessage,
 	ChromeBridgeToTabConnector,
 } from '@src/shared/chrome/ChromeBridge';
+import { consoleLog } from '@src/shared/utils/console';
 
 const chromeBridge = new ChromeBridgeToTabConnector(
 	ChromeBridgeConnection.PANEL_TO_CONTENT,
@@ -32,11 +33,11 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 	const [isConnected, setIsConnected] = useState(false);
 
 	useEffect(() => {
-		console.log('Connecting chrome bridge');
+		consoleLog('Connecting chrome bridge');
 		chromeBridge.connect();
 
 		const handlePageReload = () => {
-			console.log('Reloading page');
+			consoleLog('Reloading page');
 			chromeBridge.disconnect();
 			chromeBridge.connect();
 		};
@@ -44,7 +45,7 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 		chrome.devtools.network.onNavigated.addListener(handlePageReload);
 
 		return () => {
-			console.log('Disconnecting chrome bridge');
+			consoleLog('Disconnecting chrome bridge');
 			chromeBridge.disconnect();
 			chrome.devtools.network.onNavigated.removeListener(handlePageReload);
 		};

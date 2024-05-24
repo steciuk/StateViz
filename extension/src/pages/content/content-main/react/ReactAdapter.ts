@@ -18,6 +18,7 @@ import { getNodeData } from '@pages/content/content-main/react/inspect-element/i
 import { getFiberName } from '@pages/content/content-main/react/utils/getFiberName';
 import { getNearestStateNode } from '@pages/content/content-main/react/utils/getNearestStateNode';
 import { getRendererMajorVersion } from '@pages/content/content-main/react/utils/getRendererMajorVersion';
+import { consoleError, consoleLog } from '@src/shared/utils/console';
 
 declare global {
 	interface Window {
@@ -91,21 +92,21 @@ export class ReactAdapter extends Adapter<
 			onCommitFiberUnmount: (_, fiber) => this.unmountFiber(fiber),
 			onCommitFiberRoot: (...args) => this.handleCommitFiberRoot(...args),
 			// onPostCommitFiberRoot: (rendererID: number, root: any) => {
-			// 	// console.log('onPostCommitFiberRoot', rendererID, root);
+			// 	// consoleLog('onPostCommitFiberRoot', rendererID, root);
 			// },
 			// setStrictMode: (rendererID: number, isStrict: any) => {
-			// 	// console.log('setStrictMode', rendererID, isStrict);
+			// 	// consoleLog('setStrictMode', rendererID, isStrict);
 			// },
 			// probably only for profiler
 			// getInternalModuleRanges: () => {
-			//	// console.log('getInternalModuleRanges');
+			//	// consoleLog('getInternalModuleRanges');
 			// 	return [];
 			// },
 			// registerInternalModuleStart: (moduleStartError: Error) => {
-			// 	// console.log('registerInternalModuleStart', moduleStartError);
+			// 	// consoleLog('registerInternalModuleStart', moduleStartError);
 			// },
 			// registerInternalModuleStop: (moduleStopError: Error) => {
-			// 	// console.log('registerInternalModuleStop', moduleStopError);
+			// 	// consoleLog('registerInternalModuleStop', moduleStopError);
 			// },
 		};
 
@@ -123,7 +124,7 @@ export class ReactAdapter extends Adapter<
 		this.inspectedElementsIds = new Set(ids);
 		// if empty array it means that front stopped inspecting
 		if (ids.length === 0) return;
-		console.log('INSPECT_ELEMENT', ids);
+		consoleLog('INSPECT_ELEMENT', ids);
 
 		for (const id of ids) {
 			const nodeData = this.existingNodes.get(id);
@@ -139,7 +140,7 @@ export class ReactAdapter extends Adapter<
 		const id = this.getElementId(fiber);
 
 		if (this.inspectedElementsIds.has(id)) {
-			console.log(fiber);
+			consoleLog(fiber);
 			const nodeData = getNodeData(fiber);
 
 			this.inspectedData.set(id, {
@@ -166,11 +167,11 @@ export class ReactAdapter extends Adapter<
 	}
 
 	private handleInject(renderer: ReactRenderer): number | null {
-		console.log('inject', renderer);
+		consoleLog('inject', renderer);
 
 		const rendererVersion = getRendererMajorVersion(renderer.version);
 		if (rendererVersion === null || rendererVersion < MIN_REACT_VERSION) {
-			console.error(`Unsupported React version: ${renderer.version}`);
+			consoleError(`Unsupported React version: ${renderer.version}`);
 			return null;
 		}
 

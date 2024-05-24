@@ -1,5 +1,6 @@
 import { NodeInspectedData } from '@src/shared/types/NodeInspectedData';
 import { NodeId, NodeAndLibrary } from '@src/shared/types/ParsedNode';
+import { consoleError } from '@src/shared/utils/console';
 
 export enum ChromeBridgeConnection {
 	PANEL_TO_CONTENT = 'PANEL_TO_CONTENT_SCRIPT',
@@ -138,7 +139,7 @@ export class ChromeBridgeListener extends ChromeBridge {
 		chrome.runtime.onConnect.addListener((port) => {
 			if (port.name !== this.connectionName) {
 				port.disconnect();
-				console.error('Invalid connection');
+				consoleError('Invalid connection');
 				return;
 			}
 
