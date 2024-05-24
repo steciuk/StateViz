@@ -10,7 +10,7 @@ export const Content = (props: { libraries: Library[] | undefined }) => {
 			{librariesAttached && librariesAttached.length >= 0 ? (
 				<DetectedLibraries libraries={librariesAttached} />
 			) : (
-				<NoLibrariesConnected popup={true} />
+				<NoLibrariesConnected />
 			)}
 		</main>
 	);

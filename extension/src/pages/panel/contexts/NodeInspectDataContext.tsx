@@ -15,10 +15,10 @@ export const InspectDataProvider = (props: { children: React.ReactNode }) => {
 	const [inspectData, setInspectData] = useState<NodeInspectedData[] | null>(
 		null
 	);
-	const chromeBridge = useContext(ChromeBridgeContext);
+	const { onBridgeMessage } = useContext(ChromeBridgeContext);
 
 	useEffect(() => {
-		const removeChromeMessageListener = chromeBridge.onMessage(
+		const removeChromeMessageListener = onBridgeMessage(
 			(message: ChromeBridgeMessage) => {
 				if (message.type === ChromeBridgeMessageType.INSPECTED_DATA) {
 					setInspectData(message.content);
@@ -29,7 +29,7 @@ export const InspectDataProvider = (props: { children: React.ReactNode }) => {
 		return () => {
 			removeChromeMessageListener();
 		};
-	}, [chromeBridge]);
+	}, [onBridgeMessage]);
 
 	return (
 		<InspectDataContext.Provider value={inspectData}>

@@ -36,7 +36,7 @@ export const InspectWindow = (props: { className?: string }) => {
 // If needed, refactor this
 const useInspectNodeData = (nodeId: NodeId | null) => {
 	const inspectData = useContext(InspectDataContext);
-	const chromeBridge = useContext(ChromeBridgeContext);
+	const { sendThroughBridge } = useContext(ChromeBridgeContext);
 	const [nodeInspectData, setNodeInspectData] =
 		useState<NodeInspectedData | null>(null);
 
@@ -54,21 +54,21 @@ const useInspectNodeData = (nodeId: NodeId | null) => {
 	useEffect(() => {
 		if (lastInspectedFiberId === nodeId) return;
 
-		chromeBridge.send({
+		sendThroughBridge({
 			type: ChromeBridgeMessageType.INSPECT_ELEMENT,
 			content: nodeId === null ? [] : [nodeId],
 		});
-	}, [nodeId, chromeBridge, lastInspectedFiberId]);
+	}, [nodeId, sendThroughBridge, lastInspectedFiberId]);
 
 	// FIXME: this is needed only because SplitView destroys the component
 	useEffect(() => {
 		return () => {
-			chromeBridge.send({
+			sendThroughBridge({
 				type: ChromeBridgeMessageType.INSPECT_ELEMENT,
 				content: [],
 			});
 		};
-	}, [chromeBridge]);
+	}, [sendThroughBridge]);
 
 	return nodeInspectData;
 };

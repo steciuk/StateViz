@@ -10,9 +10,11 @@ export default defineConfig({
 			background: 'var(--background)',
 			primary: 'var(--primary)',
 			secondary: 'var(--secondary)',
+			'secondary-hover': 'var(--secondary-hover)',
 			accent: 'var(--accent)',
 			'text-disabled': 'var(--text-disabled)',
 			disabled: 'var(--disabled)',
 		},
 	},
 });
+

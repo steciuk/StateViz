@@ -65,7 +65,7 @@ abstract class ChromeBridge {
 		this.port.postMessage(message);
 	}
 
-	onMessage(callback: (message: ChromeBridgeMessage) => void): () => void {
+	onMessage = (callback: (message: ChromeBridgeMessage) => void) => {
 		if (this.port) {
 			this.port.onMessage.addListener(callback);
 		}
@@ -78,7 +78,7 @@ abstract class ChromeBridge {
 				(listener) => listener !== callback
 			);
 		};
-	}
+	};
 
 	protected handleConnection(port: chrome.runtime.Port): void {
 		this.port = port;

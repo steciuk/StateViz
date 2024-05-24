@@ -1,7 +1,15 @@
-import { createContext, ReactNode, useEffect } from 'react';
+import {
+	createContext,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 
 import {
 	ChromeBridgeConnection,
+	ChromeBridgeMessage,
 	ChromeBridgeToTabConnector,
 } from '@src/shared/chrome/ChromeBridge';
 
@@ -10,19 +18,29 @@ const chromeBridge = new ChromeBridgeToTabConnector(
 	chrome.devtools.inspectedWindow.tabId
 );
 
-export const ChromeBridgeContext = createContext(
-	null as unknown as ChromeBridgeToTabConnector
-);
+export const ChromeBridgeContext = createContext<{
+	sendThroughBridge: ChromeBridgeToTabConnector['send'];
+	onBridgeMessage: ChromeBridgeToTabConnector['onMessage'];
+	isBridgeConnected: boolean;
+}>({
+	sendThroughBridge: () => {},
+	onBridgeMessage: () => () => {},
+	isBridgeConnected: false,
+});
 
 export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
+	const [isConnected, setIsConnected] = useState(false);
+
 	useEffect(() => {
 		console.log('Connecting chrome bridge');
 		chromeBridge.connect();
+		setIsConnected(chromeBridge.isConnected);
 
 		const handlePageReload = () => {
 			console.log('Reloading page');
 			chromeBridge.disconnect();
 			chromeBridge.connect();
+			setIsConnected(chromeBridge.isConnected);
 		};
 
 		chrome.devtools.network.onNavigated.addListener(handlePageReload);
@@ -34,8 +52,25 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 		};
 	}, []);
 
+	const send = useCallback((message: ChromeBridgeMessage) => {
+		try {
+			chromeBridge.send(message);
+			setIsConnected(true);
+		} catch (e) {
+			setIsConnected(false);
+		}
+	}, []);
+
+	const bridge = useMemo(() => {
+		return {
+			sendThroughBridge: send,
+			onBridgeMessage: chromeBridge.onMessage,
+			isBridgeConnected: isConnected,
+		};
+	}, [send, isConnected]);
+
 	return (
-		<ChromeBridgeContext.Provider value={chromeBridge}>
+		<ChromeBridgeContext.Provider value={bridge}>
 			{props.children}
 		</ChromeBridgeContext.Provider>
 	);

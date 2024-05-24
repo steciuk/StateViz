@@ -19,6 +19,7 @@
 		--background: #fffefa;
 		--primary: #2a5bef;
 		--secondary: #fbeec6;
+    --secondary-hover: #f9e8b7;
 		--accent: #cdd9ff;
 		--disabled: #c4c4c4;
 	}
@@ -31,6 +32,7 @@
 		--background: #050400;
 		--primary: #8da9ff;
 		--secondary: #392c04;
+    --secondary-hover: #3f3105;
 		--accent: #1b50ee;
 		--disabled: #c4c4c4;
 	}

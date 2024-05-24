@@ -11,10 +11,11 @@ import { Library } from '@src/shared/types/Library';
 import { NoLibrariesConnected } from '@src/shared/components/NoLibrariesConnected';
 
 const Roots = () => {
+	const { isBridgeConnected } = useContext(ChromeBridgeContext);
 	const filteredNodes = useFilteredNodes();
 
-	if (!filteredNodes || filteredNodes.length === 0)
-		return <NoLibrariesConnected />;
+	if (!isBridgeConnected || !filteredNodes || filteredNodes.length === 0)
+		return <NoLibrariesConnected panel={true} />;
 
 	//TODO: check if we can use index as key here
 	return (
@@ -36,11 +37,11 @@ const Roots = () => {
 export default Roots;
 
 const useRoots = () => {
-	const chromeBridge = useContext(ChromeBridgeContext);
+	const { onBridgeMessage } = useContext(ChromeBridgeContext);
 	const [fiberRoot, setFiberRoot] = useState<NodeAndLibrary[] | null>(null);
 
 	useEffect(() => {
-		const removeChromeMessageListener = chromeBridge.onMessage(
+		const removeChromeMessageListener = onBridgeMessage(
 			(message: ChromeBridgeMessage) => {
 				if (message.type === ChromeBridgeMessageType.FULL_SKELETON) {
 					console.log('Set fiber root');
@@ -52,7 +53,7 @@ const useRoots = () => {
 		return () => {
 			removeChromeMessageListener();
 		};
-	}, [chromeBridge]);
+	}, [onBridgeMessage]);
 
 	return fiberRoot;
 };
