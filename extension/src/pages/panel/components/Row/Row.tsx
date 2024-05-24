@@ -109,16 +109,16 @@ function useExpandAllSignal(
 }
 
 function useSendHover(): (nodeId: NodeId) => void {
-	const chromeBridge = useContext(ChromeBridgeContext);
+	const { sendThroughBridge } = useContext(ChromeBridgeContext);
 
 	return useCallback(
 		(nodeId: NodeId) => {
-			chromeBridge.send({
+			sendThroughBridge({
 				type: ChromeBridgeMessageType.HOVER_ELEMENT,
 				content: nodeId,
 			});
 		},
-		[chromeBridge]
+		[sendThroughBridge]
 	);
 }
 

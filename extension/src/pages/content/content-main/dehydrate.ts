@@ -1,7 +1,4 @@
-import {
-	extractNameFromType,
-	isForwardRef,
-} from '@pages/content/content-main/react/utils/getFiberName';
+import { extractNameFromType } from '@pages/content/content-main/react/utils/getFiberName';
 import { DataType, InspectData, TypedData } from '@src/shared/types/DataType';
 
 export const MAX_DEHYDRATE_DEPTH = 5;

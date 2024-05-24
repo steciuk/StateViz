@@ -5,6 +5,7 @@ import {
 	sendChromeMessageToTab,
 } from '@src/shared/chrome/chrome-message';
 import { Library } from '@src/shared/types/Library';
+import { consoleError } from '@src/shared/utils/console';
 
 let panelCreated = false;
 
@@ -19,7 +20,7 @@ function createPanelIfNotCreated() {
 		);
 		panelCreated = true;
 	} catch (e) {
-		console.error(e);
+		consoleError(e);
 	}
 }
 
@@ -37,14 +38,18 @@ const removeListener = onChromeMessage((message, sender) => {
 
 // Devtools window opened after a library attached
 if (!panelCreated) {
-	sendChromeMessageToTab(currentTabId, {
-		type: ChromeMessageType.WHAT_LIBRARIES_ATTACHED,
-		source: ChromeMessageSource.DEVTOOLS,
-		responseCallback: (librariesAttached: Library[]) => {
-			if (librariesAttached.length > 0) {
-				createPanelIfNotCreated();
-			}
-		},
-	});
+	try {
+		sendChromeMessageToTab(currentTabId, {
+			type: ChromeMessageType.WHAT_LIBRARIES_ATTACHED,
+			source: ChromeMessageSource.DEVTOOLS,
+			responseCallback: (librariesAttached: Library[]) => {
+				if (librariesAttached.length > 0) {
+					createPanelIfNotCreated();
+				}
+			},
+		});
+	} catch (e) {
+		consoleError(e);
+	}
 }
 
