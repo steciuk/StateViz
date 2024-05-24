@@ -34,13 +34,11 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 	useEffect(() => {
 		console.log('Connecting chrome bridge');
 		chromeBridge.connect();
-		setIsConnected(chromeBridge.isConnected);
 
 		const handlePageReload = () => {
 			console.log('Reloading page');
 			chromeBridge.disconnect();
 			chromeBridge.connect();
-			setIsConnected(chromeBridge.isConnected);
 		};
 
 		chrome.devtools.network.onNavigated.addListener(handlePageReload);
@@ -61,13 +59,25 @@ export const ChromeBridgeProvider = (props: { children: ReactNode }) => {
 		}
 	}, []);
 
+	const onBridgeMessage = useCallback(
+		(callback: (message: ChromeBridgeMessage) => void) => {
+			const removeListener = chromeBridge.onMessage((message) => {
+				callback(message);
+				setIsConnected(true);
+			});
+
+			return removeListener;
+		},
+		[]
+	);
+
 	const bridge = useMemo(() => {
 		return {
 			sendThroughBridge: send,
-			onBridgeMessage: chromeBridge.onMessage,
+			onBridgeMessage: onBridgeMessage,
 			isBridgeConnected: isConnected,
 		};
-	}, [send, isConnected]);
+	}, [send, isConnected, onBridgeMessage]);
 
 	return (
 		<ChromeBridgeContext.Provider value={bridge}>
