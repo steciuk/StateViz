@@ -139,6 +139,8 @@ Current extension logo made by [Tanvir Islam](https://thenounproject.com/creator
 ## Thesis
 The thesis document can be found [here](doc/thesis.pdf). It provides a detailed overview of the extension, its architecture, and the technologies used to build it. It also includes a comprehensive evaluation of the extension's performance and usability. Unfortunately, the document is only available in Polish, but in the future, I plan to provide an English *GPTranslated* version.
 
+The thesis was defended with a grade 5.0/5.0 and awarded the distinction on 27th June 2024 at the Faculty of Electronics and Information Technology, Warsaw University of Technology.
+
 ### Thesis Abstract
 > This paper delves into the complex realm of integrating developer tools with modern frontend libraries, culminating in the creation of a versatile tool aimed at analyzing structure and data flow between components in web applications.<br><br>
 A thorough examination of existing solutions identified essential features for the new tool, leading to its implementation as a browser extension aligned with established requirements.<br><br>
